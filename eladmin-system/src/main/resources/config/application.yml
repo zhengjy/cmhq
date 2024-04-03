@@ -27,10 +27,11 @@ spring:
 
   redis:
     #数据库索引
-    database: ${REDIS_DB:0}
-    host: ${REDIS_HOST:127.0.0.1}
-    port: ${REDIS_PORT:6379}
-    password: ${REDIS_PWD:}
+    database: ${REDIS_DB:2}
+    host: ${REDIS_HOST:redis01.test.geely.com}
+    port: ${REDIS_PORT:6395}
+    password: OE$(=3TC,Mh{s>B!
+    namespace: gdmpapp
     #连接超时时间
     timeout: 5000
 
