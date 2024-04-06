@@ -46,6 +46,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
@@ -71,14 +73,26 @@ public class UserController {
     @ApiOperation("导出用户数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('user:list')")
-    public void exportUser(HttpServletResponse response, UserQueryCriteria criteria) throws IOException {
+    public void exportUser(HttpServletRequest request,HttpServletResponse response, UserQueryCriteria criteria) throws IOException {
+        if (request.getRemoteHost().contains("c.")){
+            criteria.setPlatform("company");
+        }else {
+            criteria.setPlatform("admin");
+
+        }
         userService.download(userService.queryAll(criteria), response);
     }
 
     @ApiOperation("查询用户")
     @GetMapping
     @PreAuthorize("@el.check('user:list')")
-    public ResponseEntity<PageResult<UserDto>> queryUser(UserQueryCriteria criteria, Pageable pageable){
+    public ResponseEntity<PageResult<UserDto>> queryUser(HttpServletRequest request,UserQueryCriteria criteria, Pageable pageable){
+//        if (request.getRemoteHost().contains("c.")){
+//            criteria.setPlatform("company");
+//        }else {
+//            criteria.setPlatform("admin");
+//
+//        }
         if (!ObjectUtils.isEmpty(criteria.getDeptId())) {
             criteria.getDeptIds().add(criteria.getDeptId());
             // 先查找是否存在子节点

@@ -93,6 +93,10 @@ public class User extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "密码")
     private String password;
+    @ApiModelProperty(value = "admin：管理端，商户端：company")
+    private String platform;
+    @ApiModelProperty(value = "商户id")
+    private Integer companyId;
 
     @NotNull
     @ApiModelProperty(value = "是否启用")

@@ -18,6 +18,7 @@ package me.zhengjie.config;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -64,9 +65,12 @@ public class ConfigurerAdapter implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         FileProperties.ElPath path = properties.getPath();
-        String avatarUtl = "file:" + path.getAvatar().replace("\\","/");
+        if (StringUtils.isNotEmpty(path.getAvatar())){
+            String avatarUtl = "file:" + path.getAvatar().replace("\\","/");
+            registry.addResourceHandler("/avatar/**").addResourceLocations(avatarUtl).setCachePeriod(0);
+
+        }
         String pathUtl = "file:" + path.getPath().replace("\\","/");
-        registry.addResourceHandler("/avatar/**").addResourceLocations(avatarUtl).setCachePeriod(0);
         registry.addResourceHandler("/file/**").addResourceLocations(pathUtl).setCachePeriod(0);
         registry.addResourceHandler("/**").addResourceLocations("classpath:/META-INF/resources/").setCachePeriod(0);
     }

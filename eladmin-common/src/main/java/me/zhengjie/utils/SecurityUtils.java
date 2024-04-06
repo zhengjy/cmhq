@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.exception.BadRequestException;
 import me.zhengjie.utils.enums.DataScopeEnum;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -72,6 +73,23 @@ public class SecurityUtils {
         JSONObject jsonObject = (JSONObject) JSON.toJSON(userDetails);
         return jsonObject.getJSONObject("user").getLong("id");
     }
+    /**
+     * 获取商户
+     * @return 系统商户id
+     */
+    public static Integer getCurrentCompanyId() {
+        UserDetails userDetails = getCurrentUser();
+        // 将 Java 对象转换为 JSONObject 对象
+        JSONObject jsonObject = (JSONObject) JSON.toJSON(userDetails);
+        return jsonObject.getJSONObject("user").getInteger("company_Id");
+    }
+
+    public static String getCurrentPlatform() {
+        UserDetails userDetails = getCurrentUser();
+        // 将 Java 对象转换为 JSONObject 对象
+        JSONObject jsonObject = (JSONObject) JSON.toJSON(userDetails);
+        return jsonObject.getJSONObject("user").getString("platform");
+    }
 
     /**
      * 获取当前用户的数据权限
@@ -95,5 +113,9 @@ public class SecurityUtils {
             return "";
         }
         return DataScopeEnum.ALL.getValue();
+    }
+
+    public static boolean isPlatformCompany(){
+        return StringUtils.equals(getCurrentPlatform(),"company");
     }
 }

@@ -1,0 +1,25 @@
+ip:120.76.156.209   root：ahjttd@123
+外网面板地址: https://120.76.156.209:37925/7fa15a65
+内网面板地址: https://172.30.182.159:37925/7fa15a65
+username: qdwkdmj1
+password: 94822e41
+
+尊敬的极兔开放平台用户： 您好! 您的开发者信息与企业信息已通过认证，您的apiAccount与privateKey请妥善保管; apiAccount：292969820138246174 privateKey：5380b821fd2c4146a595ba8fea443169。
+账号:创美华奇 密码:Chuangmeihuaqi1
+
+总后台登录地址
+https://ahjttd.com/MJYXlogin.php
+账号密码：boss,Cmhq@520
+
+商户登录地址
+https://ahjttd.com/company.php
+商户名称：创美华奇-客服售后 账号：18325927677 密码：Changmeihuaqi1
+
+阿里云账号：安徽极兔  密码：Li060708
+
+
+/www/server/nginx/sbin/nginx -s reload /usr/app/nginx/nginx.conf
+
+/www/server/nginx/sbin/nginx -c /usr/app/nginx/nginx.conf
+
+nohup java -jar cmhq-core-2.7.jar --spring.profiles.active=dev --spring.redis.host=127.0.0.1 > nohup.out 2>&1 &

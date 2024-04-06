@@ -16,8 +16,10 @@
 package me.zhengjie.modules.mnt.repository;
 
 import me.zhengjie.modules.mnt.domain.App;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Component;
 
 /**
 * @author zhanghouying
