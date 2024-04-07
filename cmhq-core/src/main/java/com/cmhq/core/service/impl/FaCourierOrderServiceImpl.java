@@ -1,14 +1,21 @@
 package com.cmhq.core.service.impl;
 
+import com.cmhq.core.api.UploadResult;
+import com.cmhq.core.api.UploadTypeEnum;
+import com.cmhq.core.api.strategy.StrategyFactory;
+import com.cmhq.core.api.strategy.Upload;
 import com.cmhq.core.dao.FcCourierOrderDao;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import com.cmhq.core.service.FaCourierOrderService;
+import com.cmhq.core.service.domain.CourierOrderQueryPageDomain;
 import me.zhengjie.QueryResult;
-import me.zhengjie.utils.SecurityUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/6 14:00.
@@ -21,16 +28,45 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
 
     @Override
     public QueryResult<FaCourierOrderEntity> queryAll(CourierOrderQuery query) {
-        //查询带商户权限控制，为空则不校验商户信息
-        if (SecurityUtils.isPlatformCompany()){
-//            if (){
-//
-//            }
+        return new CourierOrderQueryPageDomain(query).handle();
+    }
 
+    @Transactional
+    @Override
+    public Integer create(FaCourierOrderEntity entity) {
+        entity.setOrderNo(System.currentTimeMillis() + "");
+        //上传物流公司
+        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(entity.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_ORDER_UPLOAD.getCodeNickName())));
+        UploadResult uploadResult = upload.execute(entity);
+        if (uploadResult.getFlag()){
+            fcCourierOrderDao.insert(entity);
+        }else {
+            throw new RuntimeException("物流公司上传失败:"+uploadResult.getErrorMsg());
         }
-
-        //用户权限
+        //计费
         return null;
+    }
+
+    @Override
+    public String getCourierFreightCharge(FaCourierOrderEntity entity) {
+        entity.setOrderNo(System.currentTimeMillis()+"");
+        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(entity.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_QUERY_FREIGHT_CHARGE.getCodeNickName())));
+        UploadResult uploadResult = upload.execute(entity);
+        if (uploadResult.getFlag()){
+            return new ArrayList<>(uploadResult.getJsonMsg().values()).get(0);
+        }
+        return "";
+    }
+
+    @Override
+    public String cancelCourierOrder(Integer id) {
+        FaCourierOrderEntity entity = fcCourierOrderDao.selectById(id);
+        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(entity.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_CANCEL_COURIER_ORDER.getCodeNickName())));
+        UploadResult uploadResult = upload.execute(entity);
+        if (uploadResult.getFlag()){
+            return new ArrayList<>(uploadResult.getJsonMsg().values()).get(0);
+        }
+        return "";
     }
 
 //    @Override

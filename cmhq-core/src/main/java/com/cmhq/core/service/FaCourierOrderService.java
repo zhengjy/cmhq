@@ -15,6 +15,22 @@ public interface FaCourierOrderService {
      */
     QueryResult<FaCourierOrderEntity> queryAll(CourierOrderQuery query);
 
+
+    Integer create(FaCourierOrderEntity entity);
+
+    /**
+     * 获取物流费用
+     * @param entity
+     * @return
+     */
+    String getCourierFreightCharge(FaCourierOrderEntity entity);
+
+    /**
+     * 取消订单
+     * @param id
+     */
+    String cancelCourierOrder(Integer id);
+
 //    /**
 //     * 查询所有数据不分页
 //     * @param criteria 条件参数
@@ -28,13 +44,6 @@ public interface FaCourierOrderService {
 //     * @return FaCourierOrderDto
 //     */
 //    FaCourierOrderDto findById(Integer id);
-//
-//    /**
-//     * 创建
-//     * @param resources /
-//     */
-//    void create(FaCourierOrder resources);
-//
 //    /**
 //     * 编辑
 //     * @param resources /

@@ -1,5 +1,7 @@
 package com.cmhq.core.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
@@ -7,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.sql.Date;
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/6 13:46.
@@ -14,9 +17,8 @@ import java.math.BigDecimal;
 @Data
 @TableName("fa_courier_order")
 public class FaCourierOrderEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "`id`")
+
+    @TableId(type = IdType.AUTO)
     @ApiModelProperty(value = "id")
     private Integer id;
 
@@ -119,15 +121,16 @@ public class FaCourierOrderEntity {
     @ApiModelProperty(value = "0未结算1已结算")
     private Integer isJiesuan;
 
-    @NotNull
     @ApiModelProperty(value = "订单状态：1运输中2派件中3已签收")
     private Integer orderState;
-    @NotNull
+    @ApiModelProperty(value = "-1:待审核,0取消待审核1正常2审核通过3审核不通过")
+    private Integer canncelOrderState;
+
     @ApiModelProperty(value = "0异常1正常")
     private Integer orderIsError;
 
     @ApiModelProperty(value = "用户id")
-    private Integer userId;
+    private Integer createUserId;
 
     @Column(name = "`create_user`")
     @ApiModelProperty(value = "创建人")
@@ -144,4 +147,7 @@ public class FaCourierOrderEntity {
     @Column(name = "`update_time`")
     @ApiModelProperty(value = "updateTime")
     private Date updateTime;
+
+    @ApiModelProperty(value = "扩展信息")
+    private String courierOrderExtend;
 }

@@ -74,12 +74,7 @@ public class UserController {
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('user:list')")
     public void exportUser(HttpServletRequest request,HttpServletResponse response, UserQueryCriteria criteria) throws IOException {
-        if (request.getRemoteHost().contains("c.")){
-            criteria.setPlatform("company");
-        }else {
-            criteria.setPlatform("admin");
 
-        }
         userService.download(userService.queryAll(criteria), response);
     }
 

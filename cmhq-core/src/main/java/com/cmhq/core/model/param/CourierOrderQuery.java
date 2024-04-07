@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Created by Jiyang.Zheng on 2024/4/6 14:05.
  */
@@ -18,13 +20,10 @@ public class CourierOrderQuery {
     private String goodsName;
 
     @ApiModelProperty(value = "订单状态：极兔（0待取件1已取件2已发出3已签收）")
-    private Integer orderState;
-
-    @ApiModelProperty(value = "0取消待审核1正常2审核通过3审核不通过")
-    private String cancelState;
+    private List<Integer> orderState;
 
     @ApiModelProperty(value = "-1:待审核,0取消待审核1正常2审核通过3审核不通过")
-    private String canncelOrderState;
+    private List<Integer> canncelOrderState;
 
     @ApiModelProperty(value = "是否异常：0异常1正常")
     private String orderIsError;
@@ -44,8 +43,10 @@ public class CourierOrderQuery {
     @ApiModelProperty(value = "收货手机号")
     private String toMobile;
 
-    @ApiModelProperty(value = "商户")
+    @ApiModelProperty(value = "商户公司")
     private String companyName;
+    @ApiModelProperty(value = "帐户名称")
+    private String userName;
 
     @ApiModelProperty(value = "开始时间")
     private String sTime;
