@@ -8,6 +8,13 @@ import com.cmhq.core.api.UploadResult;
 import lombok.extern.slf4j.Slf4j;
 
 import okhttp3.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -22,7 +29,6 @@ import java.util.List;
 @Slf4j
 public abstract class AbstractBaiduUpload<Req, T extends UploadData> extends AbstractUpload<Req, T> {
 
-
     /**
      * 执行上传
      *
@@ -31,7 +37,6 @@ public abstract class AbstractBaiduUpload<Req, T extends UploadData> extends Abs
      */
     @Override
     protected <T extends UploadData> int[] doUpload(List<T> uploadData, UploadCallback callback) {
-
         //上传
         int successNum = 0;
         int failNum = 0;
@@ -50,23 +55,45 @@ public abstract class AbstractBaiduUpload<Req, T extends UploadData> extends Abs
 
 
     public <T extends UploadData> UploadResult send(T uploadData, UploadCallback callback) {
+        OkHttpClient HTTP_CLIENT = new OkHttpClient().newBuilder().build();
+        String url = getApiHost() + getUploadUrl();
+        UploadResult uploadResult = UploadResult.builder().build();
+        try {
+            String data = JSONObject.toJSONString(uploadData);
+            String unKey = uploadData.getUnKey();
+            MediaType mediaType = MediaType.parse("application/json");
+            RequestBody body = RequestBody.create(mediaType, data);
+            Request request = new Request.Builder()
+                    .url(url + getAccessToken())
+//                    .url("https://aip.baidubce.com/rpc/2.0/nlp/v1/address?access_token=" + getAccessToken())
+                    .method("POST", body)
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("Accept", "application/json")
+                    .build();
+            log.info("get baidu mark: 【{}】， url【{}】，params【{}】，headers【{}】", unKey, url, data, JSONObject.toJSONString(request.headers()));
+            Response response = HTTP_CLIENT.newCall(request).execute();
+
+            String rsp = response.body().string();
+            log.info(" get baidu mark:【{}】， response:【{}】", unKey, rsp);
+            if (StringUtils.isNotEmpty(rsp)) {
+                uploadResult.getJsonMsg().put(unKey,rsp);
+                uploadResult.setFlag(true);
+                callback.success(rsp);
+                return uploadResult;
+            } else {
+                callback.fail("对方服务器响应异常", null);
+                return uploadResult.setErrorMsg("对方服务器响应异常").setFlag(false);
+            }
+        } catch (Exception e) {
+            callback.fail(e.getMessage(), e);
+            log.error("", e);
+            return uploadResult.setErrorMsg(e.getMessage()).setFlag(false);
+        }
 
     }
-    static final OkHttpClient HTTP_CLIENT = new OkHttpClient().newBuilder().build();
 
-    public static void main(String []args) throws IOException{
-        MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "");
-        Request request = new Request.Builder()
-                .url("https://aip.baidubce.com/rpc/2.0/nlp/v1/address?access_token=" + getAccessToken())
-                .method("POST", body)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        Response response = HTTP_CLIENT.newCall(request).execute();
-        System.out.println(response.body().string());
 
-    }
+
 
 
     /**
@@ -76,6 +103,7 @@ public abstract class AbstractBaiduUpload<Req, T extends UploadData> extends Abs
      * @throws IOException IO异常
      */
     private String getAccessToken() throws IOException {
+        OkHttpClient HTTP_CLIENT = new OkHttpClient().newBuilder().build();
         String[] split = getToken().split(",");
         String appkey = null;
         String secretkey = null;
@@ -83,14 +111,12 @@ public abstract class AbstractBaiduUpload<Req, T extends UploadData> extends Abs
             appkey = split[0];
             secretkey = split[1];
         }
-
-
         MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
 
         RequestBody body = RequestBody.create(mediaType, "grant_type=client_credentials&client_id=" + appkey
                 + "&client_secret=" + secretkey);
         Request request = new Request.Builder()
-                .url("https://aip.baidubce.com/oauth/2.0/token")
+                .url(getApiHost()+"/oauth/2.0/token")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .build();

@@ -59,7 +59,7 @@ public abstract class AbstractStoUpload<Req, T extends UploadData> extends Abstr
 
 
     public <T extends UploadData> UploadResult send(T uploadData, UploadCallback callback) {
-        String url = getUploadUrl();
+        String url = getApiHost();
         UploadResult uploadResult = UploadResult.builder().build();
         if (uploadData == null) {
             callback.fail("上传数据不能为空", null);
@@ -105,6 +105,7 @@ public abstract class AbstractStoUpload<Req, T extends UploadData> extends Abstr
                 uploadResult.getJsonMsg().put(unKey,rsp);
                 StoResponse object = JSONObject.parseObject(rsp,StoResponse.class);
                 if (object.isSuccess()) {
+                    callback.success(object);
                     return uploadResult.setFlag(true);
                 } else {
                     callback.fail(rsp,null);

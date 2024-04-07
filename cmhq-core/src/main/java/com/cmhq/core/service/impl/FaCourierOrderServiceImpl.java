@@ -69,6 +69,16 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
         return "";
     }
 
+    @Override
+    public String addressAnalysis(String text) {
+        Upload upload = StrategyFactory.getUpload(UploadTypeEnum.TYPE_BAIDU_ADDRDESS);
+        UploadResult uploadResult = upload.execute(text);
+        if (uploadResult.getFlag()){
+            return new ArrayList<>(uploadResult.getJsonMsg().values()).get(0);
+        }
+        return "";
+    }
+
 //    @Override
 //    public List<FaCourierOrderDto> queryAll(FaCourierOrderQueryCriteria criteria) {
 //        return faCourierOrderMapper.toDto(faCourierOrderRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder)));

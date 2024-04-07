@@ -31,6 +31,8 @@ public interface FaCourierOrderService {
      */
     String cancelCourierOrder(Integer id);
 
+    String addressAnalysis(String text);
+
 //    /**
 //     * 查询所有数据不分页
 //     * @param criteria 条件参数

@@ -9,6 +9,7 @@ import com.cmhq.core.dao.FaCourierCompanyDao;
 import com.cmhq.core.dao.FaUploadLogDao;
 import com.cmhq.core.model.FaCourierCompanyEntity;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,6 +33,8 @@ import java.util.stream.Collectors;
 public abstract class AbstractUpload<Req,T extends UploadData> implements Upload<Req>  {
     @Autowired
     private FaUploadLogDao faUploadLogDao;
+    @Autowired
+    FaCourierCompanyDao faCourierCompanyDao;
 
     @Override
     public UploadResult execute(Req o) {
@@ -66,11 +70,22 @@ public abstract class AbstractUpload<Req,T extends UploadData> implements Upload
             int[] ints = doUpload(uploadData,  new UploadCallback() {
                 @Override
                 public void success(Object obj) {
+                    result.setFlag(true);
+                    Map map = null;
+                    if (result.getJsonMsg() != null){
+                        map = result.getJsonMsg();
+                    }else {
+                        map = Maps.newHashMap();
+                    }
+                    map.put(list.get(finalI).getUnKey(),obj);
+                    result.setJsonMsg(map);
+
                     successUks.add(list.get(finalI).getUnKey());
                 }
                 @Override
                 public void fail(Object obj, Exception e) {
                     result.setErrorMsg(obj+"");
+                    result.setFlag(false);
                     failUks.add(list.get(finalI).getUnKey());
                 }
             });
@@ -126,12 +141,14 @@ public abstract class AbstractUpload<Req,T extends UploadData> implements Upload
      * @param code
      * @param status
      */
-    protected abstract void syncTransferStatus(List<String> code, String status);
+    protected  void syncTransferStatus(List<String> code, String status){};
 
 
     protected String getToken(){
-        FaCourierCompanyDao faCourierCompanyDao = SpringContextUtil.getBean(FaCourierCompanyDao.class);
         return faCourierCompanyDao.selectOne(new LambdaQueryWrapper<FaCourierCompanyEntity>().eq(FaCourierCompanyEntity::getCourierCode, supports().getCourierCompanyCode())).getTokenInfo();
+    }
+    protected String getApiHost(){
+        return faCourierCompanyDao.selectOne(new LambdaQueryWrapper<FaCourierCompanyEntity>().eq(FaCourierCompanyEntity::getCourierCode, supports().getCourierCompanyCode())).getApiUrl();
     }
 
     /**

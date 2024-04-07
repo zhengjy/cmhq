@@ -23,7 +23,7 @@ public class CourierOrderQuery {
     private List<Integer> orderState;
 
     @ApiModelProperty(value = "-1:待审核,0取消待审核1正常2审核通过3审核不通过")
-    private List<Integer> canncelOrderState;
+    private List<Integer> cancelOrderState;
 
     @ApiModelProperty(value = "是否异常：0异常1正常")
     private String orderIsError;

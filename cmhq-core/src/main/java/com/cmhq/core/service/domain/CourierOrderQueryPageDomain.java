@@ -1,9 +1,7 @@
 package com.cmhq.core.service.domain;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cmhq.core.dao.FcCourierOrderDao;
-import com.cmhq.core.model.FaCompanyEntity;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import com.cmhq.core.util.ContextHolder;
@@ -79,8 +77,8 @@ public class CourierOrderQueryPageDomain {
             lam.eq(FaCourierOrderEntity::getOrderState,query.getOrderState());
         }
 
-        if (CollectionUtils.isNotEmpty(query.getCanncelOrderState())){
-            lam.eq(FaCourierOrderEntity::getCanncelOrderState,query.getCanncelOrderState());
+        if (CollectionUtils.isNotEmpty(query.getCancelOrderState())){
+            lam.eq(FaCourierOrderEntity::getCancelOrderState,query.getCancelOrderState());
         }
 
         if (StringUtils.isNotEmpty(query.getOrderIsError())){

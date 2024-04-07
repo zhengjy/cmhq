@@ -11,15 +11,17 @@ import lombok.Data;
  * Created by Jiyang.Zheng on 2024/4/7 14:46.
  */
 @Data
-@TableName("fa_courier_order")
+@TableName("fa_courier_company")
 public class FaCourierCompanyEntity {
 
     @TableId(type = IdType.AUTO)
     @ApiModelProperty(value = "id")
     private Integer id;
 
-    @ApiModelProperty(value = "商户id")
+    @ApiModelProperty(value = "名稱")
     private String courierName;
+    @ApiModelProperty(value = "apiurl")
+    private String apiUrl;
 
     @ApiModelProperty(value = "快递公司编码。如sto")
     private String courierCode;

@@ -31,6 +31,7 @@ public class UploadResult {
     private List<String> failUks = Lists.newArrayList();
     @Builder.Default
     private List<String> successUks = Lists.newArrayList();
+    @Builder.Default
     private Map<String,String> jsonMsg = Maps.newHashMap();
 
     /**

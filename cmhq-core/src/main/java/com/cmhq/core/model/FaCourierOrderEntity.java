@@ -9,7 +9,6 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.sql.Date;
 import java.math.BigDecimal;
-import java.util.Map;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/6 13:46.
@@ -124,7 +123,7 @@ public class FaCourierOrderEntity {
     @ApiModelProperty(value = "订单状态：1运输中2派件中3已签收")
     private Integer orderState;
     @ApiModelProperty(value = "-1:待审核,0取消待审核1正常2审核通过3审核不通过")
-    private Integer canncelOrderState;
+    private Integer cancelOrderState;
 
     @ApiModelProperty(value = "0异常1正常")
     private Integer orderIsError;

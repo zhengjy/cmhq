@@ -38,6 +38,7 @@ CREATE TABLE `fa_courier_company` (
                                       `id` bigint(20) NOT NULL AUTO_INCREMENT,
                                       `courier_code` varchar(255) COMMENT '快递公司编码：如sto：申通',
                                       `courier_name` varchar(255) COMMENT '名称',
+                                      `api_url` varchar(255) COMMENT 'apiurl',
                                       `token_info` varchar(2000) COMMENT '认证信息',
                                       PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT '快递公司';
