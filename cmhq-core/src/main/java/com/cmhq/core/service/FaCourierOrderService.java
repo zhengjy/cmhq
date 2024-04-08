@@ -23,15 +23,17 @@ public interface FaCourierOrderService {
      * @param entity
      * @return
      */
-    String getCourierFreightCharge(FaCourierOrderEntity entity);
+    Object getCourierFreightCharge(FaCourierOrderEntity entity);
 
     /**
      * 取消订单
      * @param id
      */
-    String cancelCourierOrder(Integer id);
+    String cancelCourierOrder(String stateType,String content,Integer id);
 
-    String addressAnalysis(String text);
+    Object addressAnalysis(String text);
+
+    Object queryCourierTrack(Integer id);
 
 //    /**
 //     * 查询所有数据不分页

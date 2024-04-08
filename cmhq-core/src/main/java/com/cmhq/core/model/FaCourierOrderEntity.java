@@ -118,12 +118,12 @@ public class FaCourierOrderEntity {
 
     @Column(name = "`is_jiesuan`")
     @ApiModelProperty(value = "0未结算1已结算")
-    private Integer isJiesuan;
+    private Integer isJiesuan=0;
 
     @ApiModelProperty(value = "订单状态：1运输中2派件中3已签收")
     private Integer orderState;
     @ApiModelProperty(value = "-1:待审核,0取消待审核1正常2审核通过3审核不通过")
-    private Integer cancelOrderState;
+    private Integer cancelOrderState=1;
 
     @ApiModelProperty(value = "0异常1正常")
     private Integer orderIsError;

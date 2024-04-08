@@ -1,18 +1,17 @@
 package com.cmhq.core.api.strategy;
 
 import com.alibaba.fastjson.JSONObject;
+import com.cmhq.core.api.StoResponse;
+import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.dto.StoCancelCourierOrderDto;
 import com.cmhq.core.dao.FcCourierOrderDao;
 import com.cmhq.core.model.FaCourierOrderEntity;
-import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+
 
 /**
  * Created by Jiyang.Zheng on 2024/4/7 13:56.
@@ -31,18 +30,23 @@ public class StoCancelCourierOrder extends AbstractStoUpload<Integer, StoCancelC
         return "EDI_MODIFY_ORDER_CANCEL";
     }
 
-    @Override
-    protected void syncTransferStatus(List<String> code, String status) {
-
-    }
 
     @Override
-    protected List<StoCancelCourierOrderDto> getData(Integer id) throws RuntimeException {
+    protected StoCancelCourierOrderDto getData(Integer id) throws RuntimeException {
         FaCourierOrderEntity entity  = fcCourierOrderDao.selectById(id);
         StoCancelCourierOrderDto dto = new StoCancelCourierOrderDto();
         dto.setBillCode(entity.getCourierCompanyWaybillNo());
         dto.setOrderSource("KB");
 
-        return Arrays.asList(dto);
+        return dto;
+    }
+
+    @Override
+    public void uploadResultHandle(StoCancelCourierOrderDto uploadData, UploadResult uploadResult) {
+        Object json = uploadResult.getJsonMsg();
+        if (!StringUtils.equals(json+"", "成功")) {
+            uploadResult.setFlag(false);
+        }
+        super.uploadResultHandle(uploadData,uploadResult);
     }
 }

@@ -1,7 +1,6 @@
 package com.cmhq.core.api.strategy;
 
 import com.alibaba.fastjson.JSONObject;
-import com.cmhq.core.api.StoResponse;
 import com.cmhq.core.api.UploadCallback;
 import com.cmhq.core.api.UploadData;
 import com.cmhq.core.api.UploadResult;
@@ -9,18 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/7 10:48.
@@ -29,32 +19,7 @@ import java.util.List;
 @Slf4j
 public abstract class AbstractBaiduUpload<Req, T extends UploadData> extends AbstractUpload<Req, T> {
 
-    /**
-     * 执行上传
-     *
-     * @param uploadData
-     * @return
-     */
-    @Override
-    protected <T extends UploadData> int[] doUpload(List<T> uploadData, UploadCallback callback) {
-        //上传
-        int successNum = 0;
-        int failNum = 0;
-        for (T data : uploadData) {
-            UploadResult ur = send(data, callback);
-            if (!ur.getFlag()) {
-                failNum++;
-            } else {
-                successNum++;
-            }
-//            uploadResultHandle(Arrays.asList(data), ur);
-        }
-        return new int[]{successNum, failNum};
-
-    }
-
-
-    public <T extends UploadData> UploadResult send(T uploadData, UploadCallback callback) {
+    public UploadResult send(T uploadData, UploadCallback callback) {
         OkHttpClient HTTP_CLIENT = new OkHttpClient().newBuilder().build();
         String url = getApiHost() + getUploadUrl();
         UploadResult uploadResult = UploadResult.builder().build();
@@ -76,7 +41,7 @@ public abstract class AbstractBaiduUpload<Req, T extends UploadData> extends Abs
             String rsp = response.body().string();
             log.info(" get baidu mark:【{}】， response:【{}】", unKey, rsp);
             if (StringUtils.isNotEmpty(rsp)) {
-                uploadResult.getJsonMsg().put(unKey,rsp);
+                uploadResult.setJsonMsg(rsp);
                 uploadResult.setFlag(true);
                 callback.success(rsp);
                 return uploadResult;

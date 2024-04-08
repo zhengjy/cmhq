@@ -15,6 +15,9 @@ public enum UploadTypeEnum {
     TYPE_JT_QUERY_FREIGHT_CHARGE("jt_query_freight_charge","freight_charge",CourierCompanyEnum.COMPANY_JT.getType(),"查询极兔时效运费"),
 
 
+    TYPE_STO_COURIER_QUERY_TRACK("sto_courier_query_track","courier_query_track",CourierCompanyEnum.COMPANY_STO.getType(),"物流轨迹查询sto"),
+    TYPE_JT_COURIER_QUERY_TRACK("jt_courier_query_track","courier_query_track",CourierCompanyEnum.COMPANY_JT.getType(),"物流轨迹查询jt"),
+
     TYPE_STO_CANCEL_COURIER_ORDER("sto_cancel_courier_order","freight_charge",CourierCompanyEnum.COMPANY_STO.getType(),"取消订单sto"),
     TYPE_JT_CANCEL_COURIER_ORDER("jt_cancel_courier_order","cancel_courier_order",CourierCompanyEnum.COMPANY_JT.getType(),"取消订单jt"),
 

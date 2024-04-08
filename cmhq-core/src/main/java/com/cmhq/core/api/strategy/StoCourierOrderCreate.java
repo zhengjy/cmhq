@@ -24,13 +24,9 @@ public class StoCourierOrderCreate extends AbstractStoUpload<FaCourierOrderEntit
         return "EDI_PUSH_ORDER_STATUS";
     }
 
-    @Override
-    protected void syncTransferStatus(List<String> code, String status) {
-
-    }
 
     @Override
-    protected List<StoCourierOrderDto> getData(FaCourierOrderEntity param) throws RuntimeException {
+    protected StoCourierOrderDto getData(FaCourierOrderEntity param) throws RuntimeException {
         JSONObject map = JSONObject.parseObject(param.getCourierOrderExtend());
         if (map == null){
             map = new JSONObject();
@@ -76,6 +72,6 @@ public class StoCourierOrderCreate extends AbstractStoUpload<FaCourierOrderEntit
         if (param.getWeight() != null){
             cargo.setWeight(param.getWeight());
         }
-        return Arrays.asList(dto);
+        return dto;
     }
 }

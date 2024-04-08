@@ -2,14 +2,8 @@ package com.cmhq.core.api.strategy;
 
 import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.dto.BaiduAddressDto;
-import com.cmhq.core.api.dto.StoCancelCourierOrderDto;
-import com.cmhq.core.dao.FcCourierOrderDao;
-import com.cmhq.core.model.FaCourierOrderEntity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/7 13:56.
@@ -28,10 +22,11 @@ public class BaiduAddress extends AbstractBaiduUpload<String, BaiduAddressDto>{
 
 
     @Override
-    protected List<BaiduAddressDto> getData(String text) throws RuntimeException {
+    protected BaiduAddressDto getData(String text) throws RuntimeException {
         BaiduAddressDto dto = new BaiduAddressDto();
         dto.setText(text);
 
-        return Arrays.asList(dto);
+        return dto;
     }
+
 }

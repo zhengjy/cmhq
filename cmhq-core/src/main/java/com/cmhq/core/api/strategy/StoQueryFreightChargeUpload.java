@@ -27,13 +27,9 @@ public class StoQueryFreightChargeUpload extends AbstractStoUpload<FaCourierOrde
         return "QUERY_SEND_SERVICE_DETAIL";
     }
 
-    @Override
-    protected void syncTransferStatus(List<String> code, String status) {
-
-    }
 
     @Override
-    protected List<StoFreightChargeDto> getData(FaCourierOrderEntity param) throws RuntimeException {
+    protected StoFreightChargeDto getData(FaCourierOrderEntity param) throws RuntimeException {
         JSONObject map = JSONObject.parseObject(param.getCourierOrderExtend());
         if (map == null){
             map = new JSONObject();
@@ -58,6 +54,6 @@ public class StoQueryFreightChargeUpload extends AbstractStoUpload<FaCourierOrde
         m.setRecAddress(param.getToAddress());
         m.setOpenId(param.getOrderNo());
         m.setWeight(param.getWeight()+"");
-        return Arrays.asList(m);
+        return m;
     }
 }

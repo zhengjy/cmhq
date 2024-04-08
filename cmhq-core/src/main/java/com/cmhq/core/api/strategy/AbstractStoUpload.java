@@ -32,33 +32,9 @@ import java.util.*;
 @Slf4j
 public abstract class AbstractStoUpload<Req, T extends UploadData> extends AbstractUpload<Req, T> {
 
-    /**
-     * 执行上传
-     *
-     * @param uploadData
-     * @return
-     */
-    @Override
-    protected <T extends UploadData> int[] doUpload(List<T> uploadData, UploadCallback callback) {
-
-        //上传
-        int successNum = 0;
-        int failNum = 0;
-        for (T data : uploadData) {
-            UploadResult ur = send(data, callback);
-            if (!ur.getFlag()) {
-                failNum++;
-            } else {
-                successNum++;
-            }
-//            uploadResultHandle(Arrays.asList(data), ur);
-        }
-        return new int[]{successNum, failNum};
-
-    }
 
 
-    public <T extends UploadData> UploadResult send(T uploadData, UploadCallback callback) {
+    public  UploadResult send(T uploadData, UploadCallback callback) {
         String url = getApiHost();
         UploadResult uploadResult = UploadResult.builder().build();
         if (uploadData == null) {
@@ -102,19 +78,19 @@ public abstract class AbstractStoUpload<Req, T extends UploadData> extends Abstr
             String rsp = EntityUtils.toString(response.getEntity());
             log.info(" upload sto mark:【{}】， response:【{}】", unKey, rsp);
             if (StringUtils.isNotEmpty(rsp)) {
-                uploadResult.getJsonMsg().put(unKey,rsp);
                 StoResponse object = JSONObject.parseObject(rsp,StoResponse.class);
+                uploadResult.setJsonMsg(object.getData());
                 if (object.isSuccess()) {
                     callback.success(object);
                     return uploadResult.setFlag(true);
                 } else {
                     callback.fail(rsp,null);
                     uploadResult.setErrorJsonMsg(rsp).setFlag(false);
-                    return uploadResult.setErrorMsg(object.getErrorMsg()).setFlag(false);
+                    return uploadResult.setErrorJsonMsg(rsp).setErrorMsg(object.getErrorMsg()).setFlag(false);
                 }
             } else {
                 callback.fail("对方服务器响应异常", null);
-                return uploadResult.setErrorMsg("对方服务器响应异常").setFlag(false);
+                return uploadResult.setErrorJsonMsg(rsp).setErrorMsg("对方服务器响应异常").setFlag(false);
             }
         } catch (Exception e) {
             callback.fail(e.getMessage(), e);

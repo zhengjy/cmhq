@@ -27,7 +27,8 @@ CREATE TABLE `fa_upload_log` (
                                     `id` bigint(20) NOT NULL AUTO_INCREMENT,
                                     `upload_type` varchar(255) COMMENT '上传类型',
                                     `upload_code` text COMMENT '上传唯一标识',
-                                    `msg` text COMMENT '上传失败消息',
+                                    `msg` text COMMENT '返回日志',
+                                    `error_msg` text COMMENT '错误日志+完整返回json',
                                     `create_time` datetime DEFAULT NULL COMMENT '创建时间',
                                     `upload_token` varchar(255) DEFAULT NULL,
                                     `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
@@ -42,3 +43,11 @@ CREATE TABLE `fa_courier_company` (
                                       `token_info` varchar(2000) COMMENT '认证信息',
                                       PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT '快递公司';
+
+CREATE TABLE `fa_courier_order_ext` (
+                                        `courier_order_id` int(11) NOT NULL ,
+                                        `cname` varchar(255) COMMENT '名稱',
+                                        `cvalue` varchar(255) COMMENT '值',
+                                        PRIMARY KEY (`id`),
+                                        UNIQUE KEY `idx_order_id` (`cellcode`,`cname`) USING HASH
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COMMENT '快递订单扩展数据';

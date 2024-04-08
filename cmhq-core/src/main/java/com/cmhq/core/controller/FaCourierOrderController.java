@@ -8,7 +8,6 @@ import me.zhengjie.annotation.AnonymousAccess;
 import me.zhengjie.annotation.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
@@ -45,22 +44,27 @@ public class FaCourierOrderController {
     @Log("查询运费CourierOrder")
     @ApiOperation("查询运费CourierOrder")
     public APIResponse getCourierFreightCharge(@Validated @RequestBody FaCourierOrderEntity resources) {
-        String c = faCourierOrderService.getCourierFreightCharge(resources);
-        return APIResponse.success(c);
+        return APIResponse.success(faCourierOrderService.getCourierFreightCharge(resources));
     }
 
-    @ApiOperation("取消订单")
-    @Log("取消订单")
-    @GetMapping("cancelCourierOrder")
-    public APIResponse cancelCourierOrder( @ApiParam(value = "id") @RequestParam() Integer id) {
-        return APIResponse.success(faCourierOrderService.cancelCourierOrder(id));
+    @ApiOperation("状态更新")
+    @Log("状态更新")
+    @GetMapping("updateState")
+    public APIResponse cancelCourierOrder(@ApiParam(value = "cancel:取消状态，auditSuccess:审核成功，auditFail:审核失败") @RequestParam() String stateType,
+                                          @ApiParam(value = "备注") @RequestParam() String content,
+                                          @ApiParam(value = "id") @RequestParam() Integer id) {
+        return APIResponse.success(faCourierOrderService.cancelCourierOrder(stateType,content,id));
     }
 
     @ApiOperation("地址识别")
     @GetMapping("addressAnalysis")
     public APIResponse addressAnalysis( @ApiParam(value = "text") @RequestParam() String text) {
-        String rsp = faCourierOrderService.addressAnalysis(text);
-        return APIResponse.success(rsp);
+        return APIResponse.success(faCourierOrderService.addressAnalysis(text));
+    }
+    @ApiOperation("物流轨迹查询")
+    @GetMapping("queryCourierTrack")
+    public APIResponse queryCourierTrack( @ApiParam(value = "id") @RequestParam() Integer id) {
+        return APIResponse.success(faCourierOrderService.queryCourierTrack(id));
     }
 
 //

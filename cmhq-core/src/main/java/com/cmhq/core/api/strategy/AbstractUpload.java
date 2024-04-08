@@ -8,6 +8,7 @@ import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.dao.FaCourierCompanyDao;
 import com.cmhq.core.dao.FaUploadLogDao;
 import com.cmhq.core.model.FaCourierCompanyEntity;
+import com.cmhq.core.model.UploadLogEntity;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -20,6 +21,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,9 +40,9 @@ public abstract class AbstractUpload<Req,T extends UploadData> implements Upload
 
     @Override
     public UploadResult execute(Req o) {
-        List<T> listMap;
+        T dto;
         try {
-            listMap = getData(o);
+            dto = getData(o);
         }catch (Exception e){
             log.error("上传失败，param【"+ JSONObject.toJSONString(o) +"】，msg【"+e.getMessage()+"】",e);
             if (e.getCause() != null){
@@ -48,80 +50,38 @@ public abstract class AbstractUpload<Req,T extends UploadData> implements Upload
             }
             return UploadResult.builder().failCount(0).errorMsg(e.getMessage()).build();
         }
-        return upload( listMap);
+        return upload( dto);
     }
 
 
 
     @SneakyThrows
-    public UploadResult upload(List<T> list) {
-        UploadResult result = UploadResult.builder().build();
-        int total = list.size();
-        log.info("期望上传【{}】条数据至【{}】", total,supports().getDesc());
-        int successNum = 0;
-        List<String> failUks = Lists.newArrayList();
-        List<String> successUks = Lists.newArrayList();
-        //遍历不同账号下的数据
-        List<T> uploadData = Lists.newArrayList();
-        for (int i = 0, j = list.size(); i < j; i++) {
-            uploadData.add(list.get(i));
-            log.info("mark:{},上传 total:{},currentIndex:{}", list.get(i).getUnKey(),list.size(),i);
-            int finalI = i;
-            int[] ints = doUpload(uploadData,  new UploadCallback() {
-                @Override
-                public void success(Object obj) {
-                    result.setFlag(true);
-                    Map map = null;
-                    if (result.getJsonMsg() != null){
-                        map = result.getJsonMsg();
-                    }else {
-                        map = Maps.newHashMap();
-                    }
-                    map.put(list.get(finalI).getUnKey(),obj);
-                    result.setJsonMsg(map);
-
-                    successUks.add(list.get(finalI).getUnKey());
-                }
-                @Override
-                public void fail(Object obj, Exception e) {
-                    result.setErrorMsg(obj+"");
-                    result.setFlag(false);
-                    failUks.add(list.get(finalI).getUnKey());
-                }
-            });
-            uploadData.clear();
-            successNum += ints[0];
-        }
-
-        log.info("【{}】条数据成功上传至【{}】", successNum,supports().getDesc());
-        result.setSuccessCount(successNum).setFailCount(total - successNum);
-        result.setFailUks(failUks);
-        result.setSuccessUks(successUks);
+    public UploadResult upload(T dto) {
+        UploadResult result =  send(dto,  new UploadCallback() {
+            @Override
+            public void success(Object obj) {
+            }
+            @Override
+            public void fail(Object obj, Exception e) {
+            }
+        });
+        uploadResultHandle(dto, result);
         return result;
     }
 
 
-    @Transactional
-    public  <T extends UploadData> int[] uploadResultHandle(List<T> uploadData, UploadResult uploadResult){
-        if (CollectionUtils.isEmpty(uploadData) || uploadResult == null){
-            return new int[]{0,0};
-        }
-        //上传结果处理
-        Set<String> uploadKeys = uploadData.stream().map(T::getUnKey).collect(Collectors.toSet());
-        //上传全部失败
-        Set<String> uploadFail = getUploadFail(uploadResult, uploadKeys);
-        Sets.SetView<String> uploadSuccess = Sets.difference(uploadKeys, uploadFail);
-        //状态同步
-//        syncTransferStatus(Lists.newArrayList(uploadSuccess), TransferStatusEnum.UPLOAD.getCode());TODO
-//        syncTransferStatus(Lists.newArrayList(uploadFail), TransferStatusEnum.UPLOAD_ERROR.getCode());
-        int successNum = uploadSuccess.size();
-        int failNum = uploadFail.size();
-        //日志记录
-//        log( uploadResult, uploadKeys);
-        return new int[]{successNum, failNum};
+    public  void uploadResultHandle(T uploadData, UploadResult uploadResult){
+        UploadLogEntity log = new UploadLogEntity();
+        log.setUploadType(supports().getCode());
+        log.setUploadCode(uploadData.getUnKey());
+        log.setMsg(uploadResult.getJsonMsg()+"");
+        log.setErrorMsg(uploadResult.getErrorMsg()+":"+uploadResult.getErrorJsonMsg());
+        log.setCreateTime(new Date());
+        faUploadLogDao.insert(log);
+
     }
 
-    protected abstract List<T> getData(Req param) throws RuntimeException;
+    protected abstract T getData(Req param) throws RuntimeException;
 
     /**
      * 执行上传
@@ -129,7 +89,7 @@ public abstract class AbstractUpload<Req,T extends UploadData> implements Upload
      * @param uploadData
      * @return
      */
-    protected abstract  <T extends UploadData> int[] doUpload(List<T> uploadData,  UploadCallback callback);
+    protected abstract  UploadResult  send(T uploadData,  UploadCallback callback);
     /**
      * 获取上传Url
      * @return

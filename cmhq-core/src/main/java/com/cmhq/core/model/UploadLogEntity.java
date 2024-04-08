@@ -23,6 +23,7 @@ public class UploadLogEntity {
     private String uploadCode;
     /**上传消息*/
     private String msg;
+    private String errorMsg;
     private Date createTime;
 
     private String uploadToken;
