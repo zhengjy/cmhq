@@ -119,6 +119,8 @@ public class UserController {
     public ResponseEntity<Object> createUser(@Validated @RequestBody User resources){
         checkLevel(resources);
         // 默认密码 123456
+
+        resources.setCompanyId(SecurityUtils.getCurrentCompanyId());
         resources.setPassword(passwordEncoder.encode("123456"));
         userService.create(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);

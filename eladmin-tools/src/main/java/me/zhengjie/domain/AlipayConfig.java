@@ -53,7 +53,7 @@ public class AlipayConfig implements Serializable {
 
     @Column(name = "gateway_url")
     @ApiModelProperty(value = "支付宝开放安全地址", hidden = true)
-    private String gatewayUrl = "https://openapi.alipaydev.com/gateway.do";
+    private String gatewayUrl ;
 
     @ApiModelProperty(value = "编码", hidden = true)
     private String charset= "utf-8";

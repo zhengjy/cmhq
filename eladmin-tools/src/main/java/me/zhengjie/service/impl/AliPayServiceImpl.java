@@ -44,7 +44,7 @@ public class AliPayServiceImpl implements AliPayService {
     private final AliPayRepository alipayRepository;
 
     @Override
-    @Cacheable(key = "'config'")
+//    @Cacheable(key = "'config'")TODO
     public AlipayConfig find() {
         Optional<AlipayConfig> alipayConfig = alipayRepository.findById(1L);
         return alipayConfig.orElseGet(AlipayConfig::new);

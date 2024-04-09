@@ -19,6 +19,8 @@ import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 import me.zhengjie.base.BaseDTO;
+import me.zhengjie.modules.system.domain.ChildUser;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -39,6 +41,8 @@ public class UserDto extends BaseDTO implements Serializable {
 
     private DeptSmallDto dept;
 
+    private ChildUser childUser;
+
     private Long deptId;
 
     private String username;
@@ -54,6 +58,8 @@ public class UserDto extends BaseDTO implements Serializable {
     private String avatarName;
 
     private String avatarPath;
+
+    private Integer companyId;
 
     @JSONField(serialize = false)
     private String password;

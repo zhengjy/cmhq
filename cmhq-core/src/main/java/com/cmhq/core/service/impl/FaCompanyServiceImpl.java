@@ -5,6 +5,7 @@ import com.cmhq.core.dao.FaCompanyDao;
 import com.cmhq.core.model.FaCompanyEntity;
 import com.cmhq.core.model.param.CompanyQuery;
 import com.cmhq.core.service.FaCompanyService;
+import com.cmhq.core.util.CurrentUserContent;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import me.zhengjie.QueryResult;
@@ -16,10 +17,12 @@ import me.zhengjie.modules.system.service.DeptService;
 import me.zhengjie.modules.system.service.RoleService;
 import me.zhengjie.modules.system.service.UserService;
 import me.zhengjie.modules.system.service.dto.UserDto;
+import me.zhengjie.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -37,8 +40,6 @@ public class FaCompanyServiceImpl implements FaCompanyService {
     private DeptService deptService;
     @Resource
     private  PasswordEncoder passwordEncoder;
-    @Resource
-    private  RoleService roleService;
 
     @Override
     public QueryResult<FaCompanyEntity> list(CompanyQuery query) {
@@ -65,56 +66,84 @@ public class FaCompanyServiceImpl implements FaCompanyService {
 
     @Override
     public Integer edit(FaCompanyEntity entity) throws Exception {
-        String pwd = passwordEncoder.encode(entity.getPassword());
-        entity.setPassword(pwd);
-        User user = new User();
-        user.setUsername(entity.getMobile());
-
-        Dept dept = new Dept();
-        dept.setName(entity.getCompanyName());
-        dept.setDeptSort(999);
-        dept.setEnabled(true);
-        dept.setSubCount(0);
-        deptService.create(dept);
-        user.setDept(dept);
-
-        Set<Role> roles = new HashSet<>();
-        Role role = new Role();
-        role.setId(-1L);
-        roles.add(role);
-        user.setRoles(roles);
-
-        Set<Job> jobs = new HashSet<>();
-        Job job = new Job();
-        job.setId(12L);
-        jobs.add(job);
-        user.setJobs(jobs);
-
-        user.setNickName(entity.getCompanyName());
-        user.setGender("男");
-        user.setPhone(entity.getMobile());
-        user.setEmail(System.currentTimeMillis()+"@qq.com");
-        user.setAvatarName("avatar.jpg");
-        user.setAvatarPath("/usr/app/file/");
-        user.setPassword(pwd);
-
-        user.setIsAdmin(false);
-        user.setPlatform("company");
-        user.setEnabled(true);
-
-        user.setCreateBy("admin");
-        user.setUpdateBy("admim");
         if (entity.getId() == null){
+            String pwd = passwordEncoder.encode(entity.getPassword());
+            entity.setPassword(pwd);
+            User user = new User();
+            user.setUsername(entity.getMobile());
+
+            Dept dept = new Dept();
+            dept.setName(entity.getCompanyName());
+            dept.setDeptSort(999);
+            dept.setEnabled(true);
+            dept.setSubCount(0);
+            deptService.create(dept);
+            user.setDept(dept);
+
+            Set<Role> roles = new HashSet<>();
+            Role role = new Role();
+            role.setId(-1L);
+            roles.add(role);
+            user.setRoles(roles);
+
+            Set<Job> jobs = new HashSet<>();
+            Job job = new Job();
+            job.setId(12L);
+            jobs.add(job);
+            user.setJobs(jobs);
+
+            user.setNickName(entity.getCompanyName());
+            user.setGender("男");
+            user.setPhone(entity.getMobile());
+            user.setEmail(System.currentTimeMillis()+"@qq.com");
+            user.setAvatarName("avatar.jpg");
+            user.setAvatarPath("/usr/app/file/");
+            user.setPassword(pwd);
+
+            user.setIsAdmin(false);
+            user.setPlatform("company");
+            user.setEnabled(true);
+
+            user.setCreateBy("admin");
+            user.setUpdateBy("admim");
             //保存商户表
             faCompanyDao.insert(entity);
             user.setCompanyId(entity.getId());
             //保存用户表、商户用户默认权限
             userService.create(user);
         }else {
-            userService.update(user);
             faCompanyDao.updateById(entity);
         }
         return entity.getId();
+    }
+
+    @Transactional
+    @Override
+    public Integer createChildUser(User resources)  {
+        // 默认密码 123456
+        resources.setPassword(passwordEncoder.encode("123456"));
+        //保存商户表
+        FaCompanyEntity currentCompany = CurrentUserContent.getCurrentCompany();
+        FaCompanyEntity entity = new FaCompanyEntity();
+        Integer fcid = entity.getId();
+        entity.setCompanyName(currentCompany.getCompanyName());
+        entity.setPassword(resources.getPassword());
+        entity.setMobile(resources.getPhone());
+        entity.setFid(fcid);
+        entity.setStatus(currentCompany.getStatus());
+        entity.setAvatar(currentCompany.getAvatar());
+        if (resources.getChildUser() != null){
+            entity.setZiMaxNum(resources.getChildUser().getZiMaxNum());
+            entity.setZiMaxMoney(resources.getChildUser().getZiMaxMoney());
+            entity.setZiOneMaxMoney(resources.getChildUser().getZiOneMaxMoney());
+        }
+
+        entity.setName(resources.getNickName());
+        entity.setHobbydata(currentCompany.getHobbydata());
+        faCompanyDao.insert(entity);
+        resources.setCompanyId(SecurityUtils.getCurrentCompanyId());
+        userService.create(resources);
+        return resources.getId().intValue();
     }
 
     @Override

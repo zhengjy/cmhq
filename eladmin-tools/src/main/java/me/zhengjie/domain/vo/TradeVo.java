@@ -31,11 +31,11 @@ public class TradeVo {
 
     /** （必填）商品描述 */
     @NotBlank
-    private String body;
+    private String body="创美订单信息";
 
     /** （必填）商品名称 */
     @NotBlank
-    private String subject;
+    private String subject ="创美订单名称";
 
     /** （必填）商户订单号，应该由后台生成 */
     @ApiModelProperty(hidden = true)

@@ -29,6 +29,7 @@ https://cloud.baidu.com/doc/NLP/s/gk6z52dfl
 【地址库智能识别百度API接口】
 
 ##企业支付宝：
+https://open.alipay.com/
 账号：2136330643@qq.com
 密码：ahjttd@123
 支付密码：ahjttd@88888
@@ -39,7 +40,8 @@ ID:2021004107668992
 /www/server/nginx/sbin/nginx -c /usr/app/nginx/nginx.conf
 
 ## java启动
-nohup java -jar cmhq-core-2.7.jar --spring.profiles.active=dev --spring.redis.host=127.0.0.1 --spring.redis.port=6379 --spring.redis.password=OE$(=3TC,Mh{s>B! > nohup.out 2>&1 &
+nohup java -jar cmhq-core-2.7.jar --spring.profiles.active=dev --spring.redis.host=127.0.0.1 --spring.redis.port=6379 --spring.redis.password='OE$(=3TC,Mh{s>B!' > nohup.out 2>&1 &
+nohup java -jar cmhq-core-2.7.jar --spring.profiles.active=dev  > nohup.out 2>&1 &
 
 ##申通api
 https://open.sto.cn/#/help/tz5gl0

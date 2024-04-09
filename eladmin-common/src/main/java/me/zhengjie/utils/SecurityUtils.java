@@ -81,8 +81,10 @@ public class SecurityUtils {
         UserDetails userDetails = getCurrentUser();
         // 将 Java 对象转换为 JSONObject 对象
         JSONObject jsonObject = (JSONObject) JSON.toJSON(userDetails);
-        return jsonObject.getJSONObject("user").getInteger("company_Id");
+        return jsonObject.getJSONObject("user").getInteger("companyId");
     }
+
+
 
     public static String getCurrentPlatform() {
         UserDetails userDetails = getCurrentUser();

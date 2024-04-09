@@ -51,3 +51,52 @@ CREATE TABLE `fa_courier_order_ext` (
                                         PRIMARY KEY (`id`),
                                         UNIQUE KEY `idx_order_id` (`cellcode`,`cname`) USING HASH
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COMMENT '快递订单扩展数据';
+
+
+CREATE TABLE `fa_courier_order` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `fa_company_id` int(11) DEFAULT NULL COMMENT '商户id',
+    `order_no` varchar(255) DEFAULT NULL COMMENT '订单号',
+    `courier_order_no` varchar(255) DEFAULT NULL COMMENT '快递公司订单号',
+    `courier_company_waybill_no` varchar(255) DEFAULT NULL COMMENT '快递公司运单号',
+    `goods_type` varchar(255) DEFAULT NULL COMMENT '物品分类',
+    `goods_name` varchar(255) DEFAULT NULL COMMENT '物品名称',
+    `weight` double(10,2) DEFAULT NULL COMMENT '重量',
+    `width` int(10) DEFAULT NULL COMMENT '宽度',
+    `length` int(10) DEFAULT NULL COMMENT '长度',
+    `height` int(10) DEFAULT NULL COMMENT '高',
+    `estimate_price` decimal(10,2) DEFAULT '0.00' COMMENT '商品金额',
+    `from_name` varchar(255) DEFAULT NULL COMMENT '发货人',
+    `from_mobile` varchar(255) DEFAULT NULL COMMENT '发货手机号',
+    `from_prov` varchar(255) DEFAULT NULL COMMENT '发出省份',
+    `from_city` varchar(255) DEFAULT NULL COMMENT '发出城市',
+    `from_area` varchar(255) DEFAULT NULL COMMENT '发出区县',
+    `from_address`` varchar(255) DEFAULT NULL COMMENT '发出地址',
+    `to_name` varchar(255) DEFAULT NULL COMMENT '收货人',
+  `to_mobile` varchar(255) DEFAULT NULL COMMENT '收货手机号',
+  `to_prov` varchar(255) DEFAULT NULL COMMENT '收货省份',
+  `to_city` varchar(255) DEFAULT NULL COMMENT '收货城市',
+  `to_area` varchar(255) DEFAULT NULL COMMENT '收货区县',
+  `to_address` varchar(255) NOT NULL COMMENT '收货地址',
+  `is_jiesuan` tinyint(1) DEFAULT '0' COMMENT '0未结算1已结算',
+  `cancel_order_state` int(1) NOT NULL DEFAULT '0' COMMENT '-1:待审核,0取消待审核1正常2审核通过3审核不通过',
+  `order_state` int(1) NOT NULL DEFAULT '0' COMMENT '1运输中2派件中3已签收',
+  `create_user` varchar(255) DEFAULT NULL COMMENT '创建人',
+  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user` varchar(255) DEFAULT NULL COMMENT '更新人',
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT '快递订单信息';
+
+ALTER TABLE fa_company MODIFY COLUMN name varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL;
+
+CREATE TABLE `sys_childuser` (
+  `user_id` int(11) NOT NULL ,
+  `zi_max_num` int(10) DEFAULT '0' COMMENT '子账号一天最大单量',
+  `zi_max_money` decimal(10,2) DEFAULT '0.00' COMMENT '子账号每日最大订单金额',
+  `zi_one_max_money` decimal(10,2) DEFAULT '0.00' COMMENT '子账号单笔订单最大限制金额',
+
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 COMMENT='商户子账户';
+
+ ALTER TABLE fa_recharge ADD apply_trade_no varchar(200) NULL COMMENT '支付平台订单号';
