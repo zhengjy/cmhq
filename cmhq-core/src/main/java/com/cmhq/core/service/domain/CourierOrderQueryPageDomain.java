@@ -1,24 +1,21 @@
 package com.cmhq.core.service.domain;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.cmhq.core.dao.FcCourierOrderDao;
+import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import com.cmhq.core.util.ContextHolder;
+import com.cmhq.core.util.CurrentUserContent;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import me.zhengjie.QueryResult;
 import me.zhengjie.modules.system.service.UserService;
-import me.zhengjie.modules.system.service.dto.RoleSmallDto;
-import me.zhengjie.modules.system.service.dto.UserDto;
 import me.zhengjie.utils.SecurityUtils;
 import net.dreamlu.mica.core.spring.SpringContextUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/7 9:29.
@@ -31,11 +28,11 @@ public class CourierOrderQueryPageDomain {
 
     }
     public QueryResult<FaCourierOrderEntity> handle(){
-        FcCourierOrderDao fcCourierOrderDao = SpringContextUtil.getBean(FcCourierOrderDao.class);
+        FaCourierOrderDao faCourierOrderDao = SpringContextUtil.getBean(FaCourierOrderDao.class);
         LambdaQueryWrapper<FaCourierOrderEntity> lam = new LambdaQueryWrapper<>();
         serQuery(lam);
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
-        List<FaCourierOrderEntity> list = fcCourierOrderDao.selectList(lam);
+        List<FaCourierOrderEntity> list = faCourierOrderDao.selectList(lam);
         PageInfo<FaCourierOrderEntity> page = new PageInfo<>(list);
         QueryResult<FaCourierOrderEntity> queryResult = new QueryResult<>();
         queryResult.setItems(list);
@@ -48,18 +45,11 @@ public class CourierOrderQueryPageDomain {
         //如果是商户系统，权限处理,商户端区分商户本人账号还是普通账号
         if (ContextHolder.isPlatformCompany()){
             //获取当前用户是运维账户,还是商户管理员
-            UserDto userDto = userService.findById(SecurityUtils.getCurrentUserId());
-            if (CollectionUtils.isNotEmpty(userDto.getRoles())){
-                Set<RoleSmallDto> roles=  userDto.getRoles();
-                //2 商户,3:商户运维人员
-                Optional<RoleSmallDto> role = roles.stream().filter(v -> v.getLevel().equals(2) || v.getLevel().equals(3)).findFirst();;
-                if (role.isPresent()){
-                    Integer level = role.get().getLevel();
-                    lam.eq(FaCourierOrderEntity::getFaCompanyId,SecurityUtils.getCurrentCompanyId());
-                    if (level.equals(3)){
-                        lam.eq(FaCourierOrderEntity::getCreateUserId,SecurityUtils.getCurrentUserId());
-                    }
-                }
+            if (CurrentUserContent.isCompanyChildUser()){
+                lam.eq(FaCourierOrderEntity::getFaCompanyId,SecurityUtils.getCurrentCompanyId());
+                lam.eq(FaCourierOrderEntity::getCreateUserId,SecurityUtils.getCurrentUserId());
+            }else if (CurrentUserContent.isCompanyUser()){
+                lam.eq(FaCourierOrderEntity::getFaCompanyId,SecurityUtils.getCurrentCompanyId());
             }
         }
 

@@ -31,9 +31,21 @@ public interface FaCourierOrderService {
      */
     String cancelCourierOrder(String stateType,String content,Integer id);
 
+    /**
+     * 地址解析
+     * @param text
+     * @return
+     */
     Object addressAnalysis(String text);
 
+    /**
+     * 物流信息
+     * @param id
+     * @return
+     */
     Object queryCourierTrack(Integer id);
+
+    void saveOrderExt(Integer id,String cname,String cvalue);
 
 //    /**
 //     * 查询所有数据不分页

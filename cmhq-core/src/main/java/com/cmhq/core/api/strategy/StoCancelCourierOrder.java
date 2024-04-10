@@ -1,11 +1,9 @@
 package com.cmhq.core.api.strategy;
 
-import com.alibaba.fastjson.JSONObject;
-import com.cmhq.core.api.StoResponse;
 import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.dto.StoCancelCourierOrderDto;
-import com.cmhq.core.dao.FcCourierOrderDao;
+import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StoCancelCourierOrder extends AbstractStoUpload<Integer, StoCancelCourierOrderDto>{
     @Autowired
-    private FcCourierOrderDao fcCourierOrderDao;
+    private FaCourierOrderDao faCourierOrderDao;
     @Override
     public UploadTypeEnum supports() {
         return UploadTypeEnum.TYPE_STO_CANCEL_COURIER_ORDER;
@@ -33,7 +31,7 @@ public class StoCancelCourierOrder extends AbstractStoUpload<Integer, StoCancelC
 
     @Override
     protected StoCancelCourierOrderDto getData(Integer id) throws RuntimeException {
-        FaCourierOrderEntity entity  = fcCourierOrderDao.selectById(id);
+        FaCourierOrderEntity entity  = faCourierOrderDao.selectById(id);
         StoCancelCourierOrderDto dto = new StoCancelCourierOrderDto();
         dto.setBillCode(entity.getCourierCompanyWaybillNo());
         dto.setOrderSource("KB");

@@ -1,6 +1,7 @@
 package com.cmhq.core.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -148,5 +149,14 @@ public class FaCourierOrderEntity {
     private Date updateTime;
 
     @ApiModelProperty(value = "扩展信息")
+    @TableField(exist = false)
     private String courierOrderExtend;
+
+    /**
+     * <pre>
+     * 金额
+     * </pre>
+     */
+    @TableField(exist = false)
+    private Double	money;
 }

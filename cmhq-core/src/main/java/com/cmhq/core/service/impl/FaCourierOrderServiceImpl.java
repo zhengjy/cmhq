@@ -1,17 +1,17 @@
 package com.cmhq.core.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.strategy.StrategyFactory;
 import com.cmhq.core.api.strategy.Upload;
 import com.cmhq.core.dao.FaCourierOrderExtDao;
-import com.cmhq.core.dao.FcCourierOrderDao;
+import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.FaCourierOrderExtEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import com.cmhq.core.service.FaCourierOrderService;
+import com.cmhq.core.service.domain.CourierOrderDomain;
 import com.cmhq.core.service.domain.CourierOrderQueryPageDomain;
 import me.zhengjie.QueryResult;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +29,7 @@ import java.util.Objects;
 public class FaCourierOrderServiceImpl implements FaCourierOrderService {
 
     @Autowired
-    private FcCourierOrderDao fcCourierOrderDao;
+    private FaCourierOrderDao faCourierOrderDao;
     @Autowired
     private FaCourierOrderExtDao faCourierOrderExtDao;
 
@@ -41,27 +41,9 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
     @Transactional
     @Override
     public Integer create(FaCourierOrderEntity entity) {
-        entity.setCancelOrderState(1);
-        entity.setOrderNo(System.currentTimeMillis() + "");
-        fcCourierOrderDao.insert(entity);
-        //上传物流公司
-        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(entity.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_ORDER_UPLOAD.getCodeNickName())));
-        UploadResult uploadResult = upload.execute(entity);
-        if (uploadResult.getFlag()){
-            JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(uploadResult.getJsonMsg()));
-            FaCourierOrderEntity updateEntity = new FaCourierOrderEntity();
-            updateEntity.setId(entity.getId());
-            if (StringUtils.isEmpty(jsonObject.getString("waybillNo"))){
-                throw new RuntimeException("物流公司未返回运单号");
-            }
-            updateEntity.setCourierCompanyWaybillNo(jsonObject.getString("waybillNo"));
-            updateEntity.setCourierOrderNo(jsonObject.getString("orderNo"));
-            fcCourierOrderDao.updateById(updateEntity);
-        }else {
-            throw new RuntimeException("物流公司上传失败:"+uploadResult.getErrorMsg());
-        }
-        //计费
-        return null;
+        CourierOrderDomain domain = new CourierOrderDomain(entity);
+        return domain.handle();
+
     }
 
     @Override
@@ -85,7 +67,7 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
             updateState.setCancelOrderState(-1);
             saveOrderExt(id,FaCourierOrderExtEntity.CNAME_CANCLE_CONTENT,content);
             saveOrderExt(id,FaCourierOrderExtEntity.CNAME_CANCLE_TIME, LocalDateTime.now().toString());
-            FaCourierOrderEntity entity = fcCourierOrderDao.selectById(id);
+            FaCourierOrderEntity entity = faCourierOrderDao.selectById(id);
             Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(entity.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_CANCEL_COURIER_ORDER.getCodeNickName())));
             UploadResult uploadResult = upload.execute(entity);
             if (!uploadResult.getFlag()) {
@@ -97,7 +79,7 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
             //TODO 审核通过后处理
             updateState.setCancelOrderState(2);
         }
-        fcCourierOrderDao.updateById(updateState);
+        faCourierOrderDao.updateById(updateState);
 
 
         return "";
@@ -115,7 +97,7 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
 
     @Override
     public Object queryCourierTrack(Integer id) {
-        FaCourierOrderEntity entity = fcCourierOrderDao.selectById(id);
+        FaCourierOrderEntity entity = faCourierOrderDao.selectById(id);
         Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(entity.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_COURIER_QUERY_TRACK.getCodeNickName())));
         UploadResult uploadResult = upload.execute(entity.getCourierCompanyWaybillNo());
         if (!uploadResult.getFlag()) {
@@ -124,7 +106,8 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
         return uploadResult.getJsonMsg();
     }
 
-    private void saveOrderExt(Integer id,String cname,String cvalue){
+    @Override
+    public void saveOrderExt(Integer id,String cname,String cvalue){
         faCourierOrderExtDao.delete(new LambdaQueryWrapper<FaCourierOrderExtEntity>().eq(FaCourierOrderExtEntity::getCourierOrderId,id).eq(FaCourierOrderExtEntity::getCname,cname));
         faCourierOrderExtDao.insert(new FaCourierOrderExtEntity(id,cname, cvalue));
     }
