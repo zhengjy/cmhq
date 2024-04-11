@@ -14,7 +14,7 @@ public class StoCourierOrderDto extends UploadData {
     /** 订单号（客户系统自己生成，唯一）*/
     private String orderNo;
     /**订单来源（订阅服务时填写的来源编码）     */
-    private String orderSource;
+    private String orderSource="CMHQWULIU";
     /** 获取面单的类型（00-普通、03-国际、01-代收、02-到付、04-生鲜），默认普通业务，如果有其他业务先与业务方沟通清楚*/
     private String billType;
     /**订单类型（01-普通订单、02-调度订单）默认01-普通订单，如果有散单业务需先业务方沟通清楚 */

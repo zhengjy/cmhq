@@ -48,5 +48,35 @@ https://open.sto.cn/#/help/tz5gl0
 ##极兔API
 https://open.jtexpress.com.cn/#/apiDoc/other/getInfo
 
-
+##sql转java bean
 https://www.toolscat.com/db/sql-java
+
+#订单状态
+@ApiModelProperty(value = "1上门取件2门店自寄")
+private Integer type =1;
+
+@ApiModelProperty(value = "本系统自定义状态:0待取件1已取件2已发出3已签收")
+@TableField("status")
+private Integer orderState;
+
+@ApiModelProperty(value = "-1:待审核,0取消待审核1正常2审核通过3审核不通过")
+@TableField("cancel")
+private Integer cancelOrderState=1;
+
+@ApiModelProperty(value = "物流公司物流信息状态：1运输中2派件中3已签收")
+@TableField("jitu_wuliu")
+private Integer wuliuState;
+
+@ApiModelProperty(value = "物流公司订单状态：1未调派业务员2已调派业务员3已揽收4已取件5已取消")
+@TableField("jitu_status")
+private Integer courierOrderState;
+
+@ApiModelProperty(value = "0未结算1已结算")
+private Integer isJiesuan=0;
+
+@ApiModelProperty(value = "1自己取消2极兔取消")
+private Integer cancelType;
+
+#
+计费公式 ：首重费用+【实际重量（四舍五入取整）-1】*续重费用=实际费用
+实际重量【按实际重量与体积重量（计泡重量）两者取最大值计算运费】

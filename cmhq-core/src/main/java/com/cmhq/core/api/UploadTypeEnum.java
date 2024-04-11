@@ -19,7 +19,7 @@ public enum UploadTypeEnum {
     TYPE_JT_COURIER_QUERY_TRACK("jt_courier_query_track","courier_query_track",CourierCompanyEnum.COMPANY_JT.getType(),"物流轨迹查询jt"),
 
     TYPE_STO_CANCEL_COURIER_ORDER("sto_cancel_courier_order","freight_charge",CourierCompanyEnum.COMPANY_STO.getType(),"取消订单sto"),
-    TYPE_JT_CANCEL_COURIER_ORDER("jt_cancel_courier_order","cancel_courier_order",CourierCompanyEnum.COMPANY_JT.getType(),"取消订单jt"),
+    TYPE_JT_CANCEL_COURIER_ORDER("jt_cancel_courier_order","freight_charge",CourierCompanyEnum.COMPANY_JT.getType(),"取消订单jt"),
 
     TYPE_BAIDU_ADDRDESS("baidu_addrdess","baidu_addrdess",CourierCompanyEnum.COMPANY_BAIDU.getType(),"百度地址识别"),
     ;

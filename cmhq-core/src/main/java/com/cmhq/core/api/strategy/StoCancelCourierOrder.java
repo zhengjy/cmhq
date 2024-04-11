@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * Created by Jiyang.Zheng on 2024/4/7 13:56.
  */
 @Component
-public class StoCancelCourierOrder extends AbstractStoUpload<Integer, StoCancelCourierOrderDto>{
+public class StoCancelCourierOrder extends AbstractStoUpload<FaCourierOrderEntity, StoCancelCourierOrderDto>{
     @Autowired
     private FaCourierOrderDao faCourierOrderDao;
     @Override
@@ -30,11 +30,11 @@ public class StoCancelCourierOrder extends AbstractStoUpload<Integer, StoCancelC
 
 
     @Override
-    protected StoCancelCourierOrderDto getData(Integer id) throws RuntimeException {
-        FaCourierOrderEntity entity  = faCourierOrderDao.selectById(id);
+    protected StoCancelCourierOrderDto getData(FaCourierOrderEntity entity) throws RuntimeException {
         StoCancelCourierOrderDto dto = new StoCancelCourierOrderDto();
         dto.setBillCode(entity.getCourierCompanyWaybillNo());
         dto.setOrderSource("KB");
+        dto.setRemark(entity.getReason());
 
         return dto;
     }

@@ -33,7 +33,6 @@ public class StoCourierOrderCreate extends AbstractStoUpload<FaCourierOrderEntit
         }
         StoCourierOrderDto dto = new StoCourierOrderDto();
         dto.setOrderNo(param.getOrderNo());
-        dto.setOrderSource("");//TODO
         dto.setBillType((String) map.get("billType"));
         dto.setOrderType("01");
 

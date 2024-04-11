@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.dao.FaCompanyDao;
 import com.cmhq.core.dao.FaCompanyMoneyDao;
 import com.cmhq.core.enums.MoneyConsumeEumn;
+import com.cmhq.core.enums.MoneyConsumeMsgEumn;
 import com.cmhq.core.model.CompanyMoneyParam;
 import com.cmhq.core.model.FaCompanyEntity;
 import com.cmhq.core.model.FaCompanyMoneyEntity;
-import com.cmhq.core.model.FaRechargeEntity;
 import com.cmhq.core.model.param.FcCompanyMoneyQuery;
 import com.cmhq.core.service.FaCompanyMoneyService;
 import com.github.pagehelper.PageHelper;
@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -60,6 +61,7 @@ public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
 
     }
 
+    @Transactional
     @Override
     public void saveRecord(CompanyMoneyParam param) {
         FaCompanyEntity faCompanyEntity = faCompanyDao.selectById(param.getCompanyId());
@@ -79,10 +81,30 @@ public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
             e.setAfter(faCompanyEntity.getMoney()+param.getMoney());
             e.setKoufeiType(1);
             //更新商户金额
-            FaCompanyEntity fc = new FaCompanyEntity();
-            fc.setMoney(faCompanyEntity.getMoney()+param.getMoney());
-            fc.setId(param.getCompanyId());
-            faCompanyDao.updateById(fc);
+            faCompanyDao.addMoney(param.getCompanyId(),param.getMoney());
+        //扣款
+        }else if (param.getConsumeEumn().getType().equals(MoneyConsumeEumn.CONSUM_3.getType())){
+            e.setAfter(faCompanyEntity.getMoney()-param.getMoney());
+            //更新商户金额
+            //扣除余额，更新预扣款
+            int num = faCompanyDao.minusMoney(param.getCompanyId(),param.getMoney());
+            if (num < 1){
+                throw new RuntimeException("更新账户余额失败");
+            }
+        //取消订单退回预估费用
+        }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_6.getDesc())){
+            e.setAfter(faCompanyEntity.getMoney()+param.getMoney());
+            int num = faCompanyDao.addMoney(param.getCompanyId(),param.getMoney());
+            if (num < 1){
+                throw new RuntimeException("取消订单退回预估费用失败");
+            }
+        //货物签收退回预估费用
+        }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_4.getDesc())){
+            e.setAfter(faCompanyEntity.getMoney());
+            int num = faCompanyDao.minusEstimatePrice(param.getCompanyId(),param.getMoney());
+            if (num < 1){
+                throw new RuntimeException("货物签收退回预估费用");
+            }
         }
         faCompanyMoneyDao.insert(e);
 

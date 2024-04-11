@@ -11,7 +11,9 @@ import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.FaCourierOrderExtEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import com.cmhq.core.service.FaCourierOrderService;
-import com.cmhq.core.service.domain.CourierOrderDomain;
+import com.cmhq.core.service.domain.AuditSuccessCourierOrderDomain;
+import com.cmhq.core.service.domain.CancelCourierOrderDomain;
+import com.cmhq.core.service.domain.CreateCourierOrderDomain;
 import com.cmhq.core.service.domain.CourierOrderQueryPageDomain;
 import me.zhengjie.QueryResult;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -41,7 +42,7 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
     @Transactional
     @Override
     public Integer create(FaCourierOrderEntity entity) {
-        CourierOrderDomain domain = new CourierOrderDomain(entity);
+        CreateCourierOrderDomain domain = new CreateCourierOrderDomain(entity);
         return domain.handle();
 
     }
@@ -60,26 +61,17 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
     @Transactional
     @Override
     public String cancelCourierOrder(String stateType,String content,Integer id) {
-        FaCourierOrderEntity updateState = new FaCourierOrderEntity();
-        updateState.setId(id);
-
         if (StringUtils.equals(stateType,"cancel")){
-            updateState.setCancelOrderState(-1);
-            saveOrderExt(id,FaCourierOrderExtEntity.CNAME_CANCLE_CONTENT,content);
-            saveOrderExt(id,FaCourierOrderExtEntity.CNAME_CANCLE_TIME, LocalDateTime.now().toString());
-            FaCourierOrderEntity entity = faCourierOrderDao.selectById(id);
-            Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(entity.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_CANCEL_COURIER_ORDER.getCodeNickName())));
-            UploadResult uploadResult = upload.execute(entity);
-            if (!uploadResult.getFlag()) {
-                throw new RuntimeException("物流公司取消失败:"+uploadResult.getErrorMsg());
-            }
+            new CancelCourierOrderDomain(content,id).handle();
         }else if (StringUtils.equals(stateType,"auditFail")){
+            FaCourierOrderEntity updateState = new FaCourierOrderEntity();
+            updateState.setId(id);
             updateState.setCancelOrderState(3);
+            faCourierOrderDao.updateById(updateState);
         }else if (StringUtils.equals(stateType,"auditSuccess")){
-            //TODO 审核通过后处理
-            updateState.setCancelOrderState(2);
+            new AuditSuccessCourierOrderDomain(content,id).handle();
         }
-        faCourierOrderDao.updateById(updateState);
+
 
 
         return "";

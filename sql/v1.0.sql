@@ -95,8 +95,17 @@ CREATE TABLE `sys_childuser` (
   `zi_max_num` int(10) DEFAULT '0' COMMENT '子账号一天最大单量',
   `zi_max_money` decimal(10,2) DEFAULT '0.00' COMMENT '子账号每日最大订单金额',
   `zi_one_max_money` decimal(10,2) DEFAULT '0.00' COMMENT '子账号单笔订单最大限制金额',
-
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 COMMENT='商户子账户';
 
+ALTER TABLE sys_childuser ADD child_company_id INT NULL;
+
+
  ALTER TABLE fa_recharge ADD apply_trade_no varchar(200) NULL COMMENT '支付平台订单号';
+
+
+ALTER TABLE fa_expressorder ADD courier_company_code varchar(100) NULL COMMENT '快递公司编码。如sto';
+ALTER TABLE fa_expressorder CHANGE courier_company_code courier_company_code varchar(100) NULL COMMENT '快递公司编码。如sto' AFTER orderid;
+ALTER TABLE fa_expressorder ADD create_user_id varchar(100) NULL COMMENT '创建人id';
+
+ ALTER TABLE fa_company ADD estimate_price DOUBLE NULL COMMENT '冻结金额';

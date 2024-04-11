@@ -136,11 +136,14 @@ public class FaCompanyServiceImpl implements FaCompanyService {
             entity.setZiMaxNum(resources.getChildUser().getZiMaxNum());
             entity.setZiMaxMoney(resources.getChildUser().getZiMaxMoney());
             entity.setZiOneMaxMoney(resources.getChildUser().getZiOneMaxMoney());
-        }
 
+        }
         entity.setName(resources.getNickName());
         entity.setHobbydata(currentCompany.getHobbydata());
         faCompanyDao.insert(entity);
+        if (resources.getChildUser() != null){
+            resources.getChildUser().setChildCompanyId(entity.getId());
+        }
         resources.setCompanyId(SecurityUtils.getCurrentCompanyId());
         userService.create(resources);
         return resources.getId().intValue();

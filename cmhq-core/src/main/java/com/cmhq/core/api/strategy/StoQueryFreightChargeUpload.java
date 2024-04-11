@@ -36,7 +36,6 @@ public class StoQueryFreightChargeUpload extends AbstractStoUpload<FaCourierOrde
         }
         StoCourierOrderDto dto = new StoCourierOrderDto();
         dto.setOrderNo(param.getOrderNo());
-        dto.setOrderSource("");//TODO
         dto.setBillType((String) map.get("billType"));
         dto.setOrderType((String) map.get("orderType"));
         StoFreightChargeDto m = new StoFreightChargeDto();

@@ -13,7 +13,7 @@ public interface FaCompanyMoneyService {
     void delete(Integer id);
 
     /**
-     * 存储余额记录
+     * 插入消费记录 &返还商户或扣除商户金额
      */
     void saveRecord(CompanyMoneyParam param);
 }

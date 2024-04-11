@@ -81,6 +81,12 @@ public class FaCompanyEntity {
      * </pre>
      */
     private Double	money;
+    /**
+     * <pre>
+     * 冻结金额
+     * </pre>
+     */
+    private Double	estimatePrice;
 
     /**
      * <pre>

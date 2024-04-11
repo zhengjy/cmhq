@@ -22,6 +22,13 @@ public class ChildUser {
     @Column(name = "user_id")
     @NotNull()
     private Long userId;
+
+    /**
+     * <pre>
+     * 子账户的商户id
+     * </pre>
+     */
+    private Integer childCompanyId;
     /**
      * <pre>
      * 子账号一天最大单量
