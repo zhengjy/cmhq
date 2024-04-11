@@ -40,13 +40,16 @@ public class StoInterfaceController {
 
     @ApiOperation("推送订单状态")
     @PostMapping(value = "/pushOrderStatus")
-    @Transactional
+    @AnonymousAccess
     public APIResponse<String> pushOrderStatus(@Validated @RequestBody TradeVo trade)  {
         return APIResponse.success();
     }
+
+
+
     @ApiOperation("物流轨迹推送")
     @PostMapping(value = "/pushTrace")
-    @Transactional
+    @AnonymousAccess
     public APIResponse<String> pushTrace(@Validated @RequestBody TradeVo trade) throws Exception {
 
         return APIResponse.success();

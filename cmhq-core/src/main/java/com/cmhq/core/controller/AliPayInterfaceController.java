@@ -49,6 +49,7 @@ public class AliPayInterfaceController {
     @Log("支付宝PC网页支付")
     @ApiOperation("支付宝PC网页支付")
     @PostMapping(value = "/toPayAsPC")
+    @AnonymousAccess
     @Transactional
     public APIResponse<String> toPayAsPc(@Validated @RequestBody TradeVo trade) throws Exception {
         AlipayConfig aliPay = alipayService.find();

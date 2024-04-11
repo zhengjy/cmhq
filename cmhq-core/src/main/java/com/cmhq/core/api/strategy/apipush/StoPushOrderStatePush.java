@@ -10,6 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class StoPushOrderStatePush  extends AbstartApiOrderPush<StoPushOrderStateDto>{
     @Override
+    protected String getCanceReason(StoPushOrderStateDto stoPushOrderStateDto) {
+        return null;
+    }
+
+    @Override
     protected CourierOrderStateEnum getOrderState(StoPushOrderStateDto stoPushOrderStateDto) {
         return null;
     }
