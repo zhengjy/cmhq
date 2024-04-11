@@ -1,5 +1,6 @@
 package com.cmhq.core.api.dto.request;
 
+import com.cmhq.core.api.UploadData;
 import lombok.Data;
 
 /**https://open.sto.cn/#/apiDocument/EDI_PUSH_ORDER_STATUS
@@ -7,7 +8,7 @@ import lombok.Data;
  * Created by Jiyang.Zheng on 2024/4/10 21:11.
  */
 @Data
-public class StoPushOrderStatusDto {
+public class StoPushOrderStateDto extends UploadData {
     /**业务类型：ORDER_STATUS_CHANGE_NOTIFY[接单事件]/ORDER_CANCEL_NOTIFY[取消订单事件]/ORDER_UPDATE_FETCHTIME_NOTIFY[修改取件时间事件]/ORDER_RETURN_NOTIFY[打回订单通知]*/
     private String event;
     /**网点/业务员 接单通知*/
@@ -18,6 +19,21 @@ public class StoPushOrderStatusDto {
     private ModifyInfo modifyInfo;
     /**打回订单通知*/
     private ReturnInfo returnInfo;
+
+
+    @Override
+    public String getUnKeyValue() {
+        if (changeInfo != null){
+            return changeInfo.getBillCode();
+        }else if (cancelInfo != null){
+            return cancelInfo.getBillCode();
+        }else if (modifyInfo != null){
+            return modifyInfo.getOrderId();
+        }else if (returnInfo != null){
+            return returnInfo.getOrderId();
+        }
+        return "-1";
+    }
 
     // Getters and Setters
     @Data
@@ -47,7 +63,7 @@ public class StoPushOrderStatusDto {
         /**取件码*/
         private String printCode;
 
-        // Getters and Setters
+// Getters and Setters
     }
     @Data
     public static class CancelInfo {

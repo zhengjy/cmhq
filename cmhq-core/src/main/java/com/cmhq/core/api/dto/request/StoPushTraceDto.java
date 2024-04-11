@@ -1,5 +1,6 @@
 package com.cmhq.core.api.dto.request;
 
+import com.cmhq.core.api.UploadData;
 import lombok.Data;
 
 /**
@@ -8,13 +9,18 @@ import lombok.Data;
  * Created by Jiyang.Zheng on 2024/4/10 21:11.
  */
 @Data
-public class StoPushTraceDto {
+public class StoPushTraceDto extends UploadData {
     /**运单号*/
     private String waybillNo;
     /**订单号*/
     private String linkCode;
     /**轨迹实体*/
     private Trace trace;
+
+    @Override
+    public String getUnKeyValue() {
+        return waybillNo;
+    }
 
     @Data
     public static class Trace {
