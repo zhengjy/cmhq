@@ -58,6 +58,9 @@ public class CreateCourierOrderDomain {
     public Integer handle(){
         try {
             Integer companyId = SecurityUtils.getCurrentCompanyId();
+            if (companyId == null){
+                throw new RuntimeException("当前用户非商户,无权限创建订单");
+            }
             FaCompanyEntity faCompanyEntity = faCompanyDao.selectById(companyId);
             //  预估金额 TODO 预估重量扣费
             double estimatePrice = order.getPrice() * ((double) faCompanyEntity.getRatio() /100);
@@ -75,6 +78,7 @@ public class CreateCourierOrderDomain {
                     order.setZid(CurrentUserContent.getCrrentUser().getChildUser().getChildCompanyId());
                 }
             }
+            order.setFaCompanyId(companyId);
             order.setEstimatePrice(estimatePrice);
             //下单
             faCourierOrderDao.insert(order);
@@ -83,6 +87,7 @@ public class CreateCourierOrderDomain {
             saveOrderExt(order.getId(), order.getCourierOrderExtend());
             //插入消费记录
             faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_3,estimatePrice,companyId, order.getId()+""));
+            //上传物流信息到物流公司
             uploadCourierOrder();
 
         }catch (Exception e){

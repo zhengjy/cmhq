@@ -5,7 +5,7 @@ package com.cmhq.core.enums;
  */
 public enum CourierOrderStateEnum {
     /**
-     * 申通订单上传
+     * 订单上传
      */
     STATE_1("1","未调派业务员"),
     STATE_2("2","已调派业务员"),

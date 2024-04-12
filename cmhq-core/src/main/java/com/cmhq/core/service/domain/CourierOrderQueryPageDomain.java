@@ -6,6 +6,7 @@ import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import com.cmhq.core.util.ContextHolder;
 import com.cmhq.core.util.CurrentUserContent;
+import com.cmhq.core.util.SpringApplicationUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import me.zhengjie.QueryResult;
@@ -28,10 +29,10 @@ public class CourierOrderQueryPageDomain {
 
     }
     public QueryResult<FaCourierOrderEntity> handle(){
-        FaCourierOrderDao faCourierOrderDao = SpringContextUtil.getBean(FaCourierOrderDao.class);
+        PageHelper.startPage(query.getPageNo(), query.getPageSize());
+        FaCourierOrderDao faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
         LambdaQueryWrapper<FaCourierOrderEntity> lam = new LambdaQueryWrapper<>();
         serQuery(lam);
-        PageHelper.startPage(query.getPageNo(), query.getPageSize());
         List<FaCourierOrderEntity> list = faCourierOrderDao.selectList(lam);
         PageInfo<FaCourierOrderEntity> page = new PageInfo<>(list);
         QueryResult<FaCourierOrderEntity> queryResult = new QueryResult<>();
@@ -40,11 +41,10 @@ public class CourierOrderQueryPageDomain {
         return queryResult;
     }
 
-    private void  serQuery(LambdaQueryWrapper<FaCourierOrderEntity> lam){
-        UserService userService = SpringContextUtil.getBean(UserService.class);
+    public void  serQuery(LambdaQueryWrapper<FaCourierOrderEntity> lam){
         //如果是商户系统，权限处理,商户端区分商户本人账号还是普通账号
+        //获取当前用户是运维账户,还是商户管理员
         if (ContextHolder.isPlatformCompany()){
-            //获取当前用户是运维账户,还是商户管理员
             if (CurrentUserContent.isCompanyChildUser()){
                 lam.eq(FaCourierOrderEntity::getFaCompanyId,SecurityUtils.getCurrentCompanyId());
                 lam.eq(FaCourierOrderEntity::getCreateUserId,SecurityUtils.getCurrentUserId());
@@ -52,6 +52,7 @@ public class CourierOrderQueryPageDomain {
                 lam.eq(FaCourierOrderEntity::getFaCompanyId,SecurityUtils.getCurrentCompanyId());
             }
         }
+
 
         if (StringUtils.isNotEmpty(query.getCourierCompanyCode())){
             lam.eq(FaCourierOrderEntity::getCourierCompanyCode,query.getCourierCompanyCode());
@@ -103,15 +104,11 @@ public class CourierOrderQueryPageDomain {
         if (StringUtils.isNotEmpty(query.getCompanyName())){
             lam.inSql(FaCourierOrderEntity::getFaCompanyId,"select id from fa_company like '%"+query.getCompanyName()+"%'");
         }
-        if (StringUtils.isNotEmpty(query.getUserName())){
-            lam.like(FaCourierOrderEntity::getCreateUser,query.getUserName());
+        if (ContextHolder.isPlatformCompany()){
+            if (StringUtils.isNotEmpty(query.getUserName())){
+                lam.inSql(FaCourierOrderEntity::getCreateUserId,"select id from sys_user like '%"+query.getUserName()+"%' and company_Id = " + SecurityUtils.getCurrentCompanyId() );
+            }
         }
         lam.orderByDesc(FaCourierOrderEntity::getCreateTime);
-
-
-
-
-
-
     }
 }

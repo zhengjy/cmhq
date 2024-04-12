@@ -57,7 +57,7 @@ public class StoCourierOrderCreate extends AbstractStoUpload<FaCourierOrderEntit
         StoCourierOrderDto.Cargo cargo = new StoCourierOrderDto.Cargo();
         dto.setCargo(cargo);
         cargo.setBattery((String) map.get("battery"));
-        cargo.setGoodsType(param.getGoodsType());
+        cargo.setGoodsType((String) map.get("goodsType"));
         cargo.setGoodsName(param.getGoodsName());
         if (param.getLength() != null){
             cargo.setSpaceX(param.getLength().doubleValue());

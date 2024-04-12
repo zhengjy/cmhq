@@ -3,15 +3,17 @@ package com.cmhq.core.model.param;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/6 14:05.
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @ApiModel("物流订单")
-public class CourierOrderQuery {
+public class CourierOrderQuery extends BaseQuery{
     @ApiModelProperty(value = "快递公司 sto：申通")
     private String courierCompanyCode;
     @ApiModelProperty(value = "运单号")
@@ -53,7 +55,4 @@ public class CourierOrderQuery {
     @ApiModelProperty(value = "结束时间")
     private String eTime;
 
-    private Integer pageNo;
-
-    private Integer pageSize;
 }

@@ -1,6 +1,8 @@
 package com.cmhq.core.api.strategy;
 
 import com.cmhq.core.api.UploadTypeEnum;
+import com.cmhq.core.api.strategy.apipush.ApiPush;
+import com.cmhq.core.api.strategy.apipush.ApiPushTypeEumn;
 import com.google.common.collect.Maps;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -22,12 +24,15 @@ public class StrategyFactory implements InitializingBean, ApplicationContextAwar
   private static ApplicationContext applicationContext;
 
   private static Map<String, Upload> uploadConcurrentMap = Maps.newConcurrentMap();
+  private static Map<String, ApiPush> apiPushConcurrentMap = Maps.newConcurrentMap();
 
   @Override
   public void afterPropertiesSet() throws Exception {
 
     Collection<Upload> th = BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, Upload.class).values();
     th.forEach(v -> uploadConcurrentMap.put(v.supports().getCode(), v));
+    Collection<ApiPush> apiPushes = BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, ApiPush.class).values();
+    apiPushes.forEach(v -> apiPushConcurrentMap.put(v.supports().getType(), v));
 
 
   }
@@ -43,6 +48,11 @@ public class StrategyFactory implements InitializingBean, ApplicationContextAwar
 
   public static Upload getUpload(UploadTypeEnum type) {
       Upload typeHandler = uploadConcurrentMap.get(type.getCode());
+
+    return typeHandler;
+  }
+  public static ApiPush getApiPush(ApiPushTypeEumn type) {
+    ApiPush typeHandler = apiPushConcurrentMap.get(type.getType());
 
     return typeHandler;
   }

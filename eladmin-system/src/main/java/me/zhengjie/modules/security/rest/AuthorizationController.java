@@ -82,7 +82,7 @@ public class AuthorizationController {
         String code = (String) redisUtils.get(authUser.getUuid());
         // 清除验证码
         redisUtils.del(authUser.getUuid());
-//        if (StringUtils.isBlank(code)) {TODO
+//        if (StringUtils.isBlank(code)) {TODO 验证登录平台
 //            throw new BadRequestException("验证码不存在或已过期");
 //        }
 //        if (StringUtils.isBlank(authUser.getCode()) || !authUser.getCode().equalsIgnoreCase(code)) {

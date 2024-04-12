@@ -5,6 +5,7 @@ import com.cmhq.core.api.UploadData;
 import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.dao.FaCourierOrderExtDao;
 import com.cmhq.core.dao.FaUploadLogDao;
+import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.UploadLogEntity;
 import com.cmhq.core.service.FaCompanyMoneyService;
 import com.cmhq.core.util.SpringApplicationUtils;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 
 /**
@@ -24,7 +26,9 @@ public abstract class AbstractApiPush<Req extends UploadData> implements ApiPush
     protected FaCompanyMoneyService faCompanyMoneyService;
     @Autowired
     protected FaCourierOrderDao faCourierOrderDao;
-
+    @Autowired
+    protected  FaUploadLogDao logDao;
+    @Transactional
     @Override
     public void pushHandle(Req req) {
         //请求日志写入
@@ -34,10 +38,17 @@ public abstract class AbstractApiPush<Req extends UploadData> implements ApiPush
         entity.setUploadCode(req.getUnKey());
         entity.setMsg(JSONObject.toJSONString(req));
         entity.setCreateTime(new Date());
-        FaUploadLogDao logDao = SpringApplicationUtils.getBean(FaUploadLogDao.class);
-        logDao.insert(entity);
-        doPushHandle(req);
-        afterHandle(req);
+        try {
+
+            doPushHandle(req);
+            afterHandle(req);
+        }catch (Exception e){
+            log.error("【{}】 异常",supports().getDesc(),e);
+            entity.setErrorMsg(e.getMessage());
+        }finally {
+            logDao.insert(entity);
+        }
+
 
 
     }
@@ -49,5 +60,7 @@ public abstract class AbstractApiPush<Req extends UploadData> implements ApiPush
     protected abstract void doPushHandle(Req req);
 
     protected abstract void afterHandle(Req req);
+
+    protected abstract FaCourierOrderEntity getFaCourierOrder(Req req);
 
 }

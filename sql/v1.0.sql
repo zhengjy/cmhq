@@ -107,5 +107,7 @@ ALTER TABLE sys_childuser ADD child_company_id INT NULL;
 ALTER TABLE fa_expressorder ADD courier_company_code varchar(100) NULL COMMENT '快递公司编码。如sto';
 ALTER TABLE fa_expressorder CHANGE courier_company_code courier_company_code varchar(100) NULL COMMENT '快递公司编码。如sto' AFTER orderid;
 ALTER TABLE fa_expressorder ADD create_user_id varchar(100) NULL COMMENT '创建人id';
+ALTER TABLE fa_expressorder ADD courier_company_order_no varchar(100) NULL COMMENT '快递公司订单编号';
+ALTER TABLE fa_expressorder CHANGE courier_company_order_no courier_company_order_no varchar(100) NULL COMMENT '快递公司订单编号' AFTER courier_company_code;
 
  ALTER TABLE fa_company ADD estimate_price DOUBLE NULL COMMENT '冻结金额';

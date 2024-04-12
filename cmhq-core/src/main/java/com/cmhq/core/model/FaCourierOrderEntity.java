@@ -45,8 +45,8 @@ public class FaCourierOrderEntity {
     @ApiModelProperty(value = "物品分类ID")
     private Integer goodsCategoryId;
 
-    @ApiModelProperty(value = "物品分类")
-    private String goodsType;
+//    @ApiModelProperty(value = "物品分类")
+//    private String goodsType;
 
     @ApiModelProperty(value = "物品名称")
     private String goodsName;
@@ -136,13 +136,14 @@ public class FaCourierOrderEntity {
      * 异常件 in(取消订单、)
      */
     @ApiModelProperty(value = "0异常1正常")
+    @TableField("is_error")
     private Integer orderIsError;
 
     @ApiModelProperty(value = "用户id")
     private Integer createUserId;
 
-    @ApiModelProperty(value = "创建人")
-    private String createUser;
+//    @ApiModelProperty(value = "创建人")
+//    private String createUser;
 
     @ApiModelProperty(value = "createTime")
     private Date createTime;

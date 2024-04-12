@@ -17,11 +17,19 @@ public class CompanyMoneyParam {
     double money;
     /**公司id*/
     Integer companyId;
-    /**订单号*/
+    /**订单号 ,本系统订单表id*/
     private String orderId;
     /**运单号*/
     private String billCode;
 
+    /**
+     * @param addType
+     * @param consumeEumn
+     * @param msgEumn
+     * @param money
+     * @param companyId
+     * @param orderId
+     */
     public CompanyMoneyParam(Integer addType, MoneyConsumeEumn consumeEumn, MoneyConsumeMsgEumn msgEumn, double money, Integer companyId, String orderId) {
         this.addType = addType;
         this.consumeEumn = consumeEumn;

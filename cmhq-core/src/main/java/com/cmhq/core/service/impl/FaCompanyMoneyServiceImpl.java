@@ -92,7 +92,7 @@ public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
                 throw new RuntimeException("更新账户余额失败");
             }
         //取消订单退回预估费用
-        }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_6.getDesc())){
+        }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_6.getDesc()) || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_5.getDesc())){
             e.setAfter(faCompanyEntity.getMoney()+param.getMoney());
             int num = faCompanyDao.addMoney(param.getCompanyId(),param.getMoney());
             if (num < 1){
