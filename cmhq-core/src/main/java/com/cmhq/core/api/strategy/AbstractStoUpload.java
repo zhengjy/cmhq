@@ -5,6 +5,7 @@ import com.cmhq.core.api.UploadCallback;
 import com.cmhq.core.api.UploadData;
 import com.cmhq.core.api.StoResponse;
 import com.cmhq.core.api.UploadResult;
+import com.cmhq.core.api.dto.BaseStoDto;
 import lombok.extern.slf4j.Slf4j;
 import net.dreamlu.mica.core.utils.AesUtil;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -44,38 +45,38 @@ public abstract class AbstractStoUpload<Req, T extends UploadData> extends Abstr
         String[] split = getToken().split(",");
         String from_appkey;
         String from_code;
-        String to_appkey;
-        String to_code;
+        String to_appkey = getToCode();
+        String to_code = getToCode();
         String clientSecret;
-        if (split.length == 5) {
+        if (split.length == 3) {
             from_appkey = split[0];
             from_code = split[1];
-            to_appkey = split[2];
-            to_code = split[3];
-            clientSecret = split[4];
+            clientSecret = split[2];
         } else {
             callback.fail("上传令牌异常", null);
             return uploadResult.setErrorMsg("上传令牌异常").setFlag(false);
         }
 
         try {
-            String data = JSONObject.toJSONString(uploadData);
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(url);
-            httpPost.addHeader("Content-Type", " x-www-form-urlencoded");
-            httpPost.addHeader("data_digest", calculateDigest(data,clientSecret));
-            httpPost.addHeader("api_name", getUploadUrl());
-            httpPost.addHeader("from_appkey", from_appkey);
-            httpPost.addHeader("from_code", from_code);
-            httpPost.addHeader("to_appkey", to_appkey);
-            httpPost.addHeader("to_code", to_code);
-            httpPost.addHeader("content", data);
+            httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+            String data = JSONObject.toJSONString(uploadData);
+            List<NameValuePair> params=new ArrayList<>();
+            params.add(new BasicNameValuePair("data_digest",calculateDigest(data,clientSecret)));
+            params.add(new BasicNameValuePair("api_name",getUploadUrl()));
+            params.add(new BasicNameValuePair("from_appkey",from_appkey));
+            params.add(new BasicNameValuePair("from_code",from_code));
+            params.add(new BasicNameValuePair("to_appkey",to_appkey));
+            params.add(new BasicNameValuePair("to_code",to_code));
+            params.add(new BasicNameValuePair("content",data));
+            params.add(new BasicNameValuePair("content",data));
 
             String unKey = uploadData.getUnKey();
-            log.info("upload sto mark: 【{}】， url【{}】，params【{}】，headers【{}】", unKey, url, data, JSONObject.toJSONString(httpPost.getAllHeaders()));
-            httpPost.setEntity(new StringEntity(data, StandardCharsets.UTF_8));
+            log.info("upload sto mark: 【{}】， url【{}】，params【{}】，headers【{}】", unKey, url, data, JSONObject.toJSONString(params));
+            httpPost.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
             HttpResponse response = httpClient.execute(httpPost);
-            String rsp = EntityUtils.toString(response.getEntity());
+            String rsp = EntityUtils.toString(response.getEntity(),StandardCharsets.UTF_8);
             log.info(" upload sto mark:【{}】， response:【{}】", unKey, rsp);
             if (StringUtils.isNotEmpty(rsp)) {
                 StoResponse object = JSONObject.parseObject(rsp,StoResponse.class);
@@ -157,4 +158,5 @@ public abstract class AbstractStoUpload<Req, T extends UploadData> extends Abstr
         return null;
     }
 
+    protected abstract String getToCode();
 }

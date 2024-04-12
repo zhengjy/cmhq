@@ -6,20 +6,20 @@
 
 
     <update id="minusMoney" >
-        update fa_company set money = money-#{money},estimate_price = estimate_price+#{money} where id = #{id} and (money-#{money})>0
+        update fa_company set money = money-#{money},estimate_price = estimate_price+#{money} where id = #{companyId} and (money-#{money})>0
 
     </update>
     <update id="minusEstimatePrice" >
-        update fa_company set estimate_price-#{money} where id = #{id} and (estimate_price-#{money})>0
+        update fa_company set estimate_price-#{money} where id = #{companyId} and (estimate_price-#{money})>0
 
     </update>
 
     <update id="restMoney" >
         update fa_company set money = money+#{money},
-                              estimate_price = estimate_price-#{money} where id = #{id}  and (estimate_price-#{money})>0
+                              estimate_price = estimate_price-#{money} where id = #{companyId}  and (estimate_price-#{money})>0
     </update>
     <update id="addMoney" >
-        update fa_company set money = money+#{money} where id = #{id}
+        update fa_company set money = money+#{money} where id = #{companyId}
 
     </update>
 

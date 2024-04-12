@@ -47,4 +47,9 @@ public class StoCancelCourierOrder extends AbstractStoUpload<FaCourierOrderEntit
         }
         super.uploadResultHandle(uploadData,uploadResult);
     }
+
+    @Override
+    protected String getToCode() {
+        return "edi_modify_order";
+    }
 }

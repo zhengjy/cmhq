@@ -1,5 +1,8 @@
 package com.cmhq.core.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -17,6 +20,7 @@ public class FaCompanyMoneyEntity {
      *
      * </pre>
      */
+    @TableId(type = IdType.AUTO)
     private Integer	id;
 
     /**
@@ -59,6 +63,7 @@ public class FaCompanyMoneyEntity {
      * 操作之前余额
      * </pre>
      */
+    @TableField(value = "`before`")
     private Double	before;
 
     /**
@@ -108,5 +113,6 @@ public class FaCompanyMoneyEntity {
      * 操作之后余额
      * </pre>
      */
+    @TableField(value = "`after`")
     private Double	after;
 }

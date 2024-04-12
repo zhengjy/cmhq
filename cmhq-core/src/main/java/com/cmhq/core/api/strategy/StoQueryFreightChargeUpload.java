@@ -5,14 +5,10 @@ import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.dto.StoCourierOrderDto;
 import com.cmhq.core.api.dto.StoFreightChargeDto;
 import com.cmhq.core.model.FaCourierOrderEntity;
-import com.google.common.collect.Maps;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
-/**
+/**查询申通时效运费
  * Created by Jiyang.Zheng on 2024/4/7 13:56.
  */
 @Component
@@ -54,5 +50,10 @@ public class StoQueryFreightChargeUpload extends AbstractStoUpload<FaCourierOrde
         m.setOpenId(param.getOrderNo());
         m.setWeight(param.getWeight()+"");
         return m;
+    }
+
+    @Override
+    protected String getToCode() {
+        return "ORDERMS_API";
     }
 }

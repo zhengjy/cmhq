@@ -21,7 +21,7 @@ public class StoCourierOrderCreate extends AbstractStoUpload<FaCourierOrderEntit
 
     @Override
     protected String getUploadUrl() {
-        return "EDI_PUSH_ORDER_STATUS";
+        return "OMS_EXPRESS_ORDER_CREATE";
     }
 
 
@@ -72,5 +72,10 @@ public class StoCourierOrderCreate extends AbstractStoUpload<FaCourierOrderEntit
             cargo.setWeight(param.getWeight());
         }
         return dto;
+    }
+
+    @Override
+    protected String getToCode() {
+        return "sto_oms";
     }
 }

@@ -80,3 +80,34 @@ private Integer cancelType;
 #
 计费公式 ：首重费用+【实际重量（四舍五入取整）-1】*续重费用=实际费用
 实际重量【按实际重量与体积重量（计泡重量）两者取最大值计算运费】
+
+
+#订单参数
+{
+
+        "fromAddress": "四川省南充市顺庆区下中坝春风紫金巷一个搅蒜器",
+        "fromArea": "顺庆区",
+        "fromCity": "南充市",
+        "fromMobile": "18418972451",
+        "fromName": "阳若兰",
+        "fromProv": "四川省",
+        "goodsName": "灯具",
+        "height": 0,
+        "length": 0,
+        "price": 9,
+        "toAddress": "广东省中山市横栏镇横栏镇沥边路世林工业园地下室走到头",
+        "toArea": "横栏镇",
+        "toCity": "中山市",
+        "toMobile": "13485582485",
+        "toName": "郭悦",
+        "battery": "30",
+		"courierCompanyCode": "sto",
+		"goodsType": "小件",
+		"toProv": "广东省",
+		"msg": "测试物流订单",
+		"billType": "00",
+        "type": 1,
+        "weight": 0.2,
+        "weightto": 0,
+        "width": 0
+      }

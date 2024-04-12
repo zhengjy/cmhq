@@ -27,4 +27,8 @@ public class StoQueryCourierTrackOrder extends AbstractStoUpload<String, QueryCo
         return dto;
     }
 
+    @Override
+    protected String getToCode() {
+        return "sto_trace_query";
+    }
 }

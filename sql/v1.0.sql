@@ -111,3 +111,11 @@ ALTER TABLE fa_expressorder ADD courier_company_order_no varchar(100) NULL COMME
 ALTER TABLE fa_expressorder CHANGE courier_company_order_no courier_company_order_no varchar(100) NULL COMMENT '快递公司订单编号' AFTER courier_company_code;
 
  ALTER TABLE fa_company ADD estimate_price DOUBLE NULL COMMENT '冻结金额';
+
+
+ ALTER TABLE fa_expressorder MODIFY COLUMN jitu_wuliu int(1) DEFAULT  NULL COMMENT '1运输中2派件中3已签收';
+ALTER TABLE fa_expressorder MODIFY COLUMN qj_time varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '取件时间';
+ALTER TABLE fa_expressorder MODIFY COLUMN qs_time varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '签收时间';
+ALTER TABLE fa_expressorder MODIFY COLUMN cancel_type int(1) DEFAULT 0 NULL COMMENT '1自己取消2极兔取消';
+ALTER TABLE fa_expressorder MODIFY COLUMN error_msg varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '极兔的异常信息';
+

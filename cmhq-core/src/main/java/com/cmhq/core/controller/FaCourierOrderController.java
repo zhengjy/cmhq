@@ -25,14 +25,14 @@ public class FaCourierOrderController {
     private final FaCourierOrderService faCourierOrderService;
 
 
-    @PostMapping("queryFaCourierOrder")
+    @PostMapping("list")
     @Log("查询CourierOrder")
     @ApiOperation("查询CourierOrder")
     public APIResponse queryFaCourierOrder(@RequestBody CourierOrderQuery query) {
         return APIResponse.success(faCourierOrderService.queryAll(query));
     }
 
-    @PostMapping("createFaCourierOrder")
+    @PostMapping("create")
     @Log("新增CourierOrder")
     @ApiOperation("新增CourierOrder")
     public APIResponse createFaCourierOrder(@Validated @RequestBody FaCourierOrderEntity resources) {

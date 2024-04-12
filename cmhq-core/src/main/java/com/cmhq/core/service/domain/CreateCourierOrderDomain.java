@@ -63,7 +63,7 @@ public class CreateCourierOrderDomain {
             }
             FaCompanyEntity faCompanyEntity = faCompanyDao.selectById(companyId);
             //  预估金额 TODO 预估重量扣费
-            double estimatePrice = order.getPrice() * ((double) faCompanyEntity.getRatio() /100);
+            double estimatePrice = order.getPrice() * ((double) faCompanyEntity.getRatio() /100);// TODO 2小数点
             //账户余额不足
             if (faCompanyEntity.getMoney()  < estimatePrice){
                 throw new RuntimeException("账户余额不足");
@@ -80,6 +80,8 @@ public class CreateCourierOrderDomain {
             }
             order.setFaCompanyId(companyId);
             order.setEstimatePrice(estimatePrice);
+            order.setCourierOrderState(1);
+            order.setWuliuState(2);
             //下单
             faCourierOrderDao.insert(order);
 

@@ -1,5 +1,6 @@
 package com.cmhq.core.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import java.util.Date;
 @TableName("fa_upload_log")
 public class UploadLogEntity {
 
-    @TableId
+    @TableId(type = IdType.AUTO)
     private Long id;
     /**上传类型*/
     private String uploadType;

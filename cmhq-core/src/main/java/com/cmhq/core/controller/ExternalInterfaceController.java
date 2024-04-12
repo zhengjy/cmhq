@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("v1/courierPushState/")
 @Api(value = "外部接口-物流&订单状态接收", tags = {"外部接口-物流&订单状态接收"})
 @Slf4j
-public class StoInterfaceController {
+public class ExternalInterfaceController {
 
     @ApiOperation("推送订单状态")
     @PostMapping(value = "/pushOrderStatus")
