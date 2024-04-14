@@ -113,5 +113,7 @@ public class CourierOrderQueryPageDomain {
             }
         }
         lam.orderByDesc(FaCourierOrderEntity::getCreateTime);
+        //TODO 扩展字段查询
+
     }
 }
