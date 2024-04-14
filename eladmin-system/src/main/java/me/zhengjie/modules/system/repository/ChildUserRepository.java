@@ -13,29 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package me.zhengjie.modules.security.service.dto;
+package me.zhengjie.modules.system.repository;
 
-import lombok.Getter;
-import lombok.Setter;
-import javax.validation.constraints.NotBlank;
+import me.zhengjie.modules.system.domain.ChildUser;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
  * @author Zheng Jie
- * @date 2018-11-30
+ * @date 2018-11-22
  */
-@Getter
-@Setter
-public class AuthUserDto {
+public interface ChildUserRepository extends JpaRepository<ChildUser, Long>, JpaSpecificationExecutor<ChildUser> {
 
-    @NotBlank
-    private String username;
 
-    @NotBlank
-    private String password;
-
-    private String code;
-
-    private String platform;
-
-    private String uuid = "";
 }

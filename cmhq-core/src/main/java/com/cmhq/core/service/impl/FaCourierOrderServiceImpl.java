@@ -3,6 +3,7 @@ package com.cmhq.core.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
+import com.cmhq.core.api.dto.response.CourierFreightChargeDto;
 import com.cmhq.core.api.strategy.StrategyFactory;
 import com.cmhq.core.api.strategy.Upload;
 import com.cmhq.core.dao.FaCourierOrderExtDao;
@@ -55,7 +56,7 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
         if (uploadResult.getFlag()){
             return uploadResult.getJsonMsg();
         }
-        return "";
+        return null;
     }
 
     @Transactional

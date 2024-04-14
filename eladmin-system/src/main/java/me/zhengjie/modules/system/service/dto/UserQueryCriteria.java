@@ -43,6 +43,8 @@ public class UserQueryCriteria implements Serializable {
     private Boolean enabled;
     @Query
     private String platform;
+    @Query
+    private Integer companyId;
 
     private Long deptId;
 

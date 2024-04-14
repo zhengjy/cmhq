@@ -4,6 +4,8 @@ import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.dto.QueryCourierTrackDto;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 
 /**
  * Created by Jiyang.Zheng on 2024/4/7 13:56.
@@ -23,7 +25,7 @@ public class StoQueryCourierTrackOrder extends AbstractStoUpload<String, QueryCo
     @Override
     protected QueryCourierTrackDto getData(String courierCompanyWaybillNo) throws RuntimeException {
         QueryCourierTrackDto dto = new QueryCourierTrackDto();
-        dto.setCourierCompanyWaybillNo(courierCompanyWaybillNo);
+        dto.setWaybillNoList(Arrays.asList(new QueryCourierTrackDto.BillOrderNo(courierCompanyWaybillNo)));
         return dto;
     }
 

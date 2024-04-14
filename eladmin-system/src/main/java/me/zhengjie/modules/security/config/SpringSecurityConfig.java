@@ -132,6 +132,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, anonymousUrls.get(RequestMethodEnum.DELETE.getType()).toArray(new String[0])).permitAll()
                 .antMatchers("/courierOrder/**").permitAll()
                 .antMatchers("/company/**").permitAll()
+                .antMatchers("/fcRecharge/**").permitAll()
+                .antMatchers("/companyMoney/**").permitAll()
                 .antMatchers("/ziaddress//**").permitAll()
                 .antMatchers("/external/aliPay/**").permitAll()
                 .antMatchers("/fauser/**").permitAll()

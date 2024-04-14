@@ -21,6 +21,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.zhengjie.annotation.AnonymousAccess;
 import me.zhengjie.annotation.Log;
 import me.zhengjie.annotation.rest.AnonymousDeleteMapping;
 import me.zhengjie.annotation.rest.AnonymousGetMapping;
@@ -80,6 +81,7 @@ public class AuthorizationController {
         String password = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey, authUser.getPassword());
         // 查询验证码
         String code = (String) redisUtils.get(authUser.getUuid());
+        String platform = authUser.getPlatform();
         // 清除验证码
         redisUtils.del(authUser.getUuid());
 //        if (StringUtils.isBlank(code)) {TODO 验证登录平台
@@ -109,6 +111,10 @@ public class AuthorizationController {
         }
         // 保存在线信息
         onlineUserService.save(jwtUserDto, token, request);
+        //
+        if (SecurityUtils.isPlatformCompany() && !StringUtils.equals(platform,"company")){
+            throw new BadRequestException("此账号无权限登录此系统");
+        }
         // 返回登录信息
         return ResponseEntity.ok(authInfo);
     }
@@ -121,6 +127,7 @@ public class AuthorizationController {
 
     @ApiOperation("获取验证码")
     @AnonymousGetMapping(value = "/code")
+    @AnonymousAccess
     public ResponseEntity<Object> getCode() {
         // 获取运算的结果
         Captcha captcha = loginProperties.getCaptcha();

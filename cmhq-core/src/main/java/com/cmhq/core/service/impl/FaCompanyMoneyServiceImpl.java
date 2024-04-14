@@ -74,7 +74,7 @@ public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
         e.setBefore(faCompanyEntity.getMoney());
         e.setDelkid(0);
         e.setXdelkid(0);
-        e.setOrderid(param.getOrderId());
+        e.setOrderNo(param.getOrderId());
         e.setBillCode(param.getBillCode());
         //充值
         if (param.getConsumeEumn().getType().equals(MoneyConsumeEumn.CONSUM_2.getType())){

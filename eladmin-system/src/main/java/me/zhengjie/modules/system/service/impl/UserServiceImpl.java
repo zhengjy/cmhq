@@ -16,6 +16,8 @@
 package me.zhengjie.modules.system.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import me.zhengjie.modules.system.domain.ChildUser;
+import me.zhengjie.modules.system.repository.ChildUserRepository;
 import me.zhengjie.utils.PageResult;
 import me.zhengjie.config.FileProperties;
 import me.zhengjie.exception.BadRequestException;
@@ -60,6 +62,7 @@ public class UserServiceImpl implements UserService {
     private final UserCacheManager userCacheManager;
     private final OnlineUserService onlineUserService;
     private final UserLoginMapper userLoginMapper;
+    private final ChildUserRepository childUserRepository;
 
     @Override
     public PageResult<UserDto> queryAll(UserQueryCriteria criteria, Pageable pageable) {
@@ -94,7 +97,14 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByPhone(resources.getPhone()) != null) {
             throw new EntityExistException(User.class, "phone", resources.getPhone());
         }
+        ChildUser childUser = resources.getChildUser();
+        resources.setChildUser(null);
         userRepository.save(resources);
+        if (childUser != null){
+            childUser.setUserId(resources.getId());
+            childUserRepository.save(childUser);
+        }
+
     }
 
     @Override
@@ -137,6 +147,16 @@ public class UserServiceImpl implements UserService {
         user.setPhone(resources.getPhone());
         user.setNickName(resources.getNickName());
         user.setGender(resources.getGender());
+
+        ChildUser childUser = resources.getChildUser();
+        resources.setChildUser(null);
+        userRepository.save(resources);
+        if (childUser != null){
+            childUser.setUserId(resources.getId());
+            childUserRepository.save(childUser);
+        }
+
+
         userRepository.save(user);
         // 清除缓存
         delCaches(user.getId(), user.getUsername());

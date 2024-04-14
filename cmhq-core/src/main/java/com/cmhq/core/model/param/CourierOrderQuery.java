@@ -32,6 +32,8 @@ public class CourierOrderQuery extends BaseQuery{
 
     @ApiModelProperty(value = "是否结算：0未结算1已结算")
     private String isJiesuan;
+    @ApiModelProperty(value = "是否取消：1是")
+    private String isCancel;
 
     @ApiModelProperty(value = "发货人")
     private String fromName;

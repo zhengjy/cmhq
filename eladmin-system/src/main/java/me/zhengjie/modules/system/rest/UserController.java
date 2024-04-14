@@ -74,7 +74,12 @@ public class UserController {
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('user:list')")
     public void exportUser(HttpServletRequest request,HttpServletResponse response, UserQueryCriteria criteria) throws IOException {
+        if (SecurityUtils.isPlatformCompany()){
+            criteria.setPlatform("company");
+        }else {
+            criteria.setPlatform("admin");
 
+        }
         userService.download(userService.queryAll(criteria), response);
     }
 
@@ -82,12 +87,12 @@ public class UserController {
     @GetMapping
     @PreAuthorize("@el.check('user:list')")
     public ResponseEntity<PageResult<UserDto>> queryUser(HttpServletRequest request,UserQueryCriteria criteria, Pageable pageable){
-//        if (request.getRemoteHost().contains("c.")){
-//            criteria.setPlatform("company");
-//        }else {
-//            criteria.setPlatform("admin");
-//
-//        }
+        if (SecurityUtils.isPlatformCompany()){
+            criteria.setPlatform("company");
+        }else {
+            criteria.setPlatform("admin");
+
+        }
         if (!ObjectUtils.isEmpty(criteria.getDeptId())) {
             criteria.getDeptIds().add(criteria.getDeptId());
             // 先查找是否存在子节点
@@ -119,7 +124,7 @@ public class UserController {
     public ResponseEntity<Object> createUser(@Validated @RequestBody User resources){
         checkLevel(resources);
         // 默认密码 123456
-
+        resources.setPlatform("admin");
         resources.setCompanyId(SecurityUtils.getCurrentCompanyId());
         resources.setPassword(passwordEncoder.encode("123456"));
         userService.create(resources);

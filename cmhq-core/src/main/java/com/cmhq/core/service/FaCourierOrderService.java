@@ -1,5 +1,6 @@
 package com.cmhq.core.service;
 
+import com.cmhq.core.api.dto.response.CourierFreightChargeDto;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import me.zhengjie.QueryResult;

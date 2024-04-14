@@ -71,6 +71,15 @@ public class StoCourierOrderCreate extends AbstractStoUpload<FaCourierOrderEntit
         if (param.getWeight() != null){
             cargo.setWeight(param.getWeight());
         }
+
+        StoCourierOrderDto.Customer customer = new StoCourierOrderDto.Customer();
+        dto.setCustomer(customer);
+        String[] split = getToken().split(",");
+        if (split.length >= 6) {
+            customer.setSiteCode(split[3]);
+            customer.setCustomerName(split[4]);
+            customer.setSitePwd(split[5]);
+        }
         return dto;
     }
 

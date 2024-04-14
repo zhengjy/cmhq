@@ -18,12 +18,11 @@ public class ContextHolder {
         contextHolder.set(type);
     }
 
-    // 获取数据源名
+    @Deprecated
     public static String getPlatform() {
         return (contextHolder.get() == null ? "admin" : contextHolder.get());
     }
 
-    // 清除数据源名
     public static void clearPlatform() {
         contextHolder.remove();
     }

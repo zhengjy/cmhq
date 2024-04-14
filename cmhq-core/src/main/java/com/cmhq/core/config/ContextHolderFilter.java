@@ -1,6 +1,7 @@
 package com.cmhq.core.config;
 
 import com.cmhq.core.util.ContextHolder;
+import me.zhengjie.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.*;
@@ -15,13 +16,13 @@ public class ContextHolderFilter  implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        if (httpServletRequest.getRemoteHost().contains("c.")){
-            ContextHolder.setPlatform("company");
-        }else {
-            ContextHolder.setPlatform("admin");
-        }
+//        if (SecurityUtils.isPlatformCompany()){
+//            ContextHolder.setPlatform("company");
+//        }else {
+//            ContextHolder.setPlatform("admin");
+//        }
         filterChain.doFilter(servletRequest, servletResponse);
-        ContextHolder.clearPlatform();
+//        ContextHolder.clearPlatform();
 
     }
 }

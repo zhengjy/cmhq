@@ -44,7 +44,7 @@ public class CourierOrderQueryPageDomain {
     public void  serQuery(LambdaQueryWrapper<FaCourierOrderEntity> lam){
         //如果是商户系统，权限处理,商户端区分商户本人账号还是普通账号
         //获取当前用户是运维账户,还是商户管理员
-        if (ContextHolder.isPlatformCompany()){
+        if (SecurityUtils.isPlatformCompany()){
             if (CurrentUserContent.isCompanyChildUser()){
                 lam.eq(FaCourierOrderEntity::getFaCompanyId,SecurityUtils.getCurrentCompanyId());
                 lam.eq(FaCourierOrderEntity::getCreateUserId,SecurityUtils.getCurrentUserId());
@@ -62,6 +62,9 @@ public class CourierOrderQueryPageDomain {
         }
         if (StringUtils.isNotEmpty(query.getGoodsName())){
             lam.eq(FaCourierOrderEntity::getGoodsName,query.getGoodsName());
+        }
+        if (StringUtils.isNotEmpty(query.getIsCancel())){
+            lam.isNotNull(FaCourierOrderEntity::getCancelType);
         }
 
         if (CollectionUtils.isNotEmpty(query.getOrderState())){
@@ -104,7 +107,7 @@ public class CourierOrderQueryPageDomain {
         if (StringUtils.isNotEmpty(query.getCompanyName())){
             lam.inSql(FaCourierOrderEntity::getFaCompanyId,"select id from fa_company like '%"+query.getCompanyName()+"%'");
         }
-        if (ContextHolder.isPlatformCompany()){
+        if (SecurityUtils.isPlatformCompany()){
             if (StringUtils.isNotEmpty(query.getUserName())){
                 lam.inSql(FaCourierOrderEntity::getCreateUserId,"select id from sys_user like '%"+query.getUserName()+"%' and company_Id = " + SecurityUtils.getCurrentCompanyId() );
             }

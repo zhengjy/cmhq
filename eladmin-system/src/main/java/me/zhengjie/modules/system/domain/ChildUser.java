@@ -2,13 +2,10 @@ package me.zhengjie.modules.system.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.zhengjie.base.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/9 16:42.
@@ -17,10 +14,12 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @Table(name="sys_childuser")
-public class ChildUser {
+public class ChildUser  implements Serializable {
     @Id
-    @Column(name = "user_id")
-    @NotNull()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name="user_id")
     private Long userId;
 
     /**
@@ -52,4 +51,5 @@ public class ChildUser {
      */
     @NotNull
     private Double	ziOneMaxMoney=0D;
+
 }

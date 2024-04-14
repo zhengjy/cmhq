@@ -3,6 +3,7 @@ package com.cmhq.core.service.domain;
 import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
+import com.cmhq.core.api.dto.response.CourierFreightChargeDto;
 import com.cmhq.core.api.strategy.StrategyFactory;
 import com.cmhq.core.api.strategy.Upload;
 import com.cmhq.core.dao.FaCompanyDao;
@@ -19,8 +20,10 @@ import com.cmhq.core.util.CurrentUserContent;
 import com.cmhq.core.util.SpringApplicationUtils;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.utils.SecurityUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -62,8 +65,11 @@ public class CreateCourierOrderDomain {
                 throw new RuntimeException("当前用户非商户,无权限创建订单");
             }
             FaCompanyEntity faCompanyEntity = faCompanyDao.selectById(companyId);
+            //获取价格
+
             //  预估金额 TODO 预估重量扣费
-            double estimatePrice = order.getPrice() * ((double) faCompanyEntity.getRatio() /100);// TODO 2小数点
+            BigDecimal b = new BigDecimal(order.getPrice() * ((double) faCompanyEntity.getRatio() /100));
+            double estimatePrice = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             //账户余额不足
             if (faCompanyEntity.getMoney()  < estimatePrice){
                 throw new RuntimeException("账户余额不足");
@@ -81,7 +87,6 @@ public class CreateCourierOrderDomain {
             order.setFaCompanyId(companyId);
             order.setEstimatePrice(estimatePrice);
             order.setCourierOrderState(1);
-            order.setWuliuState(2);
             //下单
             faCourierOrderDao.insert(order);
 
@@ -126,7 +131,34 @@ public class CreateCourierOrderDomain {
                 faCourierOrderService.saveOrderExt(id,key,jo.getString(key));
             }
         }
+    }
 
+    /**
+     * 不同订单公司运算不同
+     * 首重费用+【实际重量（四舍五入取整）-1】*续重费用=实际费用
+     * 实际重量【按实际重量与体积重量（计泡重量）两者取最大值计算运费】
+     * 获取预估价格
+     * @return
+     */
+    private double getEstimatePrice(Integer retio){
+        Object obj =  faCourierOrderService.getCourierFreightCharge(order);
+        if (obj instanceof CourierFreightChargeDto){
+            CourierFreightChargeDto ccd = (CourierFreightChargeDto) obj;
+            if (obj == null || CollectionUtils.isEmpty(ccd.getAvailableServiceItemList()) || ccd.getAvailableServiceItemList().get(0).getFeeModel() == null){
+                throw new RuntimeException("获取预估价格失败");
+            }
 
+            CourierFreightChargeDto.FeeModel feeModel = ccd.getAvailableServiceItemList().get(0).getFeeModel();
+            Integer totalPrice = Integer.parseInt(feeModel.getTotalPrice());
+            log.info("获取运费价格 {}",JSONObject.toJSONString(feeModel));
+            BigDecimal b = new BigDecimal((totalPrice * 100) * ((double) retio /100));
+            double estimatePrice = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+            //实际重量不知道 TODO
+            // double totalInKilograms = (feeModel.getStartPrice()*100) +(feeModel.getStartWeight() / 500) * (feeModel.getContinuedHeavyPrice() ** 100);
+
+            return estimatePrice;
+        }
+        throw new RuntimeException("未查到运费价格");
     }
 }

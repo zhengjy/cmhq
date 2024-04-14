@@ -25,10 +25,10 @@ public class FaCourierOrderController {
     private final FaCourierOrderService faCourierOrderService;
 
 
-    @PostMapping("list")
+    @GetMapping("list")
     @Log("查询CourierOrder")
     @ApiOperation("查询CourierOrder")
-    public APIResponse queryFaCourierOrder(@RequestBody CourierOrderQuery query) {
+    public APIResponse queryFaCourierOrder(@ModelAttribute CourierOrderQuery query) {
         return APIResponse.success(faCourierOrderService.queryAll(query));
     }
 

@@ -53,12 +53,14 @@ public class AliPayInterfaceController {
     @Transactional
     public APIResponse<String> toPayAsPc(@Validated @RequestBody TradeVo trade) throws Exception {
         AlipayConfig aliPay = alipayService.find();
-        trade.setOutTradeNo(alipayUtils.getOrderCode());
+        String ordercode = alipayUtils.getOrderCode();
+        trade.setOutTradeNo(ordercode);
         String payUrl = alipayService.toPayAsPc(aliPay, trade);
         FaRechargeEntity faRecharge = new FaRechargeEntity();
         faRecharge.setCid(SecurityUtils.getCurrentCompanyId());
         faRecharge.setMoney(Double.parseDouble(trade.getTotalAmount()));
         faRecharge.setStatus(0);
+        faRecharge.setOrderid(ordercode);
         faRecharge.setCreateTime(new Date());
         faRecharge.setUpdateTime(new Date());
         faRecharge.setDelkid(0);
@@ -72,6 +74,7 @@ public class AliPayInterfaceController {
     @AnonymousAccess
     @ApiOperation("支付之后跳转的链接")
     public ResponseEntity<String> returnPage(HttpServletRequest request, HttpServletResponse response) {
+        log.info("接收支付之后跳转的链接");
         AlipayConfig alipay = alipayService.find();
         response.setContentType("text/html;charset=" + alipay.getCharset());
         //内容验签，防止黑客篡改参数
@@ -80,7 +83,7 @@ public class AliPayInterfaceController {
             String outTradeNo = new String(request.getParameter("out_trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
             //支付宝交易号
             String tradeNo = new String(request.getParameter("trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-            System.out.println("商户订单号" + outTradeNo + "  " + "第三方交易号" + tradeNo);
+            log.info("商户订单号" + outTradeNo + "  " + "第三方交易号" + tradeNo);
 
 
             faRechargeService.applySuccessHandle(outTradeNo,tradeNo);
@@ -98,6 +101,7 @@ public class AliPayInterfaceController {
     @ApiOperation("支付异步通知(要公网访问)，接收异步通知，检查通知内容app_id、out_trade_no、total_amount是否与请求中的一致，根据trade_status进行后续业务处理")
     @Transactional
     public ResponseEntity<Object> notify(HttpServletRequest request) {
+        log.info("接收支付之后支付异步通知");
         AlipayConfig alipay = alipayService.find();
         Map<String, String[]> parameterMap = request.getParameterMap();
         //内容验签，防止黑客篡改参数

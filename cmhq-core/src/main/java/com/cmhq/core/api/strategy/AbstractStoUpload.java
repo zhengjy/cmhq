@@ -48,7 +48,7 @@ public abstract class AbstractStoUpload<Req, T extends UploadData> extends Abstr
         String to_appkey = getToCode();
         String to_code = getToCode();
         String clientSecret;
-        if (split.length == 3) {
+        if (split.length >= 3) {
             from_appkey = split[0];
             from_code = split[1];
             clientSecret = split[2];
@@ -69,7 +69,6 @@ public abstract class AbstractStoUpload<Req, T extends UploadData> extends Abstr
             params.add(new BasicNameValuePair("from_code",from_code));
             params.add(new BasicNameValuePair("to_appkey",to_appkey));
             params.add(new BasicNameValuePair("to_code",to_code));
-            params.add(new BasicNameValuePair("content",data));
             params.add(new BasicNameValuePair("content",data));
 
             String unKey = uploadData.getUnKey();

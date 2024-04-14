@@ -27,6 +27,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -116,6 +118,7 @@ public class SecurityUtils {
         }
         return DataScopeEnum.ALL.getValue();
     }
+
 
     public static boolean isPlatformCompany(){
         return StringUtils.equals(getCurrentPlatform(),"company");

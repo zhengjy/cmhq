@@ -96,16 +96,19 @@ public class FaCompanyMoneyEntity {
 
     /**
      * <pre>
-     * 订单ID
+     * 订单ID 作废，因为历史只能存入数字
      * </pre>
      */
+    @Deprecated
     private String	orderid;
+    private String	orderNo;
 
     /**
      * <pre>
      * 极兔运单号
      * </pre>
      */
+    @TableField(value = "billCode")
     private String	billCode;
 
     /**

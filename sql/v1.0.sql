@@ -90,13 +90,16 @@ CREATE TABLE `fa_courier_order` (
 
 ALTER TABLE fa_company MODIFY COLUMN name varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL;
 
+
 CREATE TABLE `sys_childuser` (
-  `user_id` int(11) NOT NULL ,
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
   `zi_max_num` int(10) DEFAULT '0' COMMENT '子账号一天最大单量',
   `zi_max_money` decimal(10,2) DEFAULT '0.00' COMMENT '子账号每日最大订单金额',
   `zi_one_max_money` decimal(10,2) DEFAULT '0.00' COMMENT '子账号单笔订单最大限制金额',
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 COMMENT='商户子账户';
+  `child_company_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商户子账户'
 
 ALTER TABLE sys_childuser ADD child_company_id INT NULL;
 
@@ -119,3 +122,4 @@ ALTER TABLE fa_expressorder MODIFY COLUMN qs_time varchar(255) CHARACTER SET utf
 ALTER TABLE fa_expressorder MODIFY COLUMN cancel_type int(1) DEFAULT 0 NULL COMMENT '1自己取消2极兔取消';
 ALTER TABLE fa_expressorder MODIFY COLUMN error_msg varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '极兔的异常信息';
 
+ALTER TABLE fa_company_money ADD order_no varchar(500) NULL COMMENT '支付订单号';

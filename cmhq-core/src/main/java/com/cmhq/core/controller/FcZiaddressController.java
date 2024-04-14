@@ -52,7 +52,7 @@ public class FcZiaddressController {
     @AnonymousAccess
     @RequestMapping(value = "edit", method = RequestMethod.POST)
     public APIResponse edit( @RequestBody FaZiaddressEntity entity) throws Exception {
-        if (entity == null){
+        if (entity.getId() == null){
             faZiaddressDao.insert(entity);
         }else {
             faZiaddressDao.updateById(entity);

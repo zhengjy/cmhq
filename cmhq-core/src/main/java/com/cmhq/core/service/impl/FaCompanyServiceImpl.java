@@ -121,6 +121,9 @@ public class FaCompanyServiceImpl implements FaCompanyService {
     public Integer createChildUser(User resources)  {
         // 默认密码 123456
         resources.setPassword(passwordEncoder.encode("123456"));
+        resources.setPlatform("company");
+        resources.setAvatarName("avatar.jpg");
+        resources.setAvatarPath("/usr/app/file/");
         //保存商户表
         FaCompanyEntity currentCompany = CurrentUserContent.getCurrentCompany();
         FaCompanyEntity entity = new FaCompanyEntity();
@@ -148,6 +151,7 @@ public class FaCompanyServiceImpl implements FaCompanyService {
         return resources.getId().intValue();
     }
 
+    @Transactional
     @Override
     public void delete(Integer id) {
         FaCompanyEntity entity = faCompanyDao.selectById(id);
