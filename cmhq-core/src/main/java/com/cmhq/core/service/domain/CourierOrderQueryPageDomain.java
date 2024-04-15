@@ -45,10 +45,10 @@ public class CourierOrderQueryPageDomain {
         //如果是商户系统，权限处理,商户端区分商户本人账号还是普通账号
         //获取当前用户是运维账户,还是商户管理员
         if (SecurityUtils.isPlatformCompany()){
-            if (CurrentUserContent.isCompanyChildUser()){
+            if (SecurityUtils.isCompanyChildUser()){
                 lam.eq(FaCourierOrderEntity::getFaCompanyId,SecurityUtils.getCurrentCompanyId());
                 lam.eq(FaCourierOrderEntity::getCreateUserId,SecurityUtils.getCurrentUserId());
-            }else if (CurrentUserContent.isCompanyUser()){
+            }else if (SecurityUtils.isCompanyUser()){
                 lam.eq(FaCourierOrderEntity::getFaCompanyId,SecurityUtils.getCurrentCompanyId());
             }
         }

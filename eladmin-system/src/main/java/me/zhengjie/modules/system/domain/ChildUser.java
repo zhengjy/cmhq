@@ -16,9 +16,6 @@ import java.io.Serializable;
 @Table(name="sys_childuser")
 public class ChildUser  implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(name="user_id")
     private Long userId;
 

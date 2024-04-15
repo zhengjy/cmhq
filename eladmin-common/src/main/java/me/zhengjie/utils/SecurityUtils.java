@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.exception.BadRequestException;
 import me.zhengjie.utils.enums.DataScopeEnum;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -30,6 +31,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * 获取当前登录的用户
@@ -117,6 +121,39 @@ public class SecurityUtils {
             return "";
         }
         return DataScopeEnum.ALL.getValue();
+    }
+
+    /**
+     * 是否商户
+     * @return
+     */
+    public static boolean isCompanyUser(){
+        UserDetails userDetails  = getCurrentUser();
+        // 将 Java 对象转换为 JSONObject 对象
+        JSONObject jsonObject = (JSONObject) JSON.toJSON(userDetails);
+        JSONArray jsonArray = jsonObject.getJSONObject("user").getJSONArray("roles");
+
+        if(jsonArray != null){
+            List<JSONObject> list = JSON.parseArray(jsonArray.toJSONString(), JSONObject.class);
+            return Objects.equals(list.get(0).getInteger("level"), 2);
+        }
+        return false;
+    }
+    /**
+     * 是否商户子账户
+     * @return
+     */
+    public static boolean isCompanyChildUser(){
+        UserDetails userDetails  = getCurrentUser();
+        // 将 Java 对象转换为 JSONObject 对象
+        JSONObject jsonObject = (JSONObject) JSON.toJSON(userDetails);
+        JSONArray jsonArray = jsonObject.getJSONObject("user").getJSONArray("roles");
+
+        if(jsonArray != null){
+            List<JSONObject> list = JSON.parseArray(jsonArray.toJSONString(), JSONObject.class);
+            return Objects.equals(list.get(0).getInteger("level"), 3);
+        }
+        return false;
     }
 
 

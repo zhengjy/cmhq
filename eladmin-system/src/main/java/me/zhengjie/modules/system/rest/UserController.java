@@ -89,6 +89,10 @@ public class UserController {
     public ResponseEntity<PageResult<UserDto>> queryUser(HttpServletRequest request,UserQueryCriteria criteria, Pageable pageable){
         if (SecurityUtils.isPlatformCompany()){
             criteria.setPlatform("company");
+            if (SecurityUtils.isCompanyUser()){
+                //通过角色roles排除 当前商户
+                criteria.setCompanyId(SecurityUtils.getCurrentCompanyId());
+            }
         }else {
             criteria.setPlatform("admin");
 
