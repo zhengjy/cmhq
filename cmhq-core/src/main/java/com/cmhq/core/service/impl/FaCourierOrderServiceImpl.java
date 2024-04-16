@@ -8,6 +8,7 @@ import com.cmhq.core.api.strategy.StrategyFactory;
 import com.cmhq.core.api.strategy.Upload;
 import com.cmhq.core.dao.FaCourierOrderExtDao;
 import com.cmhq.core.dao.FaCourierOrderDao;
+import com.cmhq.core.enums.CourierCompanyEnum;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.FaCourierOrderExtEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
@@ -91,7 +92,14 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
     @Override
     public Object queryCourierTrack(Integer id) {
         FaCourierOrderEntity entity = faCourierOrderDao.selectById(id);
-        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(entity.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_COURIER_QUERY_TRACK.getCodeNickName())));
+        String courierCompanyCode = CourierCompanyEnum.COMPANY_STO.getType();
+        if (entity == null){
+            throw new RuntimeException("未查询到此订单");
+        }
+        if (StringUtils.isNotEmpty(entity.getCourierCompanyCode())){
+            courierCompanyCode = entity.getCourierCompanyCode();
+        }
+        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(courierCompanyCode, UploadTypeEnum.TYPE_STO_COURIER_QUERY_TRACK.getCodeNickName())));
         UploadResult uploadResult = upload.execute(entity.getCourierCompanyWaybillNo());
         if (!uploadResult.getFlag()) {
             throw new RuntimeException("查询物流轨迹失败:"+uploadResult.getErrorMsg());

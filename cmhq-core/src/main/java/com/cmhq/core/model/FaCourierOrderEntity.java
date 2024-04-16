@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Date;
 
 /**
@@ -171,5 +173,7 @@ public class FaCourierOrderEntity {
     @TableField(exist = false)
     private String courierOrderExtend;
 
+    @TableField(exist = false)
+    private String	companyName;
 
 }

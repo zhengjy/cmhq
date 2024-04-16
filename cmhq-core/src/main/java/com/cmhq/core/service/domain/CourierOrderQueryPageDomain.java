@@ -1,7 +1,9 @@
 package com.cmhq.core.service.domain;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cmhq.core.dao.FaCompanyDao;
 import com.cmhq.core.dao.FaCourierOrderDao;
+import com.cmhq.core.model.FaCompanyEntity;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import com.cmhq.core.util.ContextHolder;
@@ -31,11 +33,20 @@ public class CourierOrderQueryPageDomain {
     public QueryResult<FaCourierOrderEntity> handle(){
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         FaCourierOrderDao faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
+        FaCompanyDao faCompanyDao = SpringApplicationUtils.getBean(FaCompanyDao.class);
         LambdaQueryWrapper<FaCourierOrderEntity> lam = new LambdaQueryWrapper<>();
         serQuery(lam);
         List<FaCourierOrderEntity> list = faCourierOrderDao.selectList(lam);
         PageInfo<FaCourierOrderEntity> page = new PageInfo<>(list);
         QueryResult<FaCourierOrderEntity> queryResult = new QueryResult<>();
+        if (list != null){
+            list.stream().forEach(v ->{
+                FaCompanyEntity faCompanyEntity = faCompanyDao.selectById(v.getFaCompanyId());
+                if (faCompanyEntity != null){
+                    v.setCompanyName(faCompanyEntity.getName());
+                }
+            });
+        }
         queryResult.setItems(list);
         queryResult.setTotal(page.getTotal());
         return queryResult;

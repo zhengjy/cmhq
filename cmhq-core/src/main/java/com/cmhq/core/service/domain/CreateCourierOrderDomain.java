@@ -49,6 +49,7 @@ public class CreateCourierOrderDomain {
         order.setOrderNo(System.currentTimeMillis() + "");
         order.setIsJiesuan(0);
         order.setOrderIsError(0);
+        order.setCreateUserId(SecurityUtils.getCurrentUserId().intValue());
 
         this.order = order;
         faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
