@@ -91,7 +91,7 @@ public class UserController {
             criteria.setPlatform("company");
             if (SecurityUtils.isCompanyUser()){
                 //通过角色roles排除 当前商户
-                criteria.setCompanyId(SecurityUtils.getCurrentCompanyId());
+                criteria.setLevel(2);
             }
         }else {
             criteria.setPlatform("admin");

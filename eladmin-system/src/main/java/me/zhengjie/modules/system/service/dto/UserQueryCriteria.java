@@ -46,8 +46,8 @@ public class UserQueryCriteria implements Serializable {
     @Query
     private Integer companyId;
 
-    @Query(propName = "id", type = Query.Type.IN, joinName = "dept")
-    private Set<Long> roleIds = new HashSet<>();
+    @Query(propName = "level", type = Query.Type.NOT_EQUAL, joinName = "roles")
+    private Integer level;
 
     private Long deptId;
 

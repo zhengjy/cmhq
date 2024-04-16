@@ -51,6 +51,14 @@ public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
         List<FaCompanyMoneyEntity> list = faCompanyMoneyDao.selectList(queryWrapper);
         PageInfo<FaCompanyMoneyEntity> page = new PageInfo<>(list);
         QueryResult<FaCompanyMoneyEntity> queryResult = new QueryResult<>();
+        if (list != null){
+            list.stream().forEach(v ->{
+                FaCompanyEntity faCompanyEntity = faCompanyDao.selectById(v.getCid());
+                if (faCompanyEntity != null){
+                    v.setCompanyName(faCompanyEntity.getName());
+                }
+            });
+        }
         queryResult.setItems(list);
         queryResult.setTotal(page.getTotal());
         return queryResult;

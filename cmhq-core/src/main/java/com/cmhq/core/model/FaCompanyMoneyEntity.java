@@ -29,6 +29,8 @@ public class FaCompanyMoneyEntity {
      * </pre>
      */
     private Integer	cid;
+    @TableField(exist = false)
+    private String	companyName;
 
     /**
      * <pre>
@@ -105,7 +107,7 @@ public class FaCompanyMoneyEntity {
 
     /**
      * <pre>
-     * 极兔运单号
+     * 运单号
      * </pre>
      */
     @TableField(value = "billCode")

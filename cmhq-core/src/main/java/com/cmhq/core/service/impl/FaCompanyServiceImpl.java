@@ -8,6 +8,7 @@ import com.cmhq.core.service.FaCompanyService;
 import com.cmhq.core.util.CurrentUserContent;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.QueryResult;
 import me.zhengjie.modules.system.domain.Dept;
 import me.zhengjie.modules.system.domain.Job;
@@ -29,6 +30,7 @@ import java.util.*;
 /**
  *  Created by Jiyang.Zheng on 2024/4/5 9:31.
  */
+@Slf4j
 @Service
 public class FaCompanyServiceImpl implements FaCompanyService {
     @Autowired
@@ -156,11 +158,16 @@ public class FaCompanyServiceImpl implements FaCompanyService {
     public void delete(Integer id) {
         FaCompanyEntity entity = faCompanyDao.selectById(id);
         faCompanyDao.deleteById(id);
-        UserDto dto = userService.findByName(entity.getCompanyName());
-        if (dto != null){
-            Set set = new HashSet<>();
-            set.add(dto.getId());
-            userService.delete(set);
+        try {
+            UserDto dto = userService.findByName(entity.getCompanyName());
+            if (dto != null){
+                Set set = new HashSet<>();
+                set.add(dto.getId());
+                userService.delete(set);
+            }
+        }catch (Exception e){
+            log.error("",e);
         }
+
     }
 }

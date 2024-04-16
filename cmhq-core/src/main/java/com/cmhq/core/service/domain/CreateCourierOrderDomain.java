@@ -68,8 +68,7 @@ public class CreateCourierOrderDomain {
             //获取价格
 
             //  预估金额 TODO 预估重量扣费
-            BigDecimal b = new BigDecimal(order.getPrice() * ((double) faCompanyEntity.getRatio() /100));
-            double estimatePrice = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            double estimatePrice = getEstimatePrice(faCompanyEntity.getRatio());
             //账户余额不足
             if (faCompanyEntity.getMoney()  < estimatePrice){
                 throw new RuntimeException("账户余额不足");
@@ -86,6 +85,7 @@ public class CreateCourierOrderDomain {
             }
             order.setFaCompanyId(companyId);
             order.setEstimatePrice(estimatePrice);
+            order.setPrice(estimatePrice);
             order.setCourierOrderState(1);
             //下单
             faCourierOrderDao.insert(order);
@@ -153,6 +153,8 @@ public class CreateCourierOrderDomain {
             log.info("获取运费价格 {}",JSONObject.toJSONString(feeModel));
             BigDecimal b = new BigDecimal((totalPrice * 100) * ((double) retio /100));
             double estimatePrice = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            //原始价格set
+            order.setPriceto((double)totalPrice  * 100);
 
             //实际重量不知道 TODO
             // double totalInKilograms = (feeModel.getStartPrice()*100) +(feeModel.getStartWeight() / 500) * (feeModel.getContinuedHeavyPrice() ** 100);
