@@ -15,6 +15,7 @@ import com.cmhq.core.model.CompanyMoneyParam;
 import com.cmhq.core.model.FaCompanyEntity;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.service.FaCompanyMoneyService;
+import com.cmhq.core.service.FaCompanyService;
 import com.cmhq.core.service.FaCourierOrderService;
 import com.cmhq.core.util.CurrentUserContent;
 import com.cmhq.core.util.SpringApplicationUtils;
@@ -37,6 +38,7 @@ public class CreateCourierOrderDomain {
     private final FaCourierOrderExtDao faCourierOrderExtDao;
     private final FaCourierOrderService faCourierOrderService;
     private final FaCompanyDao faCompanyDao;
+    private final FaCompanyService faCompanyService;
     private final FaCompanyMoneyService faCompanyMoneyService;
 
     public CreateCourierOrderDomain(FaCourierOrderEntity order) {
@@ -56,6 +58,7 @@ public class CreateCourierOrderDomain {
         faCourierOrderExtDao = SpringApplicationUtils.getBean(FaCourierOrderExtDao.class);
         faCourierOrderService = SpringApplicationUtils.getBean(FaCourierOrderService.class);
         faCompanyDao = SpringApplicationUtils.getBean(FaCompanyDao.class);
+        faCompanyService = SpringApplicationUtils.getBean(FaCompanyService.class);
         faCompanyMoneyService = SpringApplicationUtils.getBean(FaCompanyMoneyService.class);
     }
 
@@ -65,7 +68,7 @@ public class CreateCourierOrderDomain {
             if (companyId == null){
                 throw new RuntimeException("当前用户非商户,无权限创建订单");
             }
-            FaCompanyEntity faCompanyEntity = faCompanyDao.selectById(companyId);
+            FaCompanyEntity faCompanyEntity = faCompanyService.selectById(companyId);
             //获取价格
 
             //  预估金额 TODO 预估重量扣费

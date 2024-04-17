@@ -45,11 +45,12 @@ nohup java -jar cmhq-core-2.7.jar --spring.profiles.active=dev  > nohup.out 2>&1
 
 ##申通api
 https://open.sto.cn/#/help/tz5gl0
+13569704938
 ##极兔API
 https://open.jtexpress.com.cn/#/apiDoc/other/getInfo
 
 ##sql转java bean
-https://www.toolscat.com/db/sql-java
+https://www.toolscat.com/ /sql-java
 
 #订单状态
 @ApiModelProperty(value = "1上门取件2门店自寄")

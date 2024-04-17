@@ -1,6 +1,7 @@
 package com.cmhq.core.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -29,7 +30,8 @@ public class FaRechargeEntity {
      * </pre>
      */
     private Integer	cid;
-
+    @TableField(exist = false)
+    private String companyName;
     /**
      * <pre>
      * 订单id

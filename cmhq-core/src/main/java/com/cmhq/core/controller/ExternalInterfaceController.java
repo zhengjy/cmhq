@@ -39,4 +39,12 @@ public class ExternalInterfaceController {
         return APIResponse.success();
     }
 
+    @ApiOperation("结算重量回传")
+    @PostMapping(value = "/pushSettleWeight")
+    @AnonymousAccess
+    public APIResponse<String> pushSettleWeight(@Validated @RequestBody StoPushTraceDto dto) throws Exception {
+        StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_STO_PUSHSETTLEWEIGHT).pushHandle(dto);
+        return APIResponse.success();
+    }
+
 }

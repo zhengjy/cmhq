@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.dao.FaCompanyDao;
 import com.cmhq.core.model.FaCompanyEntity;
+import com.cmhq.core.service.FaCompanyService;
 import me.zhengjie.modules.system.service.dto.RoleSmallDto;
 import me.zhengjie.modules.system.service.dto.UserDto;
 import me.zhengjie.utils.SecurityUtils;
@@ -20,8 +21,8 @@ public class CurrentUserContent {
 
     public static FaCompanyEntity getCurrentCompany() {
         Integer currentCompanyId = SecurityUtils.getCurrentCompanyId();
-        FaCompanyDao faCompanyDao = SpringApplicationUtils.getBean(FaCompanyDao.class);
-        FaCompanyEntity faCompanyEntity = faCompanyDao.selectById(currentCompanyId);
+        FaCompanyService faCompanyService = SpringApplicationUtils.getBean(FaCompanyService.class);
+        FaCompanyEntity faCompanyEntity = faCompanyService.selectById(currentCompanyId);
         return faCompanyEntity;
     }
 

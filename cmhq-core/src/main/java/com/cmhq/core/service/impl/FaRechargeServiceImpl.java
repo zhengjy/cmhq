@@ -10,6 +10,7 @@ import com.cmhq.core.model.FaCompanyMoneyEntity;
 import com.cmhq.core.model.FaRechargeEntity;
 import com.cmhq.core.model.param.FaRechargeQuery;
 import com.cmhq.core.service.FaCompanyMoneyService;
+import com.cmhq.core.service.FaCompanyService;
 import com.cmhq.core.service.FaRechargeService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -33,6 +34,8 @@ import java.util.List;
 public class FaRechargeServiceImpl  implements FaRechargeService {
     @Autowired
     private FaCompanyMoneyService faCompanyMoneyService;
+    @Autowired
+    private FaCompanyService faCompanyService;
 
     @Autowired
     private FaRechargeDao faRechargeDao;
@@ -64,6 +67,15 @@ public class FaRechargeServiceImpl  implements FaRechargeService {
         queryWrapper.orderByDesc(FaRechargeEntity::getCreateTime);
         List<FaRechargeEntity> list = faRechargeDao.selectList(queryWrapper);
         PageInfo<FaRechargeEntity> page = new PageInfo<>(list);
+        if (list != null){
+            list.stream().forEach(v ->{
+                FaCompanyEntity faCompanyEntity = faCompanyService.selectById(v.getCid());
+                if (faCompanyEntity != null){
+                    v.setCompanyName(faCompanyEntity.getName());
+                }
+            });
+        }
+
         QueryResult<FaRechargeEntity> queryResult = new QueryResult<>();
         queryResult.setItems(list);
         queryResult.setTotal(page.getTotal());

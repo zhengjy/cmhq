@@ -6,6 +6,7 @@ package com.cmhq.core.api.strategy.apipush;
 public enum ApiPushTypeEumn {
     TYPE_STO_PUSHORDERSTATUS("sto_pushOrderStatus","sto_推送订单状态"),
     TYPE_STO_PUSHTRACE("sto_pushTrace","sto_物流轨迹推送"),
+    TYPE_STO_PUSHSETTLEWEIGHT("sto_pushSettleWeight","sto_结算重量回传"),
     ;
     private String type;
     private String desc;

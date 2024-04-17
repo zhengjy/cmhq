@@ -19,6 +19,8 @@ public class CompanyQuery {
     @ApiModelProperty(value = "结束时间")
     private String eTime;
 
+    private Integer id;
+
     private Integer pageNo;
 
     private Integer pageSize;

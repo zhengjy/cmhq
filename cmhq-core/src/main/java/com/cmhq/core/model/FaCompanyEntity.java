@@ -1,6 +1,7 @@
 package com.cmhq.core.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -46,6 +47,8 @@ public class FaCompanyEntity {
      * </pre>
      */
     private Integer	fUser;
+    @TableField(exist = false)
+    private String fUserName;
 
     /**
      * <pre>
@@ -139,7 +142,7 @@ public class FaCompanyEntity {
 
     /**
      * <pre>
-     *
+     *子账户名称
      * </pre>
      */
     private String	name;

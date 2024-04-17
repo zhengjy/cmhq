@@ -2,7 +2,9 @@ package com.cmhq.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.dao.FaCompanyDao;
+import com.cmhq.core.dao.FaUserDao;
 import com.cmhq.core.model.FaCompanyEntity;
+import com.cmhq.core.model.FaUserEntity;
 import com.cmhq.core.model.param.CompanyQuery;
 import com.cmhq.core.service.FaCompanyService;
 import com.cmhq.core.util.CurrentUserContent;
@@ -38,6 +40,8 @@ public class FaCompanyServiceImpl implements FaCompanyService {
     @Resource
     private UserService userService;
     @Resource
+    private FaUserDao faUserDao;
+    @Resource
     private DeptService deptService;
     @Resource
     private  PasswordEncoder passwordEncoder;
@@ -56,9 +60,30 @@ public class FaCompanyServiceImpl implements FaCompanyService {
         if (StringUtils.isNotEmpty(query.getCompanyName())){
             queryWrapper.like(FaCompanyEntity::getName,query.getCompanyName());
         }
+        if (query.getId() != null){
+            queryWrapper.eq(FaCompanyEntity::getId, query.getId());
+        }
 
         List<FaCompanyEntity>  list = faCompanyDao.selectList(queryWrapper);
         PageInfo<FaCompanyEntity> page = new PageInfo<>(list);
+        if (list != null){
+            list.stream().forEach(v ->{
+                FaUserEntity faUserEntity = faUserDao.selectById(v.getFUser());
+                if (faUserEntity != null){
+                    v.setFUserName(faUserEntity.getUsername());
+                }
+                try {
+                    UserDto dto = getUserDto(v);
+                    if (dto != null && dto.getChildUser() != null){
+                        v.setZiMaxNum(dto.getChildUser().getZiMaxNum());
+                        v.setZiMaxMoney(dto.getChildUser().getZiMaxMoney());
+                        v.setZiOneMaxMoney(dto.getChildUser().getZiOneMaxMoney());
+                    }
+                }catch (Exception e){
+                    log.error("",e);
+                }
+            });
+        }
         QueryResult<FaCompanyEntity> queryResult = new QueryResult<>();
         queryResult.setItems(list);
         queryResult.setTotal(page.getTotal());
@@ -118,6 +143,17 @@ public class FaCompanyServiceImpl implements FaCompanyService {
         return entity.getId();
     }
 
+    @Override
+    public FaCompanyEntity selectById(Integer id) {
+        CompanyQuery query = new CompanyQuery();
+        query.setId(id);
+        QueryResult<FaCompanyEntity> queryResult = list(query);
+        if (queryResult.getTotal() > 0){
+            return queryResult.getItems().get(0);
+        }
+        return null;
+    }
+
     @Transactional
     @Override
     public Integer createChildUser(User resources)  {
@@ -142,7 +178,7 @@ public class FaCompanyServiceImpl implements FaCompanyService {
             entity.setZiOneMaxMoney(resources.getChildUser().getZiOneMaxMoney());
 
         }
-        entity.setName(resources.getNickName());
+        entity.setName(resources.getUsername());
         entity.setHobbydata(currentCompany.getHobbydata());
         faCompanyDao.insert(entity);
         if (resources.getChildUser() != null){
@@ -156,18 +192,31 @@ public class FaCompanyServiceImpl implements FaCompanyService {
     @Transactional
     @Override
     public void delete(Integer id) {
-        FaCompanyEntity entity = faCompanyDao.selectById(id);
+        FaCompanyEntity entity = selectById(id);
         faCompanyDao.deleteById(id);
+        UserDto dto = getUserDto(entity);
+
+        if (dto != null){
+            Set set = new HashSet<>();
+            set.add(dto.getId());
+            userService.delete(set);
+        }
+    }
+
+    private UserDto getUserDto(FaCompanyEntity entity){
+        UserDto dto = null;
         try {
-            UserDto dto = userService.findByName(entity.getCompanyName());
-            if (dto != null){
-                Set set = new HashSet<>();
-                set.add(dto.getId());
-                userService.delete(set);
-            }
+            dto = userService.findByName(entity.getCompanyName());
         }catch (Exception e){
             log.error("",e);
         }
-
+        if (dto == null){
+            try {
+                dto = userService.findByName(entity.getName());
+            }catch (Exception e){
+                log.error("",e);
+            }
+        }
+        return dto;
     }
 }

@@ -10,6 +10,7 @@ import com.cmhq.core.model.FaCompanyEntity;
 import com.cmhq.core.model.FaCompanyMoneyEntity;
 import com.cmhq.core.model.param.FcCompanyMoneyQuery;
 import com.cmhq.core.service.FaCompanyMoneyService;
+import com.cmhq.core.service.FaCompanyService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import me.zhengjie.QueryResult;
@@ -28,6 +29,8 @@ import java.util.List;
 public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
     @Autowired
     private FaCompanyMoneyDao faCompanyMoneyDao;
+    @Autowired
+    private FaCompanyService faCompanyService;
     @Autowired
     private FaCompanyDao faCompanyDao;
 
@@ -53,7 +56,7 @@ public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
         QueryResult<FaCompanyMoneyEntity> queryResult = new QueryResult<>();
         if (list != null){
             list.stream().forEach(v ->{
-                FaCompanyEntity faCompanyEntity = faCompanyDao.selectById(v.getCid());
+                FaCompanyEntity faCompanyEntity = faCompanyService.selectById(v.getCid());
                 if (faCompanyEntity != null){
                     v.setCompanyName(faCompanyEntity.getName());
                 }
@@ -72,7 +75,7 @@ public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
     @Transactional
     @Override
     public void saveRecord(CompanyMoneyParam param) {
-        FaCompanyEntity faCompanyEntity = faCompanyDao.selectById(param.getCompanyId());
+        FaCompanyEntity faCompanyEntity = faCompanyService.selectById(param.getCompanyId());
         FaCompanyMoneyEntity e = new FaCompanyMoneyEntity();
         e.setAddType(param.getAddType());
         e.setCid(param.getCompanyId());

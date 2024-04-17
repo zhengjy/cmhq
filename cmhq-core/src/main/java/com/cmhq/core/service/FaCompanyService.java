@@ -13,6 +13,8 @@ public interface FaCompanyService {
 
     Integer edit(FaCompanyEntity entity) throws Exception;
 
+    FaCompanyEntity selectById(Integer id);
+
     /**
      * 商户创建子账户
      * @param resources
