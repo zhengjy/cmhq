@@ -25,11 +25,11 @@ import java.util.List;
  * Created by Jiyang.Zheng on 2020/4/28 13:42.
  */
 @RestController
-@RequestMapping("ziaddress/")
-@Api(value = "地址庫", tags = {"地址庫"})
+@RequestMapping("homepage/")
+@Api(value = "首页", tags = {"地址庫"})
 @Slf4j
 
-public class FcZiaddressController {
+public class HomepageController {
 
     @Autowired
     private FaZiaddressDao faZiaddressDao;

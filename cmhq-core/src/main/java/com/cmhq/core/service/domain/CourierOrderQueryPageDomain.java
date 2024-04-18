@@ -14,6 +14,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import me.zhengjie.QueryResult;
 import me.zhengjie.modules.system.service.UserService;
+import me.zhengjie.modules.system.service.dto.UserDto;
 import me.zhengjie.utils.SecurityUtils;
 import net.dreamlu.mica.core.spring.SpringContextUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -35,6 +36,7 @@ public class CourierOrderQueryPageDomain {
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         FaCourierOrderDao faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
         FaCompanyService faCompanyService = SpringApplicationUtils.getBean(FaCompanyService.class);
+        UserService userService = SpringApplicationUtils.getBean(UserService.class);
         LambdaQueryWrapper<FaCourierOrderEntity> lam = new LambdaQueryWrapper<>();
         serQuery(lam);
         List<FaCourierOrderEntity> list = faCourierOrderDao.selectList(lam);
@@ -44,8 +46,15 @@ public class CourierOrderQueryPageDomain {
             list.stream().forEach(v ->{
                 FaCompanyEntity faCompanyEntity = faCompanyService.selectById(v.getFaCompanyId());
                 if (faCompanyEntity != null){
-                    v.setCompanyName(faCompanyEntity.getName());
+                    v.setCompanyName(faCompanyEntity.getCompanyName());
                 }
+                if (v.getCreateUserId() != null){
+                    UserDto dto = userService.findById(v.getCreateUserId());
+                    if (dto != null){
+                        v.setCreateUserName(dto.getNickName());
+                    }
+                }
+
             });
         }
         queryResult.setItems(list);

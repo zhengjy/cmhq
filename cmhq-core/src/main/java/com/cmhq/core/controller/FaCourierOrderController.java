@@ -11,6 +11,7 @@ import me.zhengjie.QueryResult;
 import me.zhengjie.annotation.AnonymousAccess;
 import me.zhengjie.annotation.Log;
 import me.zhengjie.utils.FileUtil;
+import me.zhengjie.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -97,34 +98,87 @@ public class FaCourierOrderController {
             map.put("宽度", e.getWidth());
             map.put("长度", e.getLength());
             map.put("高", e.getHeight());
-            map.put("预估费用", e.getOrderNo());//
-            map.put("实际费用", e.getOrderNo());
-            map.put("期望上门取件时间", e.getOrderNo());
-            map.put("寄件方式", e.getOrderNo());
-            map.put("订单状态", e.getOrderNo());
-            map.put("发货人", e.getOrderNo());
-            map.put("发货手机号", e.getOrderNo());
-            map.put("发出省份", e.getOrderNo());
-            map.put("发出城市", e.getOrderNo());
-            map.put("发出区县", e.getOrderNo());
-            map.put("发出地址", e.getOrderNo());
-            map.put("收货人", e.getOrderNo());
-            map.put("收货手机号", e.getOrderNo());
-            map.put("收货省份", e.getOrderNo());
-            map.put("收货城市", e.getOrderNo());
-            map.put("收货区县", e.getOrderNo());
-            map.put("收货地址", e.getOrderNo());
-            map.put("物流状态", e.getOrderNo());
-            map.put("物流公司返回订单状态", e.getOrderNo());
-            map.put("是否异常件", e.getOrderNo());
-            map.put("取消状态", e.getOrderNo());
-            map.put("取消类型", e.getOrderNo());
-            map.put("取消时间", e.getOrderNo());
-            map.put("取消原因", e.getOrderNo());
-            map.put("取件时间", e.getOrderNo());
-            map.put("签收时间", e.getOrderNo());
-            map.put("是否结算", e.getOrderNo());
-            map.put("创建人", e.getOrderNo());
+            if (SecurityUtils.getCurrentCompanyId() == null){
+                map.put("预估费用", e.getEstimatePrice());//
+            }
+            map.put("实际费用", e.getPrice());
+            map.put("期望上门取件时间", e.getTakeGoodsTime());
+            //1上门取件2门店自寄
+            map.put("寄件方式", e.getType() == 1 ? "上门取件" : "门店自寄");
+            //0待取件1已取件2已发出3已签收
+            String oname= "";
+            if (e.getOrderState() == 0){
+                oname = "待取件";
+            }else if (e.getOrderState() == 1){
+                oname = "已取件";
+            }else if (e.getOrderState() == 2){
+                oname = "已发出";
+            }else if (e.getOrderState() == 3){
+                oname = "已签收";
+            }
+            map.put("订单状态", oname);
+            map.put("发货人", e.getFromName());
+            map.put("发货手机号", e.getFromMobile());
+            map.put("发出省份", e.getFromProv());
+            map.put("发出城市", e.getFromCity());
+            map.put("发出区县", e.getFromArea());
+            map.put("发出地址", e.getFromAddress());
+            map.put("收货人", e.getToName());
+            map.put("收货手机号", e.getToMobile());
+            map.put("收货省份", e.getToProv());
+            map.put("收货城市", e.getToCity());
+            map.put("收货区县", e.getToArea());
+            map.put("收货地址", e.getToAddress());
+            //1运输中2派件中3已签收
+            String wname= "";
+            if (e.getWuliuState() == 1){
+                wname = "运输中";
+            }else if (e.getWuliuState() == 2){
+                wname = "派件中";
+            }else if (e.getWuliuState() == 3){
+                wname = "已签收";
+            }
+            map.put("物流状态", wname);
+
+            //物流公司订单状态：1未调派业务员2已调派业务员3已揽收4已取件5已取消
+            String csname= "";
+            if (e.getCourierOrderState() == 1){
+                csname = "未调派业务员";
+            }else if (e.getCourierOrderState() == 2){
+                csname = "已调派业务员";
+            }else if (e.getCourierOrderState() == 3){
+                csname = "已揽收";
+            }else if (e.getCourierOrderState() == 4){
+                csname = "已取件";
+            }else if (e.getCourierOrderState() == 5){
+                csname = "已取消";
+            }
+            map.put("物流公司订单状态", csname);
+            //0异常1正常
+            map.put("是否异常件", e.getOrderIsError() == 0 ? "异常" : "正常");
+            //-1:待审核,0取消待审核1正常2审核通过3审核不通过
+            String caname= "";
+            if (e.getCancelOrderState() == -1){
+                caname = "未调派业务员";
+            }else if (e.getCancelOrderState() == 0){
+                caname = "已调派业务员";
+            }else if (e.getCancelOrderState() == 1){
+                caname = "已揽收";
+            }else if (e.getCancelOrderState() == 2){
+                caname = "已取件";
+            }else if (e.getCancelOrderState() == 3){
+                caname = "已取消";
+            }
+            map.put("取消状态", caname);
+            //1自己取消2物流公司取消
+            map.put("取消类型", e.getCancelType() == 1 ? "自己取消" : "物流公司取消");
+            map.put("取消时间", DateUtil.format(e.getCancelTime(), "yyyy-MM-dd mm:hh:ss"));
+            map.put("取消原因", e.getReason());
+            map.put("取件时间", e.getQjTime());
+            map.put("签收时间", e.getQsTime());
+            //0未结算1已结算
+            map.put("是否结算", e.getIsJiesuan() == 1 ? "已结算" : "未结算");
+            map.put("创建人", e.getCreateUserName());
             map.put("创建日期", DateUtil.format(e.getCreateTime(), "yyyy-MM-dd mm:hh:ss"));
             list.add(map);
         }

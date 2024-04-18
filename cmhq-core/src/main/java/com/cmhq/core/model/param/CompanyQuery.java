@@ -21,7 +21,7 @@ public class CompanyQuery {
 
     private Integer id;
 
-    private Integer pageNo;
+    private Integer pageNo=1;
 
-    private Integer pageSize;
+    private Integer pageSize=10;
 }

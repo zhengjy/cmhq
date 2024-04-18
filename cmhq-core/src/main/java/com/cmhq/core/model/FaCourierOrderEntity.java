@@ -144,8 +144,9 @@ public class FaCourierOrderEntity {
     @ApiModelProperty(value = "用户id")
     private Integer createUserId;
 
-//    @ApiModelProperty(value = "创建人")
-//    private String createUser;
+    @ApiModelProperty(value = "创建人")
+    @TableField(exist = false)
+    private String createUserName;
 
     @ApiModelProperty(value = "createTime")
     private Date createTime;

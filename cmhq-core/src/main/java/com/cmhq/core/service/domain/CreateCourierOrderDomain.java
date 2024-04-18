@@ -146,25 +146,26 @@ public class CreateCourierOrderDomain {
      */
     private double getEstimatePrice(Integer retio){
         Object obj =  faCourierOrderService.getCourierFreightCharge(order);
-        if (obj instanceof CourierFreightChargeDto){
-            CourierFreightChargeDto ccd = (CourierFreightChargeDto) obj;
+        try {
+            CourierFreightChargeDto ccd = JSONObject.parseObject(obj+"",CourierFreightChargeDto.class);
             if (obj == null || CollectionUtils.isEmpty(ccd.getAvailableServiceItemList()) || ccd.getAvailableServiceItemList().get(0).getFeeModel() == null){
-                throw new RuntimeException("获取预估价格失败");
+            }else {
+                CourierFreightChargeDto.FeeModel feeModel = ccd.getAvailableServiceItemList().get(0).getFeeModel();
+                Integer totalPrice = Integer.parseInt(feeModel.getTotalPrice());
+                log.info("获取运费价格 {}",JSONObject.toJSONString(feeModel));
+                BigDecimal b = new BigDecimal(((double)totalPrice / 100) * ((double) retio /100));
+                double estimatePrice = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                //原始价格set
+                order.setPriceto((double)totalPrice  * 100);
+                //实际重量不知道 TODO
+                // double totalInKilograms = (feeModel.getStartPrice()*100) +(feeModel.getStartWeight() / 500) * (feeModel.getContinuedHeavyPrice() ** 100);
+                return estimatePrice;
             }
-
-            CourierFreightChargeDto.FeeModel feeModel = ccd.getAvailableServiceItemList().get(0).getFeeModel();
-            Integer totalPrice = Integer.parseInt(feeModel.getTotalPrice());
-            log.info("获取运费价格 {}",JSONObject.toJSONString(feeModel));
-            BigDecimal b = new BigDecimal((totalPrice * 100) * ((double) retio /100));
-            double estimatePrice = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            //原始价格set
-            order.setPriceto((double)totalPrice  * 100);
-
-            //实际重量不知道 TODO
-            // double totalInKilograms = (feeModel.getStartPrice()*100) +(feeModel.getStartWeight() / 500) * (feeModel.getContinuedHeavyPrice() ** 100);
-
-            return estimatePrice;
+        }catch (Exception e){
+            log.error("获取运费价格失败",e);
         }
+
+
         throw new RuntimeException("未查到运费价格");
     }
 }
