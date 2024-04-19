@@ -21,7 +21,7 @@ public class JTCancelCourierOrder extends AbstractJTUpload<FaCourierOrderEntity,
     private FaCourierOrderDao faCourierOrderDao;
     @Override
     public UploadTypeEnum supports() {
-        return UploadTypeEnum.TYPE_STO_CANCEL_COURIER_ORDER;
+        return UploadTypeEnum.TYPE_JT_CANCEL_COURIER_ORDER;
     }
 
     @Override
