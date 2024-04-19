@@ -43,8 +43,8 @@ public class FaCourierOrderEntity {
     @TableField("zid")
     private Integer zid; //TODO
 
-
     @ApiModelProperty(value = "物品分类ID")
+    @Deprecated
     private Integer goodsCategoryId;
 
 //    @ApiModelProperty(value = "物品分类")

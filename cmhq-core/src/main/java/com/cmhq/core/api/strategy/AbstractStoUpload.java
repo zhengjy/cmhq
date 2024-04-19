@@ -98,18 +98,7 @@ public abstract class AbstractStoUpload<Req, T extends UploadData> extends Abstr
             return uploadResult.setErrorMsg(e.getMessage()).setFlag(false);
         }
     }
-    /**
-     * 计算签名值
-     *
-     * @param content  请求报文体
-     * @param secretKey    配置的私钥
-     * @return
-     */
-    public static String calculateDigest(String content, String secretKey) {
-        String text = content + secretKey;
-        byte[] md5 = DigestUtils.md5(text);
-        return Base64.encodeBase64String(md5);
-    }
+
 
     /**
      * 认证获取授权token

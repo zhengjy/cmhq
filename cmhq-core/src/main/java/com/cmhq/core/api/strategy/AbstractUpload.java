@@ -15,6 +15,8 @@ import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.dreamlu.mica.core.spring.SpringContextUtil;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -102,7 +104,18 @@ public abstract class AbstractUpload<Req,T extends UploadData> implements Upload
      * @param status
      */
     protected  void syncTransferStatus(List<String> code, String status){};
-
+    /**
+     * 计算签名值
+     *
+     * @param content  请求报文体
+     * @param secretKey    配置的私钥
+     * @return
+     */
+    public static String calculateDigest(String content, String secretKey) {
+        String text = content + secretKey;
+        byte[] md5 = DigestUtils.md5(text);
+        return Base64.encodeBase64String(md5);
+    }
 
     protected String getToken(){
         return faCourierCompanyDao.selectOne(new LambdaQueryWrapper<FaCourierCompanyEntity>().eq(FaCourierCompanyEntity::getCourierCode, supports().getCourierCompanyCode())).getTokenInfo();
