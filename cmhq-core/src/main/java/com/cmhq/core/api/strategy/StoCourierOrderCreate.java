@@ -33,7 +33,7 @@ public class StoCourierOrderCreate extends AbstractStoUpload<FaCourierOrderEntit
         }
         StoCourierOrderDto dto = new StoCourierOrderDto();
         dto.setOrderNo(param.getOrderNo());
-        dto.setBillType((String) map.get("billType"));
+        dto.setBillType("00");
         dto.setOrderType("01");
 
         StoCourierOrderDto.Sender sender = new StoCourierOrderDto.Sender();
@@ -56,7 +56,7 @@ public class StoCourierOrderCreate extends AbstractStoUpload<FaCourierOrderEntit
 
         StoCourierOrderDto.Cargo cargo = new StoCourierOrderDto.Cargo();
         dto.setCargo(cargo);
-        cargo.setBattery((String) map.get("battery"));
+        cargo.setBattery("30");
         cargo.setGoodsType((String) map.get("goodsType"));
         cargo.setGoodsName(param.getGoodsName());
         if (param.getLength() != null){

@@ -53,7 +53,7 @@ public class FaCourierOrderEntity {
     @ApiModelProperty(value = "物品名称")
     private String goodsName;
 
-    @ApiModelProperty(value = "重量")
+    @ApiModelProperty(value = "预估重量（页面填写的）")
     private Double weight;
 
     @ApiModelProperty(value = "本地实际重量")
