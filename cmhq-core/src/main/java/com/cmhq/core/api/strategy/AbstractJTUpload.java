@@ -2,6 +2,8 @@ package com.cmhq.core.api.strategy;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.*;
+import com.cmhq.core.api.dto.JTCourierOrderDto;
+import com.cmhq.core.api.dto.JTUploadData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
@@ -23,10 +25,10 @@ import java.util.List;
  */
 @Component
 @Slf4j
-public abstract class AbstractJTUpload<Req, T extends UploadData> extends AbstractUpload<Req, T> {
+public abstract class AbstractJTUpload<Req, T extends JTUploadData> extends AbstractUpload<Req, T> {
 
     public UploadResult send(T uploadData, UploadCallback callback) {
-        String url = getApiHost();
+        String url = getApiHost()+getUploadUrl();
         UploadResult uploadResult = UploadResult.builder().build();
         if (uploadData == null) {
             callback.fail("上传数据不能为空", null);
@@ -43,9 +45,10 @@ public abstract class AbstractJTUpload<Req, T extends UploadData> extends Abstra
             return uploadResult.setErrorMsg("上传令牌异常").setFlag(false);
         }
         try {
+            setContentDigest(uploadData);
             String data = JSONObject.toJSONString(uploadData);
             CloseableHttpClient httpClient = HttpClients.createDefault();
-            HttpPost httpPost = new HttpPost(url+getUploadUrl());
+            HttpPost httpPost = new HttpPost(url+"?uuid=0a29efb3f1344c24851be8d4aae2aa7f");
             httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
             httpPost.setHeader("apiAccount", apiAccount);
             httpPost.setHeader("digest", calculateDigest(data,privateKey));
@@ -79,6 +82,25 @@ public abstract class AbstractJTUpload<Req, T extends UploadData> extends Abstra
             return uploadResult.setErrorMsg(e.getMessage()).setFlag(false);
         }
 
+    }
+
+    protected void setContentDigest(T uploadData){
+        String customerCode = "";
+        String privateKey = "";
+        String[] split = getToken().split(",");
+        if (split.length >= 3) {
+            privateKey = split[1];
+            customerCode = split[2];
+        }
+        //业务digest 签名，Base64(Md5(客户编号+密文+privateKey))，其中密文：MD5(明文密码+jadada236t2) 后大写
+        //明文密码
+        String pwd ="H5CD3zE6" ;
+        //密文
+        String secretText = (customerCode+calculateDigest(pwd,"jadada236t2")).toUpperCase();
+        String digest = calculateDigest(secretText,privateKey);
+
+        uploadData.setCustomerCode(customerCode);
+        uploadData.setDigest(digest);
     }
 
 }

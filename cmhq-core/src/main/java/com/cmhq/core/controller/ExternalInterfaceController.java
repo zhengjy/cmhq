@@ -47,4 +47,32 @@ public class ExternalInterfaceController {
         return APIResponse.success();
     }
 
+
+
+    @ApiOperation("极兔推送订单状态")
+    @PostMapping(value = "/jt/pushOrderStatus")
+    @AnonymousAccess
+    public APIResponse<String> jtPushOrderStatus(@Validated @RequestBody StoPushOrderStateDto dto)  {
+        StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JT_PUSHORDERSTATUS).pushHandle(dto);
+        return APIResponse.success();
+    }
+
+
+
+    @ApiOperation("极兔物流轨迹推送")
+    @PostMapping(value = "/jt/pushTrace")
+    @AnonymousAccess
+    public APIResponse<String> jtPushTrace(@Validated @RequestBody StoPushTraceDto dto) throws Exception {
+        StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JT_PUSHTRACE).pushHandle(dto);
+        return APIResponse.success();
+    }
+
+    @ApiOperation("极兔结算重量回传")
+    @PostMapping(value = "/jt/pushSettleWeight")
+    @AnonymousAccess
+    public APIResponse<String> jtPushSettleWeight(@Validated @RequestBody StoPushTraceDto dto) throws Exception {
+        StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JT_PUSHSETTLEWEIGHT).pushHandle(dto);
+        return APIResponse.success();
+    }
+
 }

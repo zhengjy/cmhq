@@ -64,8 +64,8 @@ public class FaCourierOrderController {
     @ApiOperation("状态更新")
     @Log("状态更新")
     @GetMapping("updateState")
-    public APIResponse cancelCourierOrder(@ApiParam(value = "cancel:取消状态，auditSuccess:审核成功，auditFail:审核失败") @RequestParam() String stateType,
-                                          @ApiParam(value = "备注") @RequestParam() String content,
+    public APIResponse cancelCourierOrder(@ApiParam(value = "uncancel:取消取消状态,cancel:取消状态，auditSuccess:审核成功，auditFail:审核失败") @RequestParam() String stateType,
+                                          @ApiParam(value = "备注") @RequestParam(required = false) String content,
                                           @ApiParam(value = "id") @RequestParam() Integer id) {
         return APIResponse.success(faCourierOrderService.cancelCourierOrder(stateType,content,id));
     }

@@ -1,10 +1,8 @@
 package com.cmhq.core.api.dto;
 
-import com.cmhq.core.api.UploadData;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/7 13:57.

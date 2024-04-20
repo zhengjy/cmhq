@@ -8,7 +8,7 @@ import java.util.List;
  * Created by Jiyang.Zheng on 2024/4/13 22:05.
  */
 @Data
-public class CourierFreightChargeDto {
+public class StoCourierFreightChargeDto {
     private String sourceCode;
     private List<ServiceItem> availableServiceItemList;
     private String Ageing;

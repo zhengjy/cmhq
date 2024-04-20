@@ -3,14 +3,15 @@ package com.cmhq.core.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
-import com.cmhq.core.api.dto.response.CourierFreightChargeDto;
 import com.cmhq.core.api.strategy.StrategyFactory;
 import com.cmhq.core.api.strategy.Upload;
 import com.cmhq.core.dao.FaCourierOrderExtDao;
 import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.enums.CourierCompanyEnum;
+import com.cmhq.core.fitler.FreightFilter;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.FaCourierOrderExtEntity;
+import com.cmhq.core.model.dto.FreightChargeDto;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import com.cmhq.core.service.FaCourierOrderService;
 import com.cmhq.core.service.domain.AuditSuccessCourierOrderDomain;
@@ -20,8 +21,10 @@ import com.cmhq.core.service.domain.CourierOrderQueryPageDomain;
 import me.zhengjie.QueryResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.transaction.Transactional;
 import java.util.Objects;
 
@@ -35,6 +38,8 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
     private FaCourierOrderDao faCourierOrderDao;
     @Autowired
     private FaCourierOrderExtDao faCourierOrderExtDao;
+    @Resource(name = "stoFreightFilter")
+    private FreightFilter freightFilter;
 
     @Override
     public QueryResult<FaCourierOrderEntity> queryAll(CourierOrderQuery query) {
@@ -50,14 +55,9 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
     }
 
     @Override
-    public Object getCourierFreightCharge(FaCourierOrderEntity entity) {
+    public FreightChargeDto getCourierFreightCharge(FaCourierOrderEntity entity) {
         entity.setOrderNo(System.currentTimeMillis()+"");
-        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(entity.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_QUERY_FREIGHT_CHARGE.getCodeNickName())));
-        UploadResult uploadResult = upload.execute(entity);
-        if (uploadResult.getFlag()){
-            return uploadResult.getJsonMsg();
-        }
-        return null;
+        return freightFilter.getFreight(entity);
     }
 
     @Transactional
@@ -70,9 +70,15 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
             updateState.setId(id);
             updateState.setCancelOrderState(3);
             faCourierOrderDao.updateById(updateState);
+        }else if (StringUtils.equals(stateType,"x")){
+            FaCourierOrderEntity updateState = new FaCourierOrderEntity();
+            updateState.setId(id);
+            updateState.setCancelOrderState(1);
+            faCourierOrderDao.updateById(updateState);
         }else if (StringUtils.equals(stateType,"auditSuccess")){
             new AuditSuccessCourierOrderDomain(content,id).handle();
         }
+
 
 
 

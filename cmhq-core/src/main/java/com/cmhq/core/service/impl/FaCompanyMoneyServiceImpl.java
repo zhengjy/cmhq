@@ -58,7 +58,7 @@ public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
             list.stream().forEach(v ->{
                 FaCompanyEntity faCompanyEntity = faCompanyService.selectById(v.getCid());
                 if (faCompanyEntity != null){
-                    v.setCompanyName(faCompanyEntity.getName());
+                    v.setCompanyName(faCompanyEntity.getCompanyName());
                 }
             });
         }

@@ -3,7 +3,6 @@ package com.cmhq.core.service.domain;
 import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
-import com.cmhq.core.api.dto.response.CourierFreightChargeDto;
 import com.cmhq.core.api.strategy.StrategyFactory;
 import com.cmhq.core.api.strategy.Upload;
 import com.cmhq.core.dao.FaCompanyDao;
@@ -14,6 +13,7 @@ import com.cmhq.core.enums.MoneyConsumeMsgEumn;
 import com.cmhq.core.model.CompanyMoneyParam;
 import com.cmhq.core.model.FaCompanyEntity;
 import com.cmhq.core.model.FaCourierOrderEntity;
+import com.cmhq.core.model.dto.FreightChargeDto;
 import com.cmhq.core.service.FaCompanyMoneyService;
 import com.cmhq.core.service.FaCompanyService;
 import com.cmhq.core.service.FaCourierOrderService;
@@ -21,7 +21,6 @@ import com.cmhq.core.util.CurrentUserContent;
 import com.cmhq.core.util.SpringApplicationUtils;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.utils.SecurityUtils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -50,7 +49,7 @@ public class CreateCourierOrderDomain {
         order.setCancelOrderState(1);
         order.setOrderNo(System.currentTimeMillis() + "");
         order.setIsJiesuan(0);
-        order.setOrderIsError(0);
+        order.setOrderIsError(1);
         order.setCreateUserId(SecurityUtils.getCurrentUserId().intValue());
 
         this.order = order;
@@ -96,10 +95,11 @@ public class CreateCourierOrderDomain {
 
             //额外字段插入
             saveOrderExt(order.getId(), order.getCourierOrderExtend());
-            //插入消费记录
-            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_3,estimatePrice,companyId, order.getId()+""));
+
             //上传物流信息到物流公司
-            uploadCourierOrder();
+            String billNo = uploadCourierOrder();
+            //插入消费记录
+            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_3,estimatePrice,companyId, order.getId()+"",billNo));
 
         }catch (Exception e){
             log.error("",e);
@@ -109,7 +109,8 @@ public class CreateCourierOrderDomain {
         return order.getId();
     }
 
-    private void uploadCourierOrder(){
+    private String uploadCourierOrder(){
+        String billNo = "";
         //上传物流公司
         Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(order.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_ORDER_UPLOAD.getCodeNickName())));
         UploadResult uploadResult = upload.execute(order);
@@ -120,12 +121,14 @@ public class CreateCourierOrderDomain {
             if (StringUtils.isEmpty(jsonObject.getString("waybillNo"))){
                 throw new RuntimeException("物流公司未返回运单号");
             }
-            updateEntity.setCourierCompanyWaybillNo(jsonObject.getString("waybillNo"));
+            billNo = jsonObject.getString("waybillNo");
+            updateEntity.setCourierCompanyWaybillNo(billNo);
             updateEntity.setCourierCompanyOrderNo(jsonObject.getString("orderNo"));
             faCourierOrderDao.updateById(updateEntity);
         }else {
             throw new RuntimeException("物流公司上传失败:"+uploadResult.getErrorMsg());
         }
+        return billNo;
     }
 
     private void saveOrderExt(Integer id,String ext){
@@ -145,18 +148,15 @@ public class CreateCourierOrderDomain {
      * @return
      */
     private double getEstimatePrice(Integer retio){
-        Object obj =  faCourierOrderService.getCourierFreightCharge(order);
+        FreightChargeDto dto =  faCourierOrderService.getCourierFreightCharge(order);
         try {
-            CourierFreightChargeDto ccd = JSONObject.parseObject(obj+"",CourierFreightChargeDto.class);
-            if (obj == null || CollectionUtils.isEmpty(ccd.getAvailableServiceItemList()) || ccd.getAvailableServiceItemList().get(0).getFeeModel() == null){
-            }else {
-                CourierFreightChargeDto.FeeModel feeModel = ccd.getAvailableServiceItemList().get(0).getFeeModel();
-                Integer totalPrice = Integer.parseInt(feeModel.getTotalPrice());
-                log.info("获取运费价格 {}",JSONObject.toJSONString(feeModel));
-                BigDecimal b = new BigDecimal(((double)totalPrice / 100) * ((double) retio /100));
+            if (dto != null && dto.getTotalPrice() != null){
+                log.info("获取运费价格 {}",JSONObject.toJSONString(dto));
+                BigDecimal b = new BigDecimal(dto.getTotalPrice() * ((double) retio /100));
                 double estimatePrice = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                 //原始价格set
-                order.setPriceto((double)totalPrice  * 100);
+                order.setPriceto(dto.getTotalPrice() );
+                order.setCourierCompanyCode(dto.getCourierCompanyCode());
                 //实际重量不知道 TODO
                 // double totalInKilograms = (feeModel.getStartPrice()*100) +(feeModel.getStartWeight() / 500) * (feeModel.getContinuedHeavyPrice() ** 100);
                 return estimatePrice;
@@ -164,8 +164,6 @@ public class CreateCourierOrderDomain {
         }catch (Exception e){
             log.error("获取运费价格失败",e);
         }
-
-
         throw new RuntimeException("未查到运费价格");
     }
 }

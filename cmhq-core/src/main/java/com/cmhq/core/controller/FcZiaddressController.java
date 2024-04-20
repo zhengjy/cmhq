@@ -57,6 +57,7 @@ public class FcZiaddressController {
     @RequestMapping(value = "edit", method = RequestMethod.POST)
     public APIResponse edit( @RequestBody FaZiaddressEntity entity) throws Exception {
         if (entity.getId() == null){
+            entity.setCid(SecurityUtils.getCurrentCompanyId());
             faZiaddressDao.insert(entity);
         }else {
             faZiaddressDao.updateById(entity);

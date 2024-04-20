@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * Created by Jiyang.Zheng on 2024/4/7 13:56.
  */
 @Component
-public class StoQueryFreightChargeUpload extends AbstractStoUpload<FaCourierOrderEntity, StoFreightChargeDto>{
+public class StoQueryFreightCharge extends AbstractStoUpload<FaCourierOrderEntity, StoFreightChargeDto>{
     @Override
     public UploadTypeEnum supports() {
         return UploadTypeEnum.TYPE_STO_QUERY_FREIGHT_CHARGE;

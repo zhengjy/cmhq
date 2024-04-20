@@ -43,20 +43,13 @@ public class CancelCourierOrderDomain {
         }else {
             throw new RuntimeException("当前订单状态不允许取消！");
         }
-
         FaCourierOrderEntity updateState = new FaCourierOrderEntity();
         updateState.setId(orderId);
         updateState.setCancelOrderState(-1);
         updateState.setCancelTime(new Date());
         updateState.setReason(content);
         updateState.setCancelType(1);
-
         entity.setReason(content);
-        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(entity.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_CANCEL_COURIER_ORDER.getCodeNickName())));
-        UploadResult uploadResult = upload.execute(entity);
-        if (!uploadResult.getFlag()) {
-            throw new RuntimeException("物流公司取消失败:"+uploadResult.getErrorMsg());
-        }
         faCourierOrderDao.updateById(updateState);
     }
 }

@@ -87,16 +87,16 @@ public class UserController {
     @GetMapping
     @PreAuthorize("@el.check('user:list')")
     public ResponseEntity<PageResult<UserDto>> queryUser(HttpServletRequest request,UserQueryCriteria criteria, Pageable pageable){
-        if (SecurityUtils.isPlatformCompany()){
-            criteria.setPlatform("company");
-            if (SecurityUtils.isCompanyUser()){
-                //通过角色roles排除 当前商户
-                criteria.setLevel(2);
-            }
-        }else {
-            criteria.setPlatform("admin");
-
-        }
+//        if (SecurityUtils.isPlatformCompany()){ TODO
+//            criteria.setPlatform("company");
+//            if (SecurityUtils.isCompanyUser()){
+//                //通过角色roles排除 当前商户
+//                criteria.setLevel(2);
+//            }
+//        }else {
+//            criteria.setPlatform("admin");
+//
+//        }
         if (!ObjectUtils.isEmpty(criteria.getDeptId())) {
             criteria.getDeptIds().add(criteria.getDeptId());
             // 先查找是否存在子节点

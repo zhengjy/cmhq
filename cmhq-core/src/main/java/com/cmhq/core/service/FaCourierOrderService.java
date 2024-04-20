@@ -1,7 +1,7 @@
 package com.cmhq.core.service;
 
-import com.cmhq.core.api.dto.response.CourierFreightChargeDto;
 import com.cmhq.core.model.FaCourierOrderEntity;
+import com.cmhq.core.model.dto.FreightChargeDto;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import me.zhengjie.QueryResult;
 
@@ -24,7 +24,7 @@ public interface FaCourierOrderService {
      * @param entity
      * @return
      */
-    Object getCourierFreightCharge(FaCourierOrderEntity entity);
+    FreightChargeDto getCourierFreightCharge(FaCourierOrderEntity entity);
 
     /**
      * 取消订单

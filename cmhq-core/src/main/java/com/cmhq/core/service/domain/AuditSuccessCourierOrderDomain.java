@@ -1,5 +1,9 @@
 package com.cmhq.core.service.domain;
 
+import com.cmhq.core.api.UploadResult;
+import com.cmhq.core.api.UploadTypeEnum;
+import com.cmhq.core.api.strategy.StrategyFactory;
+import com.cmhq.core.api.strategy.Upload;
 import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.enums.MoneyConsumeEumn;
 import com.cmhq.core.enums.MoneyConsumeMsgEumn;
@@ -54,6 +58,13 @@ public class AuditSuccessCourierOrderDomain {
         faCourierOrderDao.updateById(state);
         double estimatePrice = order.getEstimatePrice();
         //插入返还记录 &返还商户或扣除商户金额
-        faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_6,estimatePrice,order.getFaCompanyId(),order.getId()+""));
+        faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_6,estimatePrice,order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+        //调用接口取消
+        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(order.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_CANCEL_COURIER_ORDER.getCodeNickName())));
+        UploadResult uploadResult = upload.execute(order);
+        if (!uploadResult.getFlag()) {
+            throw new RuntimeException("物流公司取消失败:"+uploadResult.getErrorMsg());
+        }
+
     }
 }

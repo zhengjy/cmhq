@@ -89,11 +89,11 @@ public class CourierOrderQueryPageDomain {
         }
 
         if (CollectionUtils.isNotEmpty(query.getOrderState())){
-            lam.eq(FaCourierOrderEntity::getOrderState,query.getOrderState());
+            lam.in(FaCourierOrderEntity::getOrderState,query.getOrderState());
         }
 
         if (CollectionUtils.isNotEmpty(query.getCancelOrderState())){
-            lam.eq(FaCourierOrderEntity::getCancelOrderState,query.getCancelOrderState());
+            lam.in(FaCourierOrderEntity::getCancelOrderState,query.getCancelOrderState());
         }
 
         if (StringUtils.isNotEmpty(query.getOrderIsError())){

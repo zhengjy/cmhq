@@ -80,7 +80,7 @@ public class FaCompanyServiceImpl implements FaCompanyService {
                         v.setZiOneMaxMoney(dto.getChildUser().getZiOneMaxMoney());
                     }
                 }catch (Exception e){
-                    log.error("",e);
+                    log.error("",e.getMessage());
                 }
             });
         }
@@ -206,15 +206,15 @@ public class FaCompanyServiceImpl implements FaCompanyService {
     private UserDto getUserDto(FaCompanyEntity entity){
         UserDto dto = null;
         try {
-            dto = userService.findByName(entity.getCompanyName());
+            dto = userService.findByName(entity.getMobile());
         }catch (Exception e){
-            log.error("",e);
+            log.error("",e.getMessage());
         }
         if (dto == null){
             try {
                 dto = userService.findByName(entity.getName());
             }catch (Exception e){
-                log.error("",e);
+                log.error("",e.getMessage());
             }
         }
         return dto;
