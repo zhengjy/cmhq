@@ -85,6 +85,7 @@ public abstract class AbstractUpload<Req,T extends UploadData> implements Upload
 
     protected abstract T getData(Req param) throws RuntimeException;
 
+
     /**
      * 执行上传
      *

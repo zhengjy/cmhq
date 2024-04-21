@@ -51,7 +51,7 @@ public enum UploadTypeEnum {
 
     public static UploadTypeEnum getMsgByCode(String ccc,String code) {
         for (UploadTypeEnum value : UploadTypeEnum.values()) {
-            if (value.getCourierCompanyCode().equals(ccc) && (value.getCode().contains(code) && value.getCode().contains(ccc)) ) {
+            if (value.getCourierCompanyCode().equals(ccc) && (value.getCode().contains(code)) ) {
                 return value;
             }
         }

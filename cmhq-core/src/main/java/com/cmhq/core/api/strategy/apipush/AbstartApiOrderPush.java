@@ -22,24 +22,27 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public abstract class AbstartApiOrderPush<Req extends UploadData> extends AbstractApiPush<Req > {
+public abstract class AbstartApiOrderPush<Req extends UploadData> extends AbstractApiPush<Req> {
 
     @Override
     protected void doPushHandle(Req req) {
         //获取状态
         CourierOrderStateEnum orderStateEnum = getOrderState(req);
+        if (orderStateEnum == null){
+            log.error("未匹配到订单状态 params 【{}】", JSONObject.toJSONString(req));
+            return;
+        }
         FaCourierOrderEntity orderEntity = new FaCourierOrderEntity();
         orderEntity.setOrderState(Integer.parseInt(orderStateEnum.getType()));
         if (orderStateEnum.getType().equals(CourierOrderStateEnum.STATE_5.getType())){
             //
-            orderEntity.setOrderIsError(0);
             orderEntity.setCancelType(2);
             orderEntity.setReason(getCanceReason(req));
             faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyOrderNo,req.getUnKey()));
+            otherHandle(req);
             FaCourierOrderEntity order = getFaCourierOrder(req);
             if (order == null){
                 log.error("为查询到订单 params 【{}】", JSONObject.toJSONString(order));
-                return;
             }
             //取消订单。返还账户金额
             faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_5, order.getEstimatePrice(),order.getFaCompanyId(),order.getId()+""));
@@ -55,6 +58,12 @@ public abstract class AbstartApiOrderPush<Req extends UploadData> extends Abstra
     protected abstract String getCanceReason(Req req);
 
     protected abstract CourierOrderStateEnum getOrderState(Req req);
+
+    /**
+     * 其他業務處理
+     * @param req
+     */
+    protected abstract void otherHandle(Req req);
 
     @Override
     protected FaCourierOrderEntity getFaCourierOrder(Req req) {

@@ -1,10 +1,17 @@
 package com.cmhq.core.api.strategy;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.dto.JTQueryCourierTrackDto;
+import com.cmhq.core.api.dto.request.JTPushTraceDto;
+import com.google.common.collect.Maps;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -30,6 +37,21 @@ public class JTQueryCourierTrackOrder extends AbstractJTUpload<String, JTQueryCo
     }
 
     @Override
-    protected void setContentDigest(JTQueryCourierTrackDto uploadData) {
+    protected Object jsonMsgHandle(Object jsonMsg) {
+        if (jsonMsg == null){
+            return null;
+        }
+        JTPushTraceDto dto = JSONObject.parseObject(JSONObject.toJSONString(jsonMsg),JTPushTraceDto.class);
+        if (dto == null || dto.getDetails() == null){
+            return null;
+        }
+        Map<String,String> map = Maps.newLinkedHashMap();
+        List<JTPushTraceDto.Detail> detailList = dto.getDetails().stream().sorted(Comparator.comparing(JTPushTraceDto.Detail::getScanTime)).collect(Collectors.toList());
+        for (JTPushTraceDto.Detail detail : detailList){
+            map.put(detail.getScanTime(),detail.getDesc());
+
+        }
+        return map;
     }
+
 }

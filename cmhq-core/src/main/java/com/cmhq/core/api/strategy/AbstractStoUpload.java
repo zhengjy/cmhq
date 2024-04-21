@@ -79,7 +79,7 @@ public abstract class AbstractStoUpload<Req, T extends UploadData> extends Abstr
             log.info(" upload sto mark:【{}】， response:【{}】", unKey, rsp);
             if (StringUtils.isNotEmpty(rsp)) {
                 StoResponse object = JSONObject.parseObject(rsp,StoResponse.class);
-                uploadResult.setJsonMsg(object.getData());
+                uploadResult.setJsonMsg(jsonMsgHandle(object.getData()));
                 if (object.isSuccess()) {
                     callback.success(object);
                     return uploadResult.setFlag(true);
@@ -100,50 +100,9 @@ public abstract class AbstractStoUpload<Req, T extends UploadData> extends Abstr
     }
 
 
-    /**
-     * 认证获取授权token
-     *
-     * @return
-     */
-    public String authPost(String account,
-                           String clientKey,
-                           String clientSecret, UploadCallback callback) {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        String timestamp = String.valueOf(System.currentTimeMillis());
-        String responseStr = "";
-        try {
-            String url = "";
-            HttpPost httpPost = new HttpPost(url);
-            httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-            httpPost.addHeader("clientKey", clientKey);
-            httpPost.addHeader("timestamp", timestamp);
 
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("clientKey", clientKey);
-            jsonObject.put("account", account);
-            jsonObject.put("timestamp", timestamp);
-            String encrypt = AesUtil.encryptToBase64(jsonObject.toJSONString(), clientSecret);
-            log.info("shanghai auth send url【{}】  param【{}】，headers【{}】，encrypy【{}】", url, jsonObject.toJSONString(), JSONObject.toJSONString(httpPost.getAllHeaders()), encrypt);
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("data", encrypt));
-            httpPost.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
-
-            HttpResponse response = httpClient.execute(httpPost);
-            responseStr = EntityUtils.toString(response.getEntity());
-            log.info("shanghai auth response 【{}】", responseStr);
-            if (response != null) {
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (HttpStatus.SC_OK == statusCode) {
-                    StoResponse parseObject = JSONObject.parseObject(responseStr, StoResponse.class);
-                    return null;
-                }
-            }
-        } catch (Exception e) {
-            String msg = "签名发生异常，响应值为【" + responseStr + "】";
-            callback.fail(msg, e);
-            throw new RuntimeException(msg, e);
-        }
-        return null;
+    protected Object jsonMsgHandle(Object jsonMsg) {
+        return jsonMsg;
     }
 
     protected abstract String getToCode();

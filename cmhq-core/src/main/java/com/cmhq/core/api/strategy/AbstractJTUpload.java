@@ -2,23 +2,14 @@ package com.cmhq.core.api.strategy;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.*;
-import com.cmhq.core.api.dto.JTCourierOrderDto;
 import com.cmhq.core.api.dto.JTUploadData;
+import com.yl.jms.sdk.JtExpressApi;
+import com.yl.jms.sdk.auth.ClientConfiguration;
+import com.yl.jms.sdk.client.JtExpressApiOperator;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/7 10:48.
@@ -37,44 +28,47 @@ public abstract class AbstractJTUpload<Req, T extends JTUploadData> extends Abst
         String[] split = getToken().split(",");
         String apiAccount;
         String privateKey;
-        if (split.length >= 2) {
+        String customerCode;
+        String orderPassword;
+        if (split.length >= 4) {
             apiAccount = split[0];
             privateKey = split[1];
+            customerCode = split[2];
+            orderPassword = split[3];
         } else {
             callback.fail("上传令牌异常", null);
             return uploadResult.setErrorMsg("上传令牌异常").setFlag(false);
         }
         try {
-            setContentDigest(uploadData);
+//            setContentDigest( uploadData);
+            //创建授权用户实体
+            ClientConfiguration clientConfiguration = new ClientConfiguration(apiAccount,privateKey);
+            //当调用postByCustom方法时需要customerCode和orderPassword
+            clientConfiguration.setCustomerCode(customerCode);
+            clientConfiguration.setCustomerPwd(orderPassword);
+            JtExpressApi jtExpressApi = new JtExpressApiOperator(clientConfiguration);
+            //把接口需要的参数封装到map
             String data = JSONObject.toJSONString(uploadData);
-            CloseableHttpClient httpClient = HttpClients.createDefault();
-            HttpPost httpPost = new HttpPost(url+"?uuid=0a29efb3f1344c24851be8d4aae2aa7f");
-            httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
-            httpPost.setHeader("apiAccount", apiAccount);
-            httpPost.setHeader("digest", calculateDigest(data,privateKey));
-            httpPost.setHeader("timestamp", System.currentTimeMillis()+"");
-            List<NameValuePair> params=new ArrayList<>();
-            params.add(new BasicNameValuePair("bizContent",data));
+            Map map = JSONObject.parseObject(JSONObject.toJSONString(uploadData),Map.class);
+            //调用执行器,调用接口方法
             String unKey = uploadData.getUnKey();
-            log.info("upload J&T mark: 【{}】， url【{}】，params【{}】，headers【{}】", unKey, url, data, JSONObject.toJSONString(params));
-            httpPost.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
-            HttpResponse response = httpClient.execute(httpPost);
-            String rsp = EntityUtils.toString(response.getEntity(),StandardCharsets.UTF_8);
+            log.info("upload J&T mark: 【{}】， url【{}】，params【{}】，obj【{}】", unKey, url, data, jtExpressApi.toString());
+            JSONObject rsp = jtExpressApi.post(map,url);
             log.info(" upload J&T mark:【{}】， response:【{}】", unKey, rsp);
-            if (StringUtils.isNotEmpty(rsp)) {
-                JTResponse object = JSONObject.parseObject(rsp,JTResponse.class);
-                uploadResult.setJsonMsg(object.getData());
+            if (rsp != null) {
+                JTResponse object = JSONObject.parseObject(rsp.toJSONString(),JTResponse.class);
+                uploadResult.setJsonMsg(jsonMsgHandle(object.getData()));
                 if (object.isSuccess()) {
                     callback.success(object);
                     return uploadResult.setFlag(true);
                 } else {
                     callback.fail(rsp,null);
-                    uploadResult.setErrorJsonMsg(rsp).setFlag(false);
-                    return uploadResult.setErrorJsonMsg(rsp).setErrorMsg(object.getMsg()).setFlag(false);
+                    uploadResult.setErrorJsonMsg(rsp.toJSONString()).setFlag(false);
+                    return uploadResult.setErrorJsonMsg(rsp.toJSONString()).setErrorMsg(object.getMsg()).setFlag(false);
                 }
             } else {
                 callback.fail("对方服务器响应异常", null);
-                return uploadResult.setErrorJsonMsg(rsp).setErrorMsg("对方服务器响应异常").setFlag(false);
+                return uploadResult.setErrorJsonMsg(rsp.toJSONString()).setErrorMsg("对方服务器响应异常").setFlag(false);
             }
         } catch (Exception e) {
             callback.fail(e.getMessage(), e);
@@ -84,17 +78,27 @@ public abstract class AbstractJTUpload<Req, T extends JTUploadData> extends Abst
 
     }
 
+    protected Object jsonMsgHandle(Object jsonMsg) {
+        return jsonMsg;
+    }
+
     protected void setContentDigest(T uploadData){
-        String customerCode = "";
-        String privateKey = "";
         String[] split = getToken().split(",");
-        if (split.length >= 3) {
+        String apiAccount;
+        String privateKey;
+        String customerCode;
+        String orderPassword;
+        if (split.length >= 4) {
+            apiAccount = split[0];
             privateKey = split[1];
             customerCode = split[2];
+            orderPassword = split[3];
+        }else {
+            return;
         }
         //业务digest 签名，Base64(Md5(客户编号+密文+privateKey))，其中密文：MD5(明文密码+jadada236t2) 后大写
         //明文密码
-        String pwd ="H5CD3zE6" ;
+        String pwd =orderPassword ;
         //密文
         String secretText = (customerCode+calculateDigest(pwd,"jadada236t2")).toUpperCase();
         String digest = calculateDigest(secretText,privateKey);
@@ -102,5 +106,6 @@ public abstract class AbstractJTUpload<Req, T extends JTUploadData> extends Abst
         uploadData.setCustomerCode(customerCode);
         uploadData.setDigest(digest);
     }
+
 
 }

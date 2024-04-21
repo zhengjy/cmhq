@@ -126,9 +126,11 @@ public class FaCourierOrderEntity {
     private String toAddress;
 
 
-    @ApiModelProperty(value = "物流公司物流信息状态：1运输中2派件中3已签收")
+    @ApiModelProperty(value = "本系统自定义物流息状态：1运输中2派件中3已签收4异常")
     @TableField("jitu_wuliu")
     private Integer wuliuState;
+    @ApiModelProperty(value = "物流公司返回物流信息状态")
+    private String courierWuliuState;
 
     @ApiModelProperty(value = "物流公司订单状态：1未调派业务员2已调派业务员3已揽收4已取件5已取消")
     @TableField("jitu_status")

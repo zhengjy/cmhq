@@ -123,3 +123,7 @@ ALTER TABLE fa_expressorder MODIFY COLUMN cancel_type int(1) DEFAULT 0 NULL COMM
 ALTER TABLE fa_expressorder MODIFY COLUMN error_msg varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '极兔的异常信息';
 
 ALTER TABLE fa_company_money ADD order_no varchar(500) NULL COMMENT '支付订单号';
+
+                                ALTER TABLE fa_expressorder ADD courier_wuliu_state varchar(50) NULL;
+                                ALTER TABLE fa_expressorder MODIFY COLUMN courier_wuliu_state varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '物流公司返回物流信息状态';
+

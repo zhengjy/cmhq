@@ -1,5 +1,7 @@
 package com.cmhq.core.api.strategy.apipush;
 
+import com.cmhq.core.api.JTResponse;
+import com.cmhq.core.api.StoResponse;
 import com.cmhq.core.api.UploadData;
 
 /**
@@ -10,5 +12,6 @@ public interface ApiPush<Param extends UploadData> {
     ApiPushTypeEumn supports();
 
 
-    void pushHandle(Param param);
+    StoResponse stoPushHandle(Param param);
+    JTResponse jtPushHandle(Param param);
 }

@@ -44,13 +44,13 @@ public class UserCacheManager {
      * @return JwtUserDto
      */
     public JwtUserDto getUserCache(String userName) {
-        if (StringUtils.isNotEmpty(userName)) {
-            // 获取数据
-            Object obj = redisUtils.get(LoginProperties.cacheKey + userName);
-            if(obj != null){
-                return (JwtUserDto)obj;
-            }
-        }
+//        if (StringUtils.isNotEmpty(userName)) {TODO
+//            // 获取数据
+//            Object obj = redisUtils.get(LoginProperties.cacheKey + userName);
+//            if(obj != null){
+//                return (JwtUserDto)obj;
+//            }
+//        }
         return null;
     }
 
