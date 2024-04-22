@@ -3,7 +3,9 @@ package com.cmhq.core.api.strategy;
 import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.dto.JTCourierOrderDto;
+import com.cmhq.core.api.dto.response.StoCreateCourierOrderResponseDto;
 import com.cmhq.core.model.FaCourierOrderEntity;
+import com.cmhq.core.model.dto.CreateCourierOrderResponseDto;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,6 +23,17 @@ public class JTCourierOrderCreate extends AbstractJTUpload<FaCourierOrderEntity,
         return "/api/order/addOrder";
     }
 
+    @Override
+    protected Object jsonMsgHandle(Object jsonMsg) {
+        JSONObject dto = JSONObject.parseObject(JSONObject.toJSONString(jsonMsg), JSONObject.class);
+        if (dto == null ){
+            return null;
+        }
+        CreateCourierOrderResponseDto rsp = new CreateCourierOrderResponseDto();
+        rsp.setWaybillNo(dto.getString("billCode"));
+        rsp.setOrderNo(dto.getString("txlogisticId"));
+        return rsp;
+    }
 
     @Override
     protected JTCourierOrderDto getData(FaCourierOrderEntity param) throws RuntimeException {
@@ -28,23 +41,7 @@ public class JTCourierOrderCreate extends AbstractJTUpload<FaCourierOrderEntity,
         if (map == null){
             map = new JSONObject();
         }
-        String customerCode = "";
-        String privateKey = "";
-        String[] split = getToken().split(",");
-        if (split.length >= 3) {
-            privateKey = split[1];
-            customerCode = split[2];
-        }
-        //业务digest 签名，Base64(Md5(客户编号+密文+privateKey))，其中密文：MD5(明文密码+jadada236t2) 后大写
-        //明文密码
-        String pwd ="H5CD3zE6" ;
-        //密文
-        String secretText = calculateDigest(pwd,"jadada236t2").toUpperCase();
-        String digest = calculateDigest(customerCode+secretText,privateKey);
-
         JTCourierOrderDto dto = new JTCourierOrderDto();
-        dto.setCustomerCode(customerCode);
-        dto.setDigest(digest);
 
         dto.setTxlogisticId(param.getOrderNo());
 
@@ -85,4 +82,7 @@ public class JTCourierOrderCreate extends AbstractJTUpload<FaCourierOrderEntity,
         }
         return dto;
     }
+
 }
+
+

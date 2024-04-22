@@ -9,9 +9,7 @@ import com.yl.jms.sdk.client.JtExpressApiOperator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.util.Base64;
+import com.cmhq.core.util.SignDemoUtils;
 import java.util.Map;
 
 /**
@@ -87,55 +85,26 @@ public abstract class AbstractJTUpload<Req, T extends JTUploadData> extends Abst
 
     protected void setContentDigest(T uploadData){
         String[] split = getToken().split(",");
-        String apiAccount;
         String privateKey;
         String customerCode;
-        String orderPassword;
+        String pwd;
         if (split.length >= 4) {
-            apiAccount = split[0];
             privateKey = split[1];
             customerCode = split[2];
-            orderPassword = split[3];
+            pwd = split[3];
         }else {
             return;
         }
-        //业务digest 签名，Base64(Md5(客户编号+密文+privateKey))，其中密文：MD5(明文密码+jadada236t2) 后大写
-        //明文密码
-        String pwd =orderPassword ;
-        //密文
-//        String secretText = (customerCode+calculateDigest(pwd,"jadada236t2")).toUpperCase();
-//        String digest = calculateDigest(secretText,privateKey);
-
-
         String salt = "jadada236t2";
         String MD5Password = null;
         try {
-            MD5Password = MD5Encrypt(pwd + salt).toUpperCase();
-            String dataToEncode = customerCode + MD5Password + privateKey;
-            String encodedData = base64Encode(MD5Encrypt(dataToEncode));
+            MD5Password = SignDemoUtils.MD5Encrypt(pwd + salt).toUpperCase();
             uploadData.setCustomerCode(customerCode);
-            uploadData.setDigest(encodedData);
+            uploadData.setDigest(SignDemoUtils.accountSign(customerCode,MD5Password,privateKey));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-
-    private static String MD5Encrypt(String data) throws Exception {
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
-        md5.update(data.getBytes("UTF-8"));
-        byte[] digest = md5.digest();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < digest.length; i++) {
-            String hex = Integer.toHexString(0xff & digest[i]);
-            if(hex.length() == 1) sb.append('0');
-            sb.append(hex);
-        }
-        return sb.toString();
-    }
-
-    private static String base64Encode(String data) throws UnsupportedEncodingException {
-        return Base64.getEncoder().encodeToString(data.getBytes("UTF-8"));
-    }
 
 }

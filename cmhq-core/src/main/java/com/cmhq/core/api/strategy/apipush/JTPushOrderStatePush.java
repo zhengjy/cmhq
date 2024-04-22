@@ -43,6 +43,7 @@ public class JTPushOrderStatePush extends AbstartApiOrderPush<JTPushDto<JTPushOr
         JTPushOrderStateDto dto = param.getObj();
         //TODO 實際重量更新 重新計算預估價格
         if (StringUtils.isNotEmpty(dto.getWeight())){
+            //更新余额 & 预扣费 & 插入记录
 
         }
     }

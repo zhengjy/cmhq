@@ -39,11 +39,11 @@ public class JTQueryCourierTrackOrder extends AbstractJTUpload<String, JTQueryCo
     @Override
     protected Object jsonMsgHandle(Object jsonMsg) {
         if (jsonMsg == null){
-            return null;
+            return jsonMsg;
         }
         JTPushTraceDto dto = JSONObject.parseObject(JSONObject.toJSONString(jsonMsg),JTPushTraceDto.class);
         if (dto == null || dto.getDetails() == null){
-            return null;
+            return jsonMsg;
         }
         Map<String,String> map = Maps.newLinkedHashMap();
         List<JTPushTraceDto.Detail> detailList = dto.getDetails().stream().sorted(Comparator.comparing(JTPushTraceDto.Detail::getScanTime)).collect(Collectors.toList());

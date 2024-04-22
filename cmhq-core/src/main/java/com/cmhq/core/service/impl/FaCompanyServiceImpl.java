@@ -78,6 +78,8 @@ public class FaCompanyServiceImpl implements FaCompanyService {
                         v.setZiMaxNum(dto.getChildUser().getZiMaxNum());
                         v.setZiMaxMoney(dto.getChildUser().getZiMaxMoney());
                         v.setZiOneMaxMoney(dto.getChildUser().getZiOneMaxMoney());
+                        v.setCancelMaxNum(dto.getChildUser().getCancelMaxNum());
+                        v.setCancelMaxMoney(dto.getChildUser().getCancelMaxMoney());
                     }
                 }catch (Exception e){
                     log.error("",e.getMessage());
@@ -172,12 +174,14 @@ public class FaCompanyServiceImpl implements FaCompanyService {
         entity.setFid(fcid);
         entity.setStatus(currentCompany.getStatus());
         entity.setAvatar(currentCompany.getAvatar());
-        if (resources.getChildUser() != null){
-            entity.setZiMaxNum(resources.getChildUser().getZiMaxNum());
-            entity.setZiMaxMoney(resources.getChildUser().getZiMaxMoney());
-            entity.setZiOneMaxMoney(resources.getChildUser().getZiOneMaxMoney());
-
-        }
+//        if (resources.getChildUser() != null){
+//            entity.setZiMaxNum(resources.getChildUser().getZiMaxNum());
+//            entity.setZiMaxMoney(resources.getChildUser().getZiMaxMoney());
+//            entity.setZiOneMaxMoney(resources.getChildUser().getZiOneMaxMoney());
+//            entity.setCancelMaxMoney(resources.getChildUser().getCancelMaxMoney());
+//            entity.setCancelMaxNum(resources.getChildUser().getCancelMaxNum());
+//
+//        }
         entity.setName(resources.getUsername());
         entity.setHobbydata(currentCompany.getHobbydata());
         faCompanyDao.insert(entity);

@@ -49,4 +49,18 @@ public class ChildUser  implements Serializable {
     @NotNull
     private Double	ziOneMaxMoney=0D;
 
+    /**
+     * <pre>
+     * 最多取消订单次数
+     * </pre>
+     */
+    private Integer	cancelMaxNum;
+
+    /**
+     * <pre>
+     * 单笔取消订单金额上限
+     * </pre>
+     */
+    private Double	cancelMaxMoney;
+
 }

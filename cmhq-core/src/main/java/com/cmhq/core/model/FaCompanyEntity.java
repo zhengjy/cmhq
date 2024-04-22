@@ -91,6 +91,13 @@ public class FaCompanyEntity {
      */
     private Double	estimatePrice;
 
+    /**是否凍結：Y:是，N：否*/
+    private String isFreeze;
+    /**检验下单重量和结算重量类型：day，month，week*/
+    private String checkWeightType;
+    /**检验下单重量和结算重量单位百，30：就是百分之30*/
+    private Integer checkWeightRatio;
+
     /**
      * <pre>
      * 添加时间
@@ -121,21 +128,21 @@ public class FaCompanyEntity {
 
     /**
      * <pre>
-     * 子账号一天最大单量
+     * 一天最大单量
      * </pre>
      */
     private Integer	ziMaxNum;
 
     /**
      * <pre>
-     * 子账号每日最大订单金额
+     * 每日最大订单金额
      * </pre>
      */
     private Double	ziMaxMoney;
 
     /**
      * <pre>
-     * 子账号单笔订单最大限制金额
+     * 单笔订单最大限制金额
      * </pre>
      */
     private Double	ziOneMaxMoney;

@@ -46,47 +46,13 @@ CREATE TABLE `fa_courier_company` (
 
 CREATE TABLE `fa_courier_order_ext` (
                                         `courier_order_id` int(11) NOT NULL ,
-                                        `cname` varchar(255) COMMENT '名稱',
+                                        `cname` varchar(100) COMMENT '名稱',
                                         `cvalue` varchar(255) COMMENT '值',
-                                        PRIMARY KEY (`id`),
-                                        UNIQUE KEY `idx_order_id` (`cellcode`,`cname`) USING HASH
+                                        PRIMARY KEY (`courier_order_id`),
+                                        UNIQUE KEY `idx_order_id` (`courier_order_id`,`cname`) USING HASH
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COMMENT '快递订单扩展数据';
 
 
-CREATE TABLE `fa_courier_order` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `fa_company_id` int(11) DEFAULT NULL COMMENT '商户id',
-    `order_no` varchar(255) DEFAULT NULL COMMENT '订单号',
-    `courier_order_no` varchar(255) DEFAULT NULL COMMENT '快递公司订单号',
-    `courier_company_waybill_no` varchar(255) DEFAULT NULL COMMENT '快递公司运单号',
-    `goods_type` varchar(255) DEFAULT NULL COMMENT '物品分类',
-    `goods_name` varchar(255) DEFAULT NULL COMMENT '物品名称',
-    `weight` double(10,2) DEFAULT NULL COMMENT '重量',
-    `width` int(10) DEFAULT NULL COMMENT '宽度',
-    `length` int(10) DEFAULT NULL COMMENT '长度',
-    `height` int(10) DEFAULT NULL COMMENT '高',
-    `estimate_price` decimal(10,2) DEFAULT '0.00' COMMENT '商品金额',
-    `from_name` varchar(255) DEFAULT NULL COMMENT '发货人',
-    `from_mobile` varchar(255) DEFAULT NULL COMMENT '发货手机号',
-    `from_prov` varchar(255) DEFAULT NULL COMMENT '发出省份',
-    `from_city` varchar(255) DEFAULT NULL COMMENT '发出城市',
-    `from_area` varchar(255) DEFAULT NULL COMMENT '发出区县',
-    `from_address`` varchar(255) DEFAULT NULL COMMENT '发出地址',
-    `to_name` varchar(255) DEFAULT NULL COMMENT '收货人',
-  `to_mobile` varchar(255) DEFAULT NULL COMMENT '收货手机号',
-  `to_prov` varchar(255) DEFAULT NULL COMMENT '收货省份',
-  `to_city` varchar(255) DEFAULT NULL COMMENT '收货城市',
-  `to_area` varchar(255) DEFAULT NULL COMMENT '收货区县',
-  `to_address` varchar(255) NOT NULL COMMENT '收货地址',
-  `is_jiesuan` tinyint(1) DEFAULT '0' COMMENT '0未结算1已结算',
-  `cancel_order_state` int(1) NOT NULL DEFAULT '0' COMMENT '-1:待审核,0取消待审核1正常2审核通过3审核不通过',
-  `order_state` int(1) NOT NULL DEFAULT '0' COMMENT '1运输中2派件中3已签收',
-  `create_user` varchar(255) DEFAULT NULL COMMENT '创建人',
-  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_user` varchar(255) DEFAULT NULL COMMENT '更新人',
-  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT '快递订单信息';
 
 ALTER TABLE fa_company MODIFY COLUMN name varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL;
 
@@ -126,4 +92,22 @@ ALTER TABLE fa_company_money ADD order_no varchar(500) NULL COMMENT '支付订�
 
                                 ALTER TABLE fa_expressorder ADD courier_wuliu_state varchar(50) NULL;
                                 ALTER TABLE fa_expressorder MODIFY COLUMN courier_wuliu_state varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '物流公司返回物流信息状态';
+
+CREATE TABLE `fa_company_day_ope_num` (
+                                          `id` int(11) NOT NULL AUTO_INCREMENT,
+                                          `ope_date` varchar(255) DEFAULT NULL COMMENT '操作日期',
+                                          `ope_type` varchar(255) DEFAULT NULL COMMENT '操作类型：order_cancel_num：订单取消数,order_create_num：订单创建数,consume_money：消费金额',
+                                          `company_id` int(11) DEFAULT NULL COMMENT '商户id',
+                                          `parent_company_Id` int(11) DEFAULT NULL COMMENT '上级商户id',
+                                          `ope_value` double DEFAULT NULL COMMENT '操作值',
+                                          PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT '商户操作数';
+
+ALTER TABLE fa_company ADD is_freeze  varchar(20) DEFAULT NULL COMMENT '是否凍結：Y:是，N：否';
+ALTER TABLE fa_company ADD check_weight_type varchar(100) DEFAULT NULL COMMENT '检验下单重量和结算重量类型：day，month，week';
+ALTER TABLE fa_company ADD check_weight_ratio int(11) DEFAULT NULL COMMENT '检验下单重量和结算重量单位百，130：就是百分之30';
+
+
+ALTER TABLE sys_childuser ADD cancel_max_num int(11) DEFAULT NULL COMMENT '最多取消订单次数';
+ALTER TABLE sys_childuser ADD cancel_max_money double DEFAULT NULL COMMENT '单笔取消订单金额上限';
 

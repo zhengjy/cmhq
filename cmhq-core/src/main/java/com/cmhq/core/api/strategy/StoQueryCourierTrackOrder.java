@@ -44,11 +44,11 @@ public class StoQueryCourierTrackOrder extends AbstractStoUpload<String, QueryCo
     @Override
     protected Object jsonMsgHandle(Object jsonMsg) {
         if (jsonMsg == null){
-            return null;
+            return jsonMsg;
         }
         StoCourierTrackRspDto dto = JSONObject.parseObject(JSONObject.toJSONString(jsonMsg),StoCourierTrackRspDto.class);
         if (dto == null || dto.getWaybillNo() == null){
-            return null;
+            return jsonMsg;
         }
         Map<String,String> map = Maps.newLinkedHashMap();
         List<StoCourierTrackRspDto.WaybillInfo> detailList = dto.getWaybillNo().stream().sorted(Comparator.comparing(StoCourierTrackRspDto.WaybillInfo::getOpTime)).collect(Collectors.toList());

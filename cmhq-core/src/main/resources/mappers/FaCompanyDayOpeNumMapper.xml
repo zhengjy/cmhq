@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmhq.core.dao.FaCompanyDayOpeNumDao">
+
+
+
+
+    <update id="updateValue" >
+        update fa_company_day_ope_num set ope_value = ope_value+#{opeValue} where ope_type = #{opeType}  and company_id = #{companyId} and  ope_date = #{opeDate}
+    </update>
+
+
+</mapper>

@@ -3,7 +3,10 @@ package com.cmhq.core.api.strategy;
 import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.dto.StoCourierOrderDto;
+import com.cmhq.core.api.dto.request.JTPushTraceDto;
+import com.cmhq.core.api.dto.response.StoCreateCourierOrderResponseDto;
 import com.cmhq.core.model.FaCourierOrderEntity;
+import com.cmhq.core.model.dto.CreateCourierOrderResponseDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -24,6 +27,18 @@ public class StoCourierOrderCreate extends AbstractStoUpload<FaCourierOrderEntit
         return "OMS_EXPRESS_ORDER_CREATE";
     }
 
+    @Override
+    protected Object jsonMsgHandle(Object jsonMsg) {
+        StoCreateCourierOrderResponseDto dto = JSONObject.parseObject(JSONObject.toJSONString(jsonMsg), StoCreateCourierOrderResponseDto.class);
+        if (dto == null ){
+            return jsonMsg;
+        }
+        CreateCourierOrderResponseDto rsp = new CreateCourierOrderResponseDto();
+        rsp.setWaybillNo(dto.getWaybillNo());
+        rsp.setOrderNo(dto.getOrderNo());
+
+        return rsp;
+    }
 
     @Override
     protected StoCourierOrderDto getData(FaCourierOrderEntity param) throws RuntimeException {

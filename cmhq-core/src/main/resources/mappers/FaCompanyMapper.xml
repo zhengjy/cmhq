@@ -6,7 +6,7 @@
 
 
     <update id="minusMoney" >
-        update fa_company set money = money-#{money},estimate_price = estimate_price+#{money} where id = #{companyId} and (money-#{money})>0
+        update fa_company set money = money-#{money},estimate_price = estimate_price+#{money} where id = #{companyId}
 
     </update>
     <update id="minusEstimatePrice" >
