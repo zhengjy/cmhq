@@ -20,7 +20,7 @@ public class JTPushSettleWeightPush extends AbstartApiSettleWeightPush<JTPushDto
     @Override
     protected Double getWeight(JTPushDto<JTPushSettleWeightDto> dto) {
         if (dto.getObj() != null){
-            return Double.parseDouble(dto.getObj().getPackageChargeWeight());
+            return Double.parseDouble(dto.getObj(JTPushSettleWeightDto.class).getPackageChargeWeight());
         }
         return 0D;
     }

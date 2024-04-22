@@ -69,7 +69,7 @@ public class AliPayInterfaceController {
         return APIResponse.success(payUrl);
     }
 
-    @ApiIgnore
+//    @ApiIgnore
     @GetMapping("/return")
     @AnonymousAccess
     @ApiOperation("支付之后跳转的链接")
@@ -95,7 +95,7 @@ public class AliPayInterfaceController {
         }
     }
 
-    @ApiIgnore
+//    @ApiIgnore
     @RequestMapping("/notify")
     @AnonymousAccess
     @ApiOperation("支付异步通知(要公网访问)，接收异步通知，检查通知内容app_id、out_trade_no、total_amount是否与请求中的一致，根据trade_status进行后续业务处理")

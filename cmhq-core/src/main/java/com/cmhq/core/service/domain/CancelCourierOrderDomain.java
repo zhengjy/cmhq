@@ -9,6 +9,7 @@ import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.model.FaCompanyDayOpeNumEntity;
 import com.cmhq.core.model.FaCompanyEntity;
 import com.cmhq.core.model.FaCourierOrderEntity;
+import com.cmhq.core.model.dto.CreateCourierOrderResponseDto;
 import com.cmhq.core.service.FaCompanyDayOpeNumService;
 import com.cmhq.core.service.FaCourierOrderService;
 import com.cmhq.core.util.CurrentUserContent;
@@ -54,6 +55,14 @@ public class CancelCourierOrderDomain {
         updateState.setCancelType(1);
         entity.setReason(content);
         faCourierOrderDao.updateById(updateState);
+        //取消
+        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(entity.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_CANCEL_COURIER_ORDER.getCodeNickName())));
+        UploadResult uploadResult = upload.execute(entity);
+        if (uploadResult.getFlag()){
+        }else {
+            throw new RuntimeException("物流公司取消失败:"+uploadResult.getErrorMsg());
+        }
+
     }
 
     private void check(FaCourierOrderEntity entity){

@@ -68,22 +68,25 @@ public class FaCompanyServiceImpl implements FaCompanyService {
         PageInfo<FaCompanyEntity> page = new PageInfo<>(list);
         if (list != null){
             list.stream().forEach(v ->{
-                FaUserEntity faUserEntity = faUserDao.selectById(v.getFUser());
-                if (faUserEntity != null){
-                    v.setFUserName(faUserEntity.getUsername());
-                }
-                try {
-                    UserDto dto = getUserDto(v);
-                    if (dto != null && dto.getChildUser() != null){
-                        v.setZiMaxNum(dto.getChildUser().getZiMaxNum());
-                        v.setZiMaxMoney(dto.getChildUser().getZiMaxMoney());
-                        v.setZiOneMaxMoney(dto.getChildUser().getZiOneMaxMoney());
-                        v.setCancelMaxNum(dto.getChildUser().getCancelMaxNum());
-                        v.setCancelMaxMoney(dto.getChildUser().getCancelMaxMoney());
+                if (v.getFid() != null && v.getFid() > 0){
+                    FaUserEntity faUserEntity = faUserDao.selectById(v.getFUser());
+                    if (faUserEntity != null){
+                        v.setFUserName(faUserEntity.getUsername());
                     }
-                }catch (Exception e){
-                    log.error("",e.getMessage());
+                    try {
+                        UserDto dto = getUserDto(v);
+                        if (dto != null && dto.getChildUser() != null){
+                            v.setZiMaxNum(dto.getChildUser().getZiMaxNum());
+                            v.setZiMaxMoney(dto.getChildUser().getZiMaxMoney());
+                            v.setZiOneMaxMoney(dto.getChildUser().getZiOneMaxMoney());
+                            v.setCancelMaxNum(dto.getChildUser().getCancelMaxNum());
+                            v.setCancelMaxMoney(dto.getChildUser().getCancelMaxMoney());
+                        }
+                    }catch (Exception e){
+                        log.error("",e.getMessage());
+                    }
                 }
+
             });
         }
         QueryResult<FaCompanyEntity> queryResult = new QueryResult<>();

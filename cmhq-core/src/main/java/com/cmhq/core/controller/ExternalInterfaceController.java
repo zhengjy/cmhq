@@ -11,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.annotation.AnonymousAccess;
+import me.zhengjie.annotation.rest.AnonymousPostMapping;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class ExternalInterfaceController {
 
     @ApiOperation("推送订单状态")
-    @PostMapping(value = "/pushOrderStatus")
-    @AnonymousAccess
+    @AnonymousPostMapping(value = "/pushOrderStatus")
     public StoResponse pushOrderStatus(@Validated @RequestBody StoPushOrderStateDto dto)  {
         StoResponse response = StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_STO_PUSHORDERSTATUS).stoPushHandle(dto);
         return response;
@@ -34,16 +34,14 @@ public class ExternalInterfaceController {
 
 
     @ApiOperation("物流轨迹推送")
-    @PostMapping(value = "/pushTrace")
-    @AnonymousAccess
+    @AnonymousPostMapping(value = "/pushTrace")
     public StoResponse pushTrace(@Validated @RequestBody StoPushTraceDto dto) throws Exception {
         ;
         return StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_STO_PUSHTRACE).stoPushHandle(dto);
     }
 
     @ApiOperation("结算重量回传")
-    @PostMapping(value = "/pushSettleWeight")
-    @AnonymousAccess
+    @AnonymousPostMapping(value = "/pushSettleWeight")
     public StoResponse pushSettleWeight(@Validated @RequestBody StoPushTraceDto dto) throws Exception {
         return StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_STO_PUSHSETTLEWEIGHT).stoPushHandle(dto);
     }
@@ -51,8 +49,7 @@ public class ExternalInterfaceController {
 
 
     @ApiOperation("极兔推送订单状态")
-    @PostMapping(value = "/jt/pushOrderStatus")
-    @AnonymousAccess
+    @AnonymousPostMapping(value = "/jt/pushOrderStatus")
     public JTResponse jtPushOrderStatus(JTPushDto dto)  {
 
         return StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JT_PUSHORDERSTATUS).jtPushHandle(dto);
@@ -60,16 +57,14 @@ public class ExternalInterfaceController {
 
 
     @ApiOperation("极兔物流轨迹推送")
-    @PostMapping(value = "/jt/pushTrace")
-    @AnonymousAccess
-    public JTResponse jtPushTrace(@Validated @RequestBody StoPushTraceDto dto) throws Exception {
+    @AnonymousPostMapping(value = "/jt/pushTrace")
+    public JTResponse jtPushTrace( JTPushDto dto) throws Exception {
         return StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JT_PUSHTRACE).jtPushHandle(dto);
     }
 
     @ApiOperation("极兔结算重量回传")
-    @PostMapping(value = "/jt/pushSettleWeight")
-    @AnonymousAccess
-    public JTResponse jtPushSettleWeight(@Validated @RequestBody StoPushTraceDto dto) throws Exception {
+    @AnonymousPostMapping(value = "/jt/pushSettleWeight")
+    public JTResponse jtPushSettleWeight(JTPushDto dto) throws Exception {
         return StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JT_PUSHSETTLEWEIGHT).jtPushHandle(dto);
     }
 

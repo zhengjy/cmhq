@@ -16,7 +16,7 @@ public class JTPushWuliuTracePush extends AbstartApiTracePush<JTPushDto<JTPushTr
     @Override
     protected CourierWuliuStateEnum getTraceState(JTPushDto<JTPushTraceDto> param) {
         if (param.getObj() != null){
-            JTPushTraceDto dto = param.getObj();
+            JTPushTraceDto dto = param.getObj(JTPushTraceDto.class);
             JTPushTraceDto.Detail d = dto.getDetails().get(0);
             /**
              * 扫描类型
@@ -51,7 +51,7 @@ public class JTPushWuliuTracePush extends AbstartApiTracePush<JTPushDto<JTPushTr
     @Override
     protected String getCourierWuliuState(JTPushDto<JTPushTraceDto> param) {
         if (param.getObj() != null){
-            JTPushTraceDto dto = param.getObj();
+            JTPushTraceDto dto = param.getObj(JTPushTraceDto.class);
             List<JTPushTraceDto.Detail> detailList = dto.getDetails();
             return detailList.get(0).getScanType();
         }

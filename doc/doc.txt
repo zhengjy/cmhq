@@ -112,3 +112,7 @@ private Integer cancelType;
         "weightto": 0,
         "width": 0
       }
+ #极兔回传接口
+ http://b.ahjttd.com:8000/v1/courierPushState/jt/pushOrderStatus
+ http://b.ahjttd.com:8000/v1/courierPushState/jt/pushTrace
+ http://b.ahjttd.com:8000/v1/courierPushState/jt/pushSettleWeight

@@ -1,5 +1,6 @@
 package com.cmhq.core.api.strategy;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.dto.JTQueryCourierTrackDto;
@@ -41,7 +42,12 @@ public class JTQueryCourierTrackOrder extends AbstractJTUpload<String, JTQueryCo
         if (jsonMsg == null){
             return jsonMsg;
         }
-        JTPushTraceDto dto = JSONObject.parseObject(JSONObject.toJSONString(jsonMsg),JTPushTraceDto.class);
+        JSONArray jr = JSONObject.parseArray(JSONObject.toJSONString(jsonMsg));
+        if (jr == null){
+            return jsonMsg;
+        }
+
+        JTPushTraceDto dto = JSONObject.parseObject( JSONObject.toJSONString(jr.get(0)),JTPushTraceDto.class);
         if (dto == null || dto.getDetails() == null){
             return jsonMsg;
         }

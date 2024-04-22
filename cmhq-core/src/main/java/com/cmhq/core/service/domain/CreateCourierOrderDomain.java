@@ -113,11 +113,11 @@ public class CreateCourierOrderDomain {
             throw new RuntimeException("账户余额不足");
         }
 
-        if (faCompanyEntity.getZiOneMaxMoney() != null && estimatePrice > faCompanyEntity.getZiOneMaxMoney()){
+        if (faCompanyEntity.getZiOneMaxMoney() != null && faCompanyEntity.getZiOneMaxMoney()  > 0 && estimatePrice > faCompanyEntity.getZiOneMaxMoney()){
             throw new RuntimeException("商户账户单笔订单最大限制金额");
         }
 
-        if (faCompanyEntity.getZiMaxMoney() != null){
+        if (faCompanyEntity.getZiMaxMoney() != null && faCompanyEntity.getZiMaxMoney() > 0){
             //商户日最大金额
             double createOrderMaxMoney = faCompanyDayOpeNumService.selectValue(LocalDate.now().toString(),LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_MAX_MONEY);
             if (createOrderMaxMoney >= faCompanyEntity.getZiMaxMoney()){
@@ -125,7 +125,7 @@ public class CreateCourierOrderDomain {
             }
         }
 
-        if (faCompanyEntity.getZiMaxNum() != null){
+        if (faCompanyEntity.getZiMaxNum() != null && faCompanyEntity.getZiMaxNum() > 0){
             //商户日下单量
             double createOrderNum = faCompanyDayOpeNumService.selectValue(LocalDate.now().toString(),LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_NUM);
             if (createOrderNum >= faCompanyEntity.getZiMaxNum()){

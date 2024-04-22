@@ -1,5 +1,7 @@
 package com.cmhq.core.api.dto.request;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.cmhq.core.api.UploadData;
 import lombok.Data;
 
@@ -15,10 +17,9 @@ public class JTPushDto<T>   extends UploadData {
 
     private T obj;
 
-    public T getObj() {
-        Type genericSuperclass = getClass().getGenericSuperclass();
-        ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
-        return (T) parameterizedType.getActualTypeArguments()[0];
+    public T getObj(Class clazz) {
+        Object o = JSONObject.parseObject(bizContent,clazz);
+        return (T) o;
     }
 
     @Override
