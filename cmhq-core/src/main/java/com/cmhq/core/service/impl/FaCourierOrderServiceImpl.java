@@ -21,7 +21,6 @@ import com.cmhq.core.service.domain.CourierOrderQueryPageDomain;
 import me.zhengjie.QueryResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -70,7 +69,7 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
             updateState.setId(id);
             updateState.setCancelOrderState(3);
             faCourierOrderDao.updateById(updateState);
-        }else if (StringUtils.equals(stateType,"x")){
+        }else if (StringUtils.equals(stateType,"uncancel")){
             FaCourierOrderEntity updateState = new FaCourierOrderEntity();
             updateState.setId(id);
             updateState.setCancelOrderState(1);
@@ -78,10 +77,6 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
         }else if (StringUtils.equals(stateType,"auditSuccess")){
             new AuditSuccessCourierOrderDomain(content,id).handle();
         }
-
-
-
-
         return "";
     }
 

@@ -10,6 +10,7 @@ import com.cmhq.core.dao.FaUploadLogDao;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.UploadLogEntity;
 import com.cmhq.core.service.FaCompanyMoneyService;
+import com.cmhq.core.service.FaCourierOrderService;
 import com.cmhq.core.util.SpringApplicationUtils;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.APIResponse;
@@ -29,6 +30,8 @@ public abstract class AbstractApiPush<Req extends UploadData> implements ApiPush
     protected FaCompanyMoneyService faCompanyMoneyService;
     @Autowired
     protected FaCourierOrderDao faCourierOrderDao;
+    @Autowired
+    protected FaCourierOrderService faCourierOrderService;
     @Autowired
     protected  FaUploadLogDao logDao;
     @Transactional

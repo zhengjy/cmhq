@@ -96,7 +96,7 @@ public class FaCompanyServiceImpl implements FaCompanyService {
     }
 
     @Override
-    public Integer edit(FaCompanyEntity entity) throws Exception {
+    public Integer edit(FaCompanyEntity entity) {
         if (entity.getId() == null){
             String pwd = passwordEncoder.encode(entity.getPassword());
             entity.setPassword(pwd);

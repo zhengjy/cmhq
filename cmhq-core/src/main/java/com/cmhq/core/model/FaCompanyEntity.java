@@ -95,6 +95,8 @@ public class FaCompanyEntity {
     private String isFreeze;
     /**检验下单重量和结算重量类型：day，month，week*/
     private String checkWeightType;
+    /**检验下单重量和结算重量周期次数*/
+    private Integer checkWeightNum;
     /**检验下单重量和结算重量单位百，30：就是百分之30*/
     private Integer checkWeightRatio;
 

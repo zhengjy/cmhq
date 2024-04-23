@@ -11,7 +11,7 @@ public interface FaCompanyService {
 
     QueryResult<FaCompanyEntity> list(CompanyQuery query);
 
-    Integer edit(FaCompanyEntity entity) throws Exception;
+    Integer edit(FaCompanyEntity entity) ;
 
     FaCompanyEntity selectById(Integer id);
 

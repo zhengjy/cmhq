@@ -24,9 +24,9 @@ public class StoPushOrderStateDto extends UploadData {
     @Override
     public String getUnKeyValue() {
         if (changeInfo != null){
-            return changeInfo.getBillCode();
+            return changeInfo.getOrderId();
         }else if (cancelInfo != null){
-            return cancelInfo.getBillCode();
+            return cancelInfo.getOrderId();
         }else if (modifyInfo != null){
             return modifyInfo.getOrderId();
         }else if (returnInfo != null){

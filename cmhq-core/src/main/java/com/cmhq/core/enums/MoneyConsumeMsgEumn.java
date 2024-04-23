@@ -10,6 +10,7 @@ public enum MoneyConsumeMsgEumn {
     MSG_4("货物签收退回预估费用"),
     MSG_5("快递员取消订单退回预估费用"),
     MSG_6("取消订单退回预估费用"),
+    MSG_7("创建订单预估重量和实际重量不符增加扣除预估费用"),
     ;
     private String desc;
 

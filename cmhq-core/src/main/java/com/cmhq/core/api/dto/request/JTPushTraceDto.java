@@ -30,6 +30,8 @@ public class JTPushTraceDto extends UploadData {
         private String scanTime;
         // 轨迹描述
         private String desc;
+        //重量
+        private String weight;
 
         // 扫描网点区/县
         private String scanNetworkArea;

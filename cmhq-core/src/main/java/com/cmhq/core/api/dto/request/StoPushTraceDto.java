@@ -71,7 +71,7 @@ public class StoPushTraceDto extends UploadData {
         /***/
         private String signoffPeople;
         /***/
-        private double weight;
+        private Double weight;
         /*时区**/
         private String tz;
         /***/

@@ -36,4 +36,9 @@ public class JTFreightFilter extends AbstractFreightFilter{
         }
         return null;
     }
+
+    @Override
+    public CourierCompanyEnum getCourierCompany() {
+        return CourierCompanyEnum.COMPANY_JT;
+    }
 }

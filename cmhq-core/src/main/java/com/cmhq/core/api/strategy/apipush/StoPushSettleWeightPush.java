@@ -3,6 +3,7 @@ package com.cmhq.core.api.strategy.apipush;
 import com.cmhq.core.api.dto.request.StoPushSettleWeightDto;
 import com.cmhq.core.api.dto.request.StoPushTraceDto;
 import com.cmhq.core.enums.CourierWuliuStateEnum;
+import com.cmhq.core.model.dto.SettleWeightDto;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,13 @@ public class StoPushSettleWeightPush extends AbstartApiSettleWeightPush<StoPushS
 
 
     @Override
-    protected Double getWeight(StoPushSettleWeightDto dto) {
-        return StringUtils.isNotEmpty(dto.getSettleWeight()) ? Double.parseDouble(dto.getSettleWeight()) : 0d;
+    protected SettleWeightDto getSettleWeight(StoPushSettleWeightDto dto) {
+        if (dto == null){
+            return null;
+        }
+        SettleWeightDto sd = new SettleWeightDto();
+        sd.setWaybillNo(dto.getBillCode());
+        sd.setTotalFreight(dto.getSettleWeight());
+        return sd;
     }
 }

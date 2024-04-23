@@ -2,6 +2,7 @@ package com.cmhq.core.api.strategy.apipush;
 
 import com.cmhq.core.api.dto.request.JTPushDto;
 import com.cmhq.core.api.dto.request.JTPushSettleWeightDto;
+import com.cmhq.core.model.dto.SettleWeightDto;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,11 +19,16 @@ public class JTPushSettleWeightPush extends AbstartApiSettleWeightPush<JTPushDto
 
 
     @Override
-    protected Double getWeight(JTPushDto<JTPushSettleWeightDto> dto) {
-        if (dto.getObj() != null){
-            return Double.parseDouble(dto.getObj(JTPushSettleWeightDto.class).getPackageChargeWeight());
+    protected SettleWeightDto getSettleWeight(JTPushDto<JTPushSettleWeightDto> dto) {
+        if (dto == null){
+            return null;
         }
-        return 0D;
+        JTPushSettleWeightDto dd = dto.getObj(JTPushSettleWeightDto.class);
+        SettleWeightDto sd = new SettleWeightDto();
+        sd.setWaybillNo(dd.getWaybillNo());
+        sd.setTotalFreight(dd.getTotalFreight());
+        sd.setPackageChargeWeight(dd.getPackageChargeWeight());
+        return sd;
     }
 
     @Override

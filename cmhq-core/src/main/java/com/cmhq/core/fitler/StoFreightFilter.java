@@ -35,13 +35,15 @@ public class StoFreightFilter  extends AbstractFreightFilter{
                 FreightChargeDto dto = new FreightChargeDto();
                 //原始价格set
                 dto.setTotalPrice((double)totalPrice  / 100);
-                dto.setContinuedHeavy(feeModel.getContinuedHeavy());
-                dto.setStartPrice(feeModel.getStartPrice());
-                dto.setContinuedHeavyPrice(feeModel.getContinuedHeavyPrice());
                 dto.setCourierCompanyCode(CourierCompanyEnum.COMPANY_STO.getType());
                 return dto;
             }
         }
         return null;
+    }
+
+    @Override
+    public CourierCompanyEnum getCourierCompany() {
+        return CourierCompanyEnum.COMPANY_STO;
     }
 }

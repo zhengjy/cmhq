@@ -12,6 +12,11 @@ import org.springframework.stereotype.Component;
 public class StoPushWuliuTracePush extends AbstartApiTracePush<StoPushTraceDto>{
 
     @Override
+    protected void otherHandle(StoPushTraceDto stoPushTraceDto) {
+
+    }
+
+    @Override
     protected CourierWuliuStateEnum getTraceState(StoPushTraceDto dto) {
         if (dto.getTrace() != null){
             //扫描类型（收件;发件;到件;派件;第三方代派;问题件;退回件;留仓件;快件取出;代取快递; 派件入柜;柜机代收;驿站代收;第三方代收;签收;改地址件(2020-07-24 新增)）
@@ -37,6 +42,26 @@ public class StoPushWuliuTracePush extends AbstartApiTracePush<StoPushTraceDto>{
             StoPushTraceDto.Trace trace = dto.getTrace();
             return trace.getScanType();
 
+        }
+        return null;
+    }
+
+    @Override
+    protected String getWeight(StoPushTraceDto dto) {
+        if (dto.getTrace() != null){
+            StoPushTraceDto.Trace trace = dto.getTrace();
+            if (trace.getScanType().equals("收件")){
+                return trace.getWeight()+"";
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected String getIsErrorMsg(StoPushTraceDto dto) {
+        if (dto.getTrace() != null){
+            StoPushTraceDto.Trace trace = dto.getTrace();
+            return trace.getIssueName();
         }
         return null;
     }

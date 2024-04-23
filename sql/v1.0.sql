@@ -104,7 +104,8 @@ CREATE TABLE `fa_company_day_ope_num` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT '商户操作数';
 
 ALTER TABLE fa_company ADD is_freeze  varchar(20) DEFAULT NULL COMMENT '是否凍結：Y:是，N：否';
-ALTER TABLE fa_company ADD check_weight_type varchar(100) DEFAULT NULL COMMENT '检验下单重量和结算重量类型：day，month，week';
+ALTER TABLE fa_company ADD check_weight_type varchar(100) DEFAULT NULL COMMENT '检验下单重量和结算重量周期类型：day，month，week';
+ALTER TABLE fa_company ADD check_weight_num int(11) DEFAULT NULL COMMENT '检验下单重量和结算重量周期次数';
 ALTER TABLE fa_company ADD check_weight_ratio int(11) DEFAULT NULL COMMENT '检验下单重量和结算重量单位百，130：就是百分之30';
 
 

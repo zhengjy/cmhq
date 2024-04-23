@@ -21,6 +21,7 @@ import com.cmhq.core.service.FaCompanyMoneyService;
 import com.cmhq.core.service.FaCompanyService;
 import com.cmhq.core.service.FaCourierOrderService;
 import com.cmhq.core.util.CurrentUserContent;
+import com.cmhq.core.util.EstimatePriceUtil;
 import com.cmhq.core.util.SpringApplicationUtils;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.utils.SecurityUtils;
@@ -87,7 +88,7 @@ public class CreateCourierOrderDomain {
             faCourierOrderDao.insert(order);
             //额外字段插入
             saveOrderExt(order.getId(), order.getCourierOrderExtend());
-            //上传物流信息到物流公司
+            //上传订单信息到物流公司
             String billNo = uploadCourierOrder();
             //插入消费记录
             faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_3,estimatePrice,companyId, order.getId()+"",billNo));
@@ -195,20 +196,7 @@ public class CreateCourierOrderDomain {
      */
     private double getEstimatePrice(Integer retio){
         FreightChargeDto dto =  faCourierOrderService.getCourierFreightCharge(order);
-        try {
-            if (dto != null && dto.getTotalPrice() != null){
-                log.info("获取运费价格 {}",JSONObject.toJSONString(dto));
-                BigDecimal b = new BigDecimal(dto.getTotalPrice() * ((double) retio /100));
-                double estimatePrice = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                //原始价格set
-                order.setPriceto(dto.getTotalPrice() );
-                order.setCourierCompanyCode(dto.getCourierCompanyCode());
-                // double totalInKilograms = (feeModel.getStartPrice()*100) +(feeModel.getStartWeight() / 500) * (feeModel.getContinuedHeavyPrice() ** 100);
-                return estimatePrice;
-            }
-        }catch (Exception e){
-            log.error("获取运费价格失败",e);
-        }
-        throw new RuntimeException("未查到运费价格");
+        return EstimatePriceUtil.getEstimatePrice(retio,dto);
+
     }
 }

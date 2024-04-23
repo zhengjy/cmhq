@@ -8,6 +8,8 @@ import com.cmhq.core.enums.MoneyConsumeEumn;
 import com.cmhq.core.enums.MoneyConsumeMsgEumn;
 import com.cmhq.core.model.CompanyMoneyParam;
 import com.cmhq.core.model.FaCourierOrderEntity;
+import com.cmhq.core.model.dto.SettleWeightDto;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
@@ -33,12 +35,26 @@ public abstract class AbstartApiSettleWeightPush< Req extends UploadData> extend
             log.error("订单已签收 params 【{}】", JSONObject.toJSONString(order));
             return;
         }
-        getWeight(req);
+        SettleWeightDto swd = getSettleWeight(req);
+        if (swd == null){
+            log.error("未返回结算运费信息 params 【{}】", JSONObject.toJSONString(order));
+            return;
+        }
+        double weight = order.getWeight() == null ? 0D : order.getWeight();
+        //返回的和填写的出入比例 达到商户配置,则记录 ,触发则冻结
+
+        //重新计算运费 +  返回重量
+
+        //增加新的冻结
+
+        //更新实际重量
+
+        swd.getWaybillNo();
         //
 
     }
 
-    protected abstract Double getWeight(Req req);
+    protected abstract SettleWeightDto getSettleWeight(Req req);
 
     @Override
     protected FaCourierOrderEntity getFaCourierOrder(Req req) {
@@ -53,4 +69,6 @@ public abstract class AbstartApiSettleWeightPush< Req extends UploadData> extend
     protected void afterHandle(Req req) {
 
     }
+
+
 }

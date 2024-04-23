@@ -1,5 +1,6 @@
 package com.cmhq.core.fitler;
 
+import com.cmhq.core.enums.CourierCompanyEnum;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.dto.FreightChargeDto;
 
@@ -16,5 +17,9 @@ public interface FreightFilter {
      */
     FreightChargeDto getFreight(FaCourierOrderEntity order);
 
+    FreightChargeDto getFreightByCourierCompanyCode(FaCourierOrderEntity order,String courierCompanyCode);
+
     FreightChargeDto doFreightHandle(FaCourierOrderEntity order);
+
+    CourierCompanyEnum getCourierCompany();
 }

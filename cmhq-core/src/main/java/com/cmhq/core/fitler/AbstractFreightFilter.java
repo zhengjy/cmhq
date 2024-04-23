@@ -2,6 +2,7 @@ package com.cmhq.core.fitler;
 
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.dto.FreightChargeDto;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,21 +15,44 @@ public abstract class AbstractFreightFilter  implements FreightFilter{
 
     @Override
     public FreightChargeDto getFreight(FaCourierOrderEntity order) {
+        return doGetFreight(order,null);
+    }
+
+    @Override
+    public FreightChargeDto getFreightByCourierCompanyCode(FaCourierOrderEntity order,String courierCompanyCode) {
+        return doGetFreight(order,courierCompanyCode);
+    }
+
+    private FreightChargeDto doGetFreight(FaCourierOrderEntity order,String courierCompanyCode){
         List<FreightFilter>  list = FitlerFactory.getFreightFilters();
         FreightChargeDto preDto = null;
         for (FreightFilter filter : list){
-            FreightChargeDto currDto = filter.doFreightHandle(order);
-            if (preDto == null){
-                preDto = currDto;
+            if (StringUtils.isNotEmpty(courierCompanyCode)){
+                if (filter.getCourierCompany().getType().equals(courierCompanyCode)){
+                    FreightChargeDto currDto = filter.doFreightHandle(order);
+                    if (preDto == null){
+                        preDto = currDto;
+                    }else {
+                        if (currDto != null && preDto != null){
+                            if (currDto.getTotalPrice() < preDto.getTotalPrice()){
+                                preDto =  currDto;
+                            }
+                        }
+                    }
+                }
             }else {
-              if (currDto != null && preDto != null){
-                  if (currDto.getTotalPrice() < preDto.getTotalPrice()){
-                      preDto =  currDto;
-                  }
-              }
+                FreightChargeDto currDto = filter.doFreightHandle(order);
+                if (preDto == null){
+                    preDto = currDto;
+                }else {
+                    if (currDto != null && preDto != null){
+                        if (currDto.getTotalPrice() < preDto.getTotalPrice()){
+                            preDto =  currDto;
+                        }
+                    }
+                }
             }
         }
         return preDto;
     }
-
 }

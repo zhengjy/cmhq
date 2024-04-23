@@ -38,7 +38,7 @@ public abstract class AbstartApiOrderPush<Req extends UploadData> extends Abstra
             //
             orderEntity.setCancelType(2);
             orderEntity.setReason(getCanceReason(req));
-            faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyOrderNo,req.getUnKey()));
+            faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getId,req.getUnKey()));
             otherHandle(req);
             FaCourierOrderEntity order = getFaCourierOrder(req);
             if (order == null){
@@ -46,6 +46,8 @@ public abstract class AbstartApiOrderPush<Req extends UploadData> extends Abstra
             }
             //取消订单。返还账户金额
             faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_5, order.getEstimatePrice(),order.getFaCompanyId(),order.getId()+""));
+        }else {
+            faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getId,req.getUnKey()));
         }
 
     }

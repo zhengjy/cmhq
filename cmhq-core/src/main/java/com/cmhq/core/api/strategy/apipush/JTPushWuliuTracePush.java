@@ -14,6 +14,14 @@ import java.util.List;
 public class JTPushWuliuTracePush extends AbstartApiTracePush<JTPushDto<JTPushTraceDto>>{
 
     @Override
+    protected void otherHandle(JTPushDto<JTPushTraceDto> param) {
+        if (param.getObj() != null){
+            JTPushTraceDto dto = param.getObj(JTPushTraceDto.class);
+            JTPushTraceDto.Detail d = dto.getDetails().get(0);
+        }
+    }
+
+    @Override
     protected CourierWuliuStateEnum getTraceState(JTPushDto<JTPushTraceDto> param) {
         if (param.getObj() != null){
             JTPushTraceDto dto = param.getObj(JTPushTraceDto.class);
@@ -54,6 +62,26 @@ public class JTPushWuliuTracePush extends AbstartApiTracePush<JTPushDto<JTPushTr
             JTPushTraceDto dto = param.getObj(JTPushTraceDto.class);
             List<JTPushTraceDto.Detail> detailList = dto.getDetails();
             return detailList.get(0).getScanType();
+        }
+        return "";
+    }
+
+    @Override
+    protected String getWeight(JTPushDto<JTPushTraceDto> param) {
+        if (param.getObj() != null){
+            JTPushTraceDto dto = param.getObj(JTPushTraceDto.class);
+            List<JTPushTraceDto.Detail> detailList = dto.getDetails();
+            return detailList.get(0).getWeight();
+        }
+        return "";
+    }
+
+    @Override
+    protected String getIsErrorMsg(JTPushDto<JTPushTraceDto> param) {
+        if (param.getObj() != null){
+            JTPushTraceDto dto = param.getObj(JTPushTraceDto.class);
+            List<JTPushTraceDto.Detail> detailList = dto.getDetails();
+            return detailList.get(0).getProblemType();
         }
         return "";
     }
