@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  * Created by Jiyang.Zheng on 2024/4/20 10:29.
  */
 @Slf4j
-@Component
+@Component("jTFreightFilter")
 public class JTFreightFilter extends AbstractFreightFilter{
     @Override
     public FreightChargeDto doFreightHandle(FaCourierOrderEntity order) {
@@ -29,10 +29,18 @@ public class JTFreightFilter extends AbstractFreightFilter{
                 log.info("获取J&T运费价格 {}",JSONObject.toJSONString(uploadResult.getJsonMsg()));
                 FreightChargeDto dto = new FreightChargeDto();
                 //原始价格set
+                if(ccd.getTotalPrice() == 0){
+                    ccd.setTotalPrice(6D);
+                }
                 dto.setTotalPrice(ccd.getTotalPrice());
                 dto.setCourierCompanyCode(CourierCompanyEnum.COMPANY_JT.getType());
                 return dto;
             }
+        }else {
+            FreightChargeDto dto = new FreightChargeDto();
+            dto.setErrorMsg(uploadResult.getErrorMsg());
+            dto.setCourierCompanyCode(CourierCompanyEnum.COMPANY_JT.getType());
+            return dto;
         }
         return null;
     }

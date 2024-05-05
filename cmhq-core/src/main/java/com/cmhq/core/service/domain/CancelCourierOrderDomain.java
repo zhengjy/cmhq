@@ -106,9 +106,7 @@ public class CancelCourierOrderDomain {
                 //正常状态
                 && (entity.getCancelOrderState() == 0 || entity.getCancelOrderState() == 1 || entity.getCancelOrderState() == 3)
                 //没有物流信息
-                && entity.getWuliuState() == null &&
-                //未取件
-                Objects.equals( entity.getCourierOrderState(),1)){
+                && entity.getWuliuState() == null){
         }else {
             throw new RuntimeException("当前订单状态不允许取消！");
         }

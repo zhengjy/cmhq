@@ -18,6 +18,11 @@ https://ahjttd.com/MJYXlogin.php
 https://ahjttd.com/company.php
 商户名称：创美华奇-客服售后 账号：18325927677 密码：Changmeihuaqi1
 
+②商户登录地址
+https://ahjttd.com/company.php
+商户主账号名称：创美华奇 账号：18511113985 密码：Changmeihuaqi1
+商户子账号①名称：创美华奇-林子祥 账号：17194823977 密码：chuangmeihuaqi1
+
 ## 阿里云账号：安徽极兔  密码：Li060708
 ## 阿里云账号：皖南商会 cwqgy6785156 /  cwqgy250
 
@@ -116,3 +121,13 @@ private Integer cancelType;
  http://b.ahjttd.com:8000/v1/courierPushState/jt/pushOrderStatus
  http://b.ahjttd.com:8000/v1/courierPushState/jt/pushTrace
  http://b.ahjttd.com:8000/v1/courierPushState/jt/pushSettleWeight
+
+
+ #jd
+ 接入指南
+ https://cloud.jdl.com/#/open-business-document/access-guide/158/104
+ 京东快递接口文档
+ https://cloud.jdl.com/#/open-business-document/api-doc/158/1051
+ 账户名称：安徽惠普智能科技有限公司
+ 密码：Cmhq@520
+ 手机验证：13569704938

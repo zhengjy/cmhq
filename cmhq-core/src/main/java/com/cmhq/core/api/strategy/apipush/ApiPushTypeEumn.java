@@ -10,6 +10,9 @@ public enum ApiPushTypeEumn {
     TYPE_JT_PUSHORDERSTATUS("jt_pushOrderStatus","jt_推送订单状态"),
     TYPE_JT_PUSHTRACE("jt_pushTrace","jt_物流轨迹推送"),
     TYPE_JT_PUSHSETTLEWEIGHT("jt_pushSettleWeight","jt_结算重量回传"),
+    TYPE_JD_PUSHORDERSTATUS("jd_pushOrderStatus","推送订单状态"),
+    TYPE_JD_PUSHTRACE("jd_pushTrace","物流轨迹推送"),
+    TYPE_JD_PUSHSETTLEWEIGHT("jd_pushSettleWeight","结算重量回传"),
     ;
     private String type;
     private String desc;

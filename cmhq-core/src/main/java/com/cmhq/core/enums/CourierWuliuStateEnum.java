@@ -1,7 +1,7 @@
 package com.cmhq.core.enums;
 
 /**
- *
+ *1运输中2派件中3已签收4异常
  */
 public enum CourierWuliuStateEnum {
     /**
@@ -11,6 +11,7 @@ public enum CourierWuliuStateEnum {
     STATE_2("2","派件中"),
     STATE_3("3","已签收"),
     STATE_4("4","異常件"),
+
     ;
     private String type;
     private String desc;

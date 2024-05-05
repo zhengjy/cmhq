@@ -48,7 +48,7 @@ public class FaRechargeServiceImpl  implements FaRechargeService {
             queryWrapper.eq(FaRechargeEntity::getCid,SecurityUtils.getCurrentCompanyId());
         }
         if (StringUtils.isNotEmpty(query.getCompanyName())){
-            queryWrapper.inSql(FaRechargeEntity::getCid,"select id from fa_company like '%"+query.getCompanyName()+"%'");
+            queryWrapper.inSql(FaRechargeEntity::getCid,"select id from fa_company where company_name like '%"+query.getCompanyName()+"%'");
         }
         if (StringUtils.isNotEmpty(query.getOrderId())){
             queryWrapper.inSql(FaRechargeEntity::getOrderid,query.getOrderId());
@@ -71,7 +71,7 @@ public class FaRechargeServiceImpl  implements FaRechargeService {
             list.stream().forEach(v ->{
                 FaCompanyEntity faCompanyEntity = faCompanyService.selectById(v.getCid());
                 if (faCompanyEntity != null){
-                    v.setCompanyName(faCompanyEntity.getName());
+                    v.setCompanyName(faCompanyEntity.getCompanyName());
                 }
             });
         }

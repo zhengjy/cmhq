@@ -6,13 +6,13 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
-import org.apache.commons.lang3.StringUtils;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.Date;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/6 13:46.
  */
+@Slf4j
 @Data
 @TableName("fa_expressorder")
 public class FaCourierOrderEntity {
@@ -68,9 +68,10 @@ public class FaCourierOrderEntity {
     @ApiModelProperty(value = "高")
     private Integer height;
 
-    @ApiModelProperty(value = "预估费用")
+    //
+    @ApiModelProperty(value = "预估费用（快递公司返回的费用）")
     private Double estimatePrice;
-    @ApiModelProperty(value = "实际费用")
+    @ApiModelProperty(value = "实际费用（真实扣费的费用）")
     private Double price;
     @ApiModelProperty(value = "本地实际费用")
     private Double priceto;
@@ -79,15 +80,15 @@ public class FaCourierOrderEntity {
     private String takeGoodsTime;
 
     @ApiModelProperty(value = "1上门取件2门店自寄")
-    private Integer type =1;
+    private Integer type;
 
-    @ApiModelProperty(value = "本系统自定义状态:0待取件1已取件2已发出3已签收")
+    @ApiModelProperty(value = "本系统自定义状态:0待取件1调派2已取件3:已取消")
     @TableField("status")
     private Integer orderState;
 
     @ApiModelProperty(value = "-1:待审核,0取消待审核1正常2审核通过3审核不通过")
     @TableField("cancel")
-    private Integer cancelOrderState=1;
+    private Integer cancelOrderState;
 
     @ApiModelProperty(value = "发货人")
     private String fromName;
@@ -132,9 +133,8 @@ public class FaCourierOrderEntity {
     @ApiModelProperty(value = "物流公司返回物流信息状态")
     private String courierWuliuState;
 
-    @ApiModelProperty(value = "物流公司订单状态：1未调派业务员2已调派业务员3已揽收4已取件5已取消")
-    @TableField("jitu_status")
-    private Integer courierOrderState;
+    @ApiModelProperty(value = "物流公司订单状态")
+    private String courierOrderState;
 
     /**
      * 异常件 in(取消订单、)
@@ -160,7 +160,7 @@ public class FaCourierOrderEntity {
     @ApiModelProperty(value = "预计结算时间戳签收7天后")
     private Date jiesuanTime;
     @ApiModelProperty(value = "0未结算1已结算")
-    private Integer isJiesuan=0;
+    private Integer isJiesuan;
 
     @ApiModelProperty(value = "1自己取消2物流公司取消")
     private Integer cancelType;

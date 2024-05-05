@@ -7,6 +7,7 @@ public enum CourierCompanyEnum {
      */
     COMPANY_STO("sto","申通"),
     COMPANY_JT("J&T","极兔"),
+    COMPANY_JD("jd","京东"),
     COMPANY_BAIDU("baidu","百度"),
     ;
     private String type;

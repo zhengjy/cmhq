@@ -1,9 +1,13 @@
 package com.cmhq.core.service;
 
 import com.cmhq.core.model.FaCourierOrderEntity;
+import com.cmhq.core.model.dto.FaCostFreight;
 import com.cmhq.core.model.dto.FreightChargeDto;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import me.zhengjie.QueryResult;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/6 13:59.
@@ -25,6 +29,11 @@ public interface FaCourierOrderService {
      * @return
      */
     FreightChargeDto getCourierFreightCharge(FaCourierOrderEntity entity);
+    /**
+     * 获取所有物流的最低成本价，筛选最低价格
+     * @return
+     */
+    FaCostFreight selectFaCompanyCostFreight(FaCourierOrderEntity entity);
 
     /**
      * 取消订单
@@ -47,6 +56,12 @@ public interface FaCourierOrderService {
     Object queryCourierTrack(Integer id);
 
     void saveOrderExt(Integer id,String cname,String cvalue);
+
+    void delete(Integer id);
+
+    Map<String, String> getOrderNoCompanyIdUserId();
+
+    Integer shareCreate(HttpServletRequest request,FaCourierOrderEntity resources);
 
 //    /**
 //     * 查询所有数据不分页

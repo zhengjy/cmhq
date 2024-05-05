@@ -16,13 +16,20 @@ import java.util.List;
 public class CourierOrderQuery extends BaseQuery{
     @ApiModelProperty(value = "快递公司 sto：申通")
     private String courierCompanyCode;
+    @ApiModelProperty(value = "id")
+    private Integer id;
+    @ApiModelProperty(value = "订单号")
+    private String orderNo;
     @ApiModelProperty(value = "运单号")
     private String courierCompanyWaybillNo;
     @ApiModelProperty(value = "物品名称")
     private String goodsName;
 
-    @ApiModelProperty(value = "订单状态：极兔（0待取件1已取件2已发出3已签收）")
+    @ApiModelProperty(value = "本系统自定义状态:0待取件1调派2已取件3:已取消")
     private List<Integer> orderState;
+
+    @ApiModelProperty(value = "本系统自定义物流息状态：1运输中2派件中3已签收4异常")
+    private List<Integer> wuliuState;
 
     @ApiModelProperty(value = "-1:待审核,0取消待审核1正常2审核通过3审核不通过")
     private List<Integer> cancelOrderState;

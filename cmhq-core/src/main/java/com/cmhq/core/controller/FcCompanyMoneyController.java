@@ -1,26 +1,17 @@
 package com.cmhq.core.controller;
 
 import cn.hutool.core.date.DateUtil;
-import com.cmhq.core.model.FaCompanyEntity;
 import com.cmhq.core.model.FaCompanyMoneyEntity;
-import com.cmhq.core.model.FaRechargeEntity;
-import com.cmhq.core.model.param.CompanyQuery;
-import com.cmhq.core.model.param.FaRechargeQuery;
 import com.cmhq.core.model.param.FcCompanyMoneyQuery;
 import com.cmhq.core.service.FaCompanyMoneyService;
-import com.cmhq.core.service.FaCompanyService;
-import com.cmhq.core.util.CurrentUserContent;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.APIResponse;
 import me.zhengjie.QueryResult;
-import me.zhengjie.annotation.Log;
-import me.zhengjie.modules.system.domain.User;
 import me.zhengjie.utils.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;

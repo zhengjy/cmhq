@@ -34,20 +34,22 @@ public abstract class AbstartApiOrderPush<Req extends UploadData> extends Abstra
         }
         FaCourierOrderEntity orderEntity = new FaCourierOrderEntity();
         orderEntity.setOrderState(Integer.parseInt(orderStateEnum.getType()));
-        if (orderStateEnum.getType().equals(CourierOrderStateEnum.STATE_5.getType())){
+        orderEntity.setCourierOrderState(getCourierOrderState(req));
+        if (orderStateEnum.getType().equals(CourierOrderStateEnum.STATE_3.getType())){
             //
             orderEntity.setCancelType(2);
             orderEntity.setReason(getCanceReason(req));
-            faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getId,req.getUnKey()));
+            faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,req.getUnKey()));
             otherHandle(req);
             FaCourierOrderEntity order = getFaCourierOrder(req);
             if (order == null){
                 log.error("为查询到订单 params 【{}】", JSONObject.toJSONString(order));
+                return;
             }
             //取消订单。返还账户金额
             faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_5, order.getEstimatePrice(),order.getFaCompanyId(),order.getId()+""));
         }else {
-            faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getId,req.getUnKey()));
+            faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,req.getUnKey()));
         }
 
     }
@@ -58,6 +60,7 @@ public abstract class AbstartApiOrderPush<Req extends UploadData> extends Abstra
      * @return
      */
     protected abstract String getCanceReason(Req req);
+    protected abstract String getCourierOrderState(Req req);
 
     protected abstract CourierOrderStateEnum getOrderState(Req req);
 
@@ -69,7 +72,7 @@ public abstract class AbstartApiOrderPush<Req extends UploadData> extends Abstra
 
     @Override
     protected FaCourierOrderEntity getFaCourierOrder(Req req) {
-        List<FaCourierOrderEntity> list = faCourierOrderDao.selectList(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyOrderNo,req.getUnKey()));
+        List<FaCourierOrderEntity> list = faCourierOrderDao.selectList(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,req.getUnKey()));
         if (CollectionUtils.isNotEmpty(list)){
             return list.get(0);
         }

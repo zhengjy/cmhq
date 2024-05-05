@@ -1,16 +1,14 @@
 package com.cmhq.core.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.JTResponse;
 import com.cmhq.core.api.StoResponse;
-import com.cmhq.core.api.dto.request.JTPushDto;
-import com.cmhq.core.api.dto.request.StoPushOrderStateDto;
-import com.cmhq.core.api.dto.request.StoPushTraceDto;
+import com.cmhq.core.api.dto.request.*;
 import com.cmhq.core.api.strategy.StrategyFactory;
 import com.cmhq.core.api.strategy.apipush.ApiPushTypeEumn;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import me.zhengjie.annotation.AnonymousAccess;
 import me.zhengjie.annotation.rest.AnonymousPostMapping;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +49,7 @@ public class ExternalInterfaceController {
     @ApiOperation("极兔推送订单状态")
     @AnonymousPostMapping(value = "/jt/pushOrderStatus")
     public JTResponse jtPushOrderStatus(JTPushDto dto)  {
+        log.info("req ="+ JSONObject.toJSONString(dto));
 
         return StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JT_PUSHORDERSTATUS).jtPushHandle(dto);
     }
@@ -58,7 +57,7 @@ public class ExternalInterfaceController {
 
     @ApiOperation("极兔物流轨迹推送")
     @AnonymousPostMapping(value = "/jt/pushTrace")
-    public JTResponse jtPushTrace( JTPushDto dto) throws Exception {
+    public JTResponse jtPushTrace(JTPushDto dto) throws Exception {
         return StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JT_PUSHTRACE).jtPushHandle(dto);
     }
 
@@ -66,6 +65,12 @@ public class ExternalInterfaceController {
     @AnonymousPostMapping(value = "/jt/pushSettleWeight")
     public JTResponse jtPushSettleWeight(JTPushDto dto) throws Exception {
         return StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JT_PUSHSETTLEWEIGHT).jtPushHandle(dto);
+    }
+
+    @ApiOperation("京东物流轨迹推送")
+    @AnonymousPostMapping(value = "/jd/pushTrace")
+    public JTResponse jtPushTrace(JDPushTraceDto dto) throws Exception {
+        return StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JT_PUSHTRACE).jtPushHandle(dto);
     }
 
 }

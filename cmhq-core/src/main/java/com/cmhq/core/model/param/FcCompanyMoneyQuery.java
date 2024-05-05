@@ -16,4 +16,6 @@ public class FcCompanyMoneyQuery  extends BaseQuery{
     private String billNo;
     @ApiModelProperty(value = "类型：1系统2充值3消费")
     private String type;
+    @ApiModelProperty(value = "用户")
+    private String faUser;
 }

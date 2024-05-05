@@ -13,17 +13,10 @@ import java.util.List;
 @Component
 public class JTPushWuliuTracePush extends AbstartApiTracePush<JTPushDto<JTPushTraceDto>>{
 
-    @Override
-    protected void otherHandle(JTPushDto<JTPushTraceDto> param) {
-        if (param.getObj() != null){
-            JTPushTraceDto dto = param.getObj(JTPushTraceDto.class);
-            JTPushTraceDto.Detail d = dto.getDetails().get(0);
-        }
-    }
 
     @Override
     protected CourierWuliuStateEnum getTraceState(JTPushDto<JTPushTraceDto> param) {
-        if (param.getObj() != null){
+        if (param.getObj(JTPushTraceDto.class) != null){
             JTPushTraceDto dto = param.getObj(JTPushTraceDto.class);
             JTPushTraceDto.Detail d = dto.getDetails().get(0);
             /**
@@ -42,13 +35,16 @@ public class JTPushWuliuTracePush extends AbstartApiTracePush<JTPushDto<JTPushTr
              * 12、安检扫描
              * 13、其他扫描
              */
-            if (d.getScanType().equals("10")){
+            if (d.getScanType().equals("快件签收" )){
                 return CourierWuliuStateEnum.STATE_3;
-            }else if (d.getScanType().equals("1") ){
+            }else if (d.getScanType().equals("到件扫描") || d.getScanType().equals("出仓扫描")
+                    || d.getScanType().equals("入库扫描")  || d.getScanType().equals("代理点收入扫描")
+                    || d.getScanType().equals("快件取出扫描") || d.getScanType().equals("出库扫描")
+            ){
                 return CourierWuliuStateEnum.STATE_2;
-            }else if (d.getScanType().equals("3")){
+            }else if (d.getScanType().equals("快件揽收") || d.getScanType().equals("发件扫描")){
                 return CourierWuliuStateEnum.STATE_1;
-            }else if (d.getScanType().equals("11") ){
+            }else if (d.getScanType().equals("问题件扫描") ){
                 return CourierWuliuStateEnum.STATE_4;
             }
 
@@ -58,7 +54,7 @@ public class JTPushWuliuTracePush extends AbstartApiTracePush<JTPushDto<JTPushTr
 
     @Override
     protected String getCourierWuliuState(JTPushDto<JTPushTraceDto> param) {
-        if (param.getObj() != null){
+        if (param.getObj(JTPushTraceDto.class) != null){
             JTPushTraceDto dto = param.getObj(JTPushTraceDto.class);
             List<JTPushTraceDto.Detail> detailList = dto.getDetails();
             return detailList.get(0).getScanType();
@@ -68,7 +64,7 @@ public class JTPushWuliuTracePush extends AbstartApiTracePush<JTPushDto<JTPushTr
 
     @Override
     protected String getWeight(JTPushDto<JTPushTraceDto> param) {
-        if (param.getObj() != null){
+        if (param.getObj(JTPushTraceDto.class) != null){
             JTPushTraceDto dto = param.getObj(JTPushTraceDto.class);
             List<JTPushTraceDto.Detail> detailList = dto.getDetails();
             return detailList.get(0).getWeight();
@@ -78,7 +74,7 @@ public class JTPushWuliuTracePush extends AbstartApiTracePush<JTPushDto<JTPushTr
 
     @Override
     protected String getIsErrorMsg(JTPushDto<JTPushTraceDto> param) {
-        if (param.getObj() != null){
+        if (param.getObj(JTPushTraceDto.class) != null){
             JTPushTraceDto dto = param.getObj(JTPushTraceDto.class);
             List<JTPushTraceDto.Detail> detailList = dto.getDetails();
             return detailList.get(0).getProblemType();

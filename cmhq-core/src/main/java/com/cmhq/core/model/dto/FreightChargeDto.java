@@ -13,4 +13,6 @@ public class FreightChargeDto {
     private Double totalPrice;
     /**快递公司编码*/
     private String courierCompanyCode;
+
+    private String errorMsg;
 }

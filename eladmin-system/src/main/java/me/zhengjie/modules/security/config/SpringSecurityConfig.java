@@ -135,9 +135,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/fcRecharge/**").permitAll()
                 .antMatchers("/companyMoney/**").permitAll()
                 .antMatchers("/ziaddress//**").permitAll()
+                .antMatchers("/fcCost//**").permitAll()
                 .antMatchers("/external/aliPay/**").permitAll()
                 .antMatchers("/v1/courierPushState/**").permitAll()
                 .antMatchers("/fauser/**").permitAll()
+                .antMatchers("/jobtest/**").permitAll()
                 // 所有类型的接口都放行
                 .antMatchers(anonymousUrls.get(RequestMethodEnum.ALL.getType()).toArray(new String[0])).permitAll()
                 // 所有请求都需要认证

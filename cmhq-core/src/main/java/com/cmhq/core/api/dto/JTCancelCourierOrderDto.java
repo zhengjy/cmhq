@@ -1,5 +1,6 @@
 package com.cmhq.core.api.dto;
 
+import com.cmhq.core.api.strategy.JTUploadData;
 import lombok.Data;
 
 /**

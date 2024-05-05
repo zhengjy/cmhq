@@ -45,12 +45,11 @@ CREATE TABLE `fa_courier_company` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT '快递公司';
 
 CREATE TABLE `fa_courier_order_ext` (
-                                        `courier_order_id` int(11) NOT NULL ,
-                                        `cname` varchar(100) COMMENT '名稱',
-                                        `cvalue` varchar(255) COMMENT '值',
-                                        PRIMARY KEY (`courier_order_id`),
-                                        UNIQUE KEY `idx_order_id` (`courier_order_id`,`cname`) USING HASH
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COMMENT '快递订单扩展数据';
+                                        `courier_order_id` int(11) NOT NULL,
+                                        `cname` varchar(100) NOT NULL DEFAULT '' COMMENT '名稱',
+                                        `cvalue` varchar(255) DEFAULT NULL COMMENT '值',
+                                        PRIMARY KEY (`courier_order_id`,`cname`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='快递订单扩展数据';
 
 
 
@@ -93,7 +92,7 @@ ALTER TABLE fa_company_money ADD order_no varchar(500) NULL COMMENT '支付订�
                                 ALTER TABLE fa_expressorder ADD courier_wuliu_state varchar(50) NULL;
                                 ALTER TABLE fa_expressorder MODIFY COLUMN courier_wuliu_state varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '物流公司返回物流信息状态';
 
-CREATE TABLE `fa_company_day_ope_num` (
+CREATE TABLE `fa_company_day_ope_num2` (
                                           `id` int(11) NOT NULL AUTO_INCREMENT,
                                           `ope_date` varchar(255) DEFAULT NULL COMMENT '操作日期',
                                           `ope_type` varchar(255) DEFAULT NULL COMMENT '操作类型：order_cancel_num：订单取消数,order_create_num：订单创建数,consume_money：消费金额',
@@ -112,3 +111,27 @@ ALTER TABLE fa_company ADD check_weight_ratio int(11) DEFAULT NULL COMMENT '检�
 ALTER TABLE sys_childuser ADD cancel_max_num int(11) DEFAULT NULL COMMENT '最多取消订单次数';
 ALTER TABLE sys_childuser ADD cancel_max_money double DEFAULT NULL COMMENT '单笔取消订单金额上限';
 
+ALTER TABLE fa_expressorder ADD courier_order_state varchar(100) DEFAULT NULL COMMENT '物流公司订单状态';
+
+ALTER TABLE fa_expressorder MODIFY COLUMN jitu_status int(1) DEFAULT 1 NOT NULL COMMENT '1未调派业务员2已调派业务员3已揽收4已取件5已取消';
+
+CREATE TABLE `fa_company_cost` (
+                                   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                                   `pro_f` varchar(20) DEFAULT null COMMENT '始发省',
+                                   `city_f` varchar(20) DEFAULT null COMMENT '始发地',
+                                   `pro_d` varchar(20) DEFAULT null COMMENT '目的省',
+                                   `city_d` varchar(20) DEFAULT null COMMENT '目的地',
+                                   `address` varchar(20) DEFAULT null COMMENT '流向',
+                                   `area` varchar(20) DEFAULT null COMMENT '区域',
+                                   `price_init` decimal(10,3) unsigned DEFAULT '0.000' COMMENT '平台原价首重（1kg）',
+                                   `price_init_to` decimal(10,3) unsigned DEFAULT '0.000' COMMENT '平台原价续重（元/kg）',
+                                   `price` decimal(10,3) unsigned DEFAULT '0.000' COMMENT '首重（1kg）',
+                                   `price_to` decimal(10,3) unsigned DEFAULT '0.000' COMMENT '续重（元/kg）',
+                                   `courier_company_code` varchar(100) DEFAULT NULL COMMENT '快递公司编码。如sto',
+                                   PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT COMMENT='快递公司成本价格';
+
+CREATE TABLE `fa_courier_order_share_orderno` (
+                                                  `order_no` varchar(50) NOT NULL,
+                                                  PRIMARY KEY (`order_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='快递订单分享订单号';

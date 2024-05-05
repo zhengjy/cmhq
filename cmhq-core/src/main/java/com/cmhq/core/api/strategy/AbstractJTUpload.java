@@ -2,7 +2,6 @@ package com.cmhq.core.api.strategy;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.*;
-import com.cmhq.core.api.dto.JTUploadData;
 import com.yl.jms.sdk.JtExpressApi;
 import com.yl.jms.sdk.auth.ClientConfiguration;
 import com.yl.jms.sdk.client.JtExpressApiOperator;

@@ -11,10 +11,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class StoPushWuliuTracePush extends AbstartApiTracePush<StoPushTraceDto>{
 
-    @Override
-    protected void otherHandle(StoPushTraceDto stoPushTraceDto) {
-
-    }
 
     @Override
     protected CourierWuliuStateEnum getTraceState(StoPushTraceDto dto) {

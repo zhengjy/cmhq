@@ -25,7 +25,7 @@ public class FaCourierOrderExtEntity {
 
     @TableId
     private Integer courierOrderId;
-    /**orderIsErrorMsg:订单错误原因
+    /**orderIsErrorMsg:订单异常原因
      * goodsType:sto物品类型
      * jtGoodsType:jt物品类型
      * */

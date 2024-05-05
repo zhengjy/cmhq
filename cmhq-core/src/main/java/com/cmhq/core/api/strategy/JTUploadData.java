@@ -1,4 +1,4 @@
-package com.cmhq.core.api.dto;
+package com.cmhq.core.api.strategy;
 
 import com.cmhq.core.api.UploadData;
 

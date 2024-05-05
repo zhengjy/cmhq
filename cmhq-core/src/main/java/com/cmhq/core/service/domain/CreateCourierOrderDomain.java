@@ -5,8 +5,6 @@ import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.strategy.StrategyFactory;
 import com.cmhq.core.api.strategy.Upload;
-import com.cmhq.core.dao.FaCompanyDao;
-import com.cmhq.core.dao.FaCourierOrderExtDao;
 import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.enums.MoneyConsumeEumn;
 import com.cmhq.core.enums.MoneyConsumeMsgEumn;
@@ -20,14 +18,14 @@ import com.cmhq.core.service.FaCompanyDayOpeNumService;
 import com.cmhq.core.service.FaCompanyMoneyService;
 import com.cmhq.core.service.FaCompanyService;
 import com.cmhq.core.service.FaCourierOrderService;
-import com.cmhq.core.util.CurrentUserContent;
 import com.cmhq.core.util.EstimatePriceUtil;
 import com.cmhq.core.util.SpringApplicationUtils;
 import lombok.extern.slf4j.Slf4j;
+import me.zhengjie.modules.system.service.UserService;
+import me.zhengjie.modules.system.service.dto.UserDto;
 import me.zhengjie.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -37,53 +35,62 @@ import java.util.Objects;
 @Slf4j
 public class CreateCourierOrderDomain {
 
-    private FaCourierOrderEntity order;
+    private final FaCourierOrderEntity order;
     private final FaCourierOrderDao faCourierOrderDao;
-    private final FaCourierOrderExtDao faCourierOrderExtDao;
     private final FaCourierOrderService faCourierOrderService;
-    private final FaCompanyDao faCompanyDao;
     private final FaCompanyService faCompanyService;
     private final FaCompanyMoneyService faCompanyMoneyService;
     private final FaCompanyDayOpeNumService faCompanyDayOpeNumService;
 
-    public CreateCourierOrderDomain(FaCourierOrderEntity order) {
-
+    public CreateCourierOrderDomain(FaCourierOrderEntity order,Integer companyId,Long userId,String orderNo){
         if (order.getType() == null){
             order.setType(1);
         }
         order.setOrderState(0);
         order.setCancelOrderState(1);
-        order.setOrderNo(System.currentTimeMillis() + "");
+        order.setOrderNo(orderNo);
         order.setIsJiesuan(0);
         order.setOrderIsError(1);
-        order.setCreateUserId(SecurityUtils.getCurrentUserId().intValue());
+        order.setCreateUserId(userId.intValue());
+        order.setFaCompanyId(companyId);
 
         this.order = order;
         faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
-        faCourierOrderExtDao = SpringApplicationUtils.getBean(FaCourierOrderExtDao.class);
         faCourierOrderService = SpringApplicationUtils.getBean(FaCourierOrderService.class);
-        faCompanyDao = SpringApplicationUtils.getBean(FaCompanyDao.class);
         faCompanyService = SpringApplicationUtils.getBean(FaCompanyService.class);
         faCompanyMoneyService = SpringApplicationUtils.getBean(FaCompanyMoneyService.class);
         faCompanyDayOpeNumService = SpringApplicationUtils.getBean(FaCompanyDayOpeNumService.class);
     }
 
+
+
+    public CreateCourierOrderDomain(FaCourierOrderEntity order) {
+        this(order,SecurityUtils.getCurrentCompanyId(),SecurityUtils.getCurrentUserId(),System.currentTimeMillis() + "");
+    }
+
     public Integer handle(){
-        double estimatePrice = 0;
+        double price = 0;
+        Integer companyId = order.getFaCompanyId();
         try {
-            Integer companyId = SecurityUtils.getCurrentCompanyId();
             if (companyId == null){
                 throw new RuntimeException("当前用户非商户,无权限创建订单");
             }
             FaCompanyEntity faCompanyEntity = faCompanyService.selectById(companyId);
-            //  预估金额
-            estimatePrice = getEstimatePrice(faCompanyEntity.getRatio());
+            //  实际费用
+            price = getPrice(faCompanyEntity.getRatio());
 
-            check(estimatePrice,faCompanyEntity);
-            order.setFaCompanyId(companyId);
-            order.setEstimatePrice(estimatePrice);
-            order.setPrice(estimatePrice);
-            order.setCourierOrderState(1);
+            check(price,faCompanyEntity);
+            //这里获取物流公司的预估价，但是这个价格只是给商户看，还需要获取最低价的物流公司需要取  匹配底价表才能知道 那个物流公司价格最低
+            FreightChargeDto dto =  EstimatePriceUtil.getCourerCompanyCostPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),order.getWeight(),null);
+            FreightChargeDto dto2 =  faCourierOrderService.getCourierFreightCharge(order);
+            order.setCourierCompanyCode(dto.getCourierCompanyCode());
+            order.setEstimatePrice(dto2.getTotalPrice());
+            order.setPrice(price);
+            if (order.getType() ==null){
+                order.setType(1);
+            }
+            order.setCancelOrderState(1);
+            order.setIsJiesuan(0);
             //下单
             faCourierOrderDao.insert(order);
             //额外字段插入
@@ -91,14 +98,14 @@ public class CreateCourierOrderDomain {
             //上传订单信息到物流公司
             String billNo = uploadCourierOrder();
             //插入消费记录
-            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_3,estimatePrice,companyId, order.getId()+"",billNo));
+            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_3,price,companyId, order.getId()+"",billNo));
         }catch (Exception e){
             log.error("",e);
             throw new RuntimeException(e.getMessage());
         }finally {
             //记录统计量
-            faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(),FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_NUM,1);
-            faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(),FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_MAX_MONEY,estimatePrice);
+            faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(),FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_NUM,1,companyId);
+            faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(),FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_MAX_MONEY,price,companyId);
 
         }
         return order.getId();
@@ -120,7 +127,7 @@ public class CreateCourierOrderDomain {
 
         if (faCompanyEntity.getZiMaxMoney() != null && faCompanyEntity.getZiMaxMoney() > 0){
             //商户日最大金额
-            double createOrderMaxMoney = faCompanyDayOpeNumService.selectValue(LocalDate.now().toString(),LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_MAX_MONEY);
+            double createOrderMaxMoney = faCompanyDayOpeNumService.selectValue(LocalDate.now().toString(),LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_MAX_MONEY,faCompanyEntity.getId().longValue());
             if (createOrderMaxMoney >= faCompanyEntity.getZiMaxMoney()){
                 throw new RuntimeException("商户当日最大金额已达上限");
             }
@@ -128,31 +135,34 @@ public class CreateCourierOrderDomain {
 
         if (faCompanyEntity.getZiMaxNum() != null && faCompanyEntity.getZiMaxNum() > 0){
             //商户日下单量
-            double createOrderNum = faCompanyDayOpeNumService.selectValue(LocalDate.now().toString(),LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_NUM);
+            double createOrderNum = faCompanyDayOpeNumService.selectValue(LocalDate.now().toString(),LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_NUM,faCompanyEntity.getId().longValue());
             if (createOrderNum >= faCompanyEntity.getZiMaxNum()){
                 throw new RuntimeException("商户当日下单量已达上限");
             }
         }
 
-        if (CurrentUserContent.isCompanyChildUser() && CurrentUserContent.getCrrentUser().getChildUser() != null){
-            if ( estimatePrice > CurrentUserContent.getCrrentUser().getChildUser().getZiOneMaxMoney()){
+        UserService userService = SpringApplicationUtils.getBean(UserService.class);
+        long userId = order.getCreateUserId().longValue();
+        UserDto userDto = userService.findById(userId);
+        if (userDto.getChildUser() != null){
+            if ( estimatePrice > userDto.getChildUser().getZiOneMaxMoney()){
                 throw new RuntimeException("账户单笔金额达到上线");
             }
-            if (CurrentUserContent.getCrrentUser().getChildUser().getZiMaxMoney() != null){
+            if (userDto.getChildUser().getZiMaxMoney() != null){
                 //商户日最大金额
-                double createOrderMaxMoney = faCompanyDayOpeNumService.selectValue(LocalDate.now().toString(),LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_MAX_MONEY);
-                if (createOrderMaxMoney >= CurrentUserContent.getCrrentUser().getChildUser().getZiMaxMoney()){
+                double createOrderMaxMoney = faCompanyDayOpeNumService.selectValue(LocalDate.now().toString(),LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_MAX_MONEY,faCompanyEntity.getId().longValue());
+                if (createOrderMaxMoney >= userDto.getChildUser().getZiMaxMoney()){
                     throw new RuntimeException("账户当日最大金额已达上限");
                 }
             }
-            if (CurrentUserContent.getCrrentUser().getChildUser().getZiMaxNum() != null){
+            if (userDto.getChildUser().getZiMaxNum() != null){
                 //商户日下单量
-                double createOrderNum = faCompanyDayOpeNumService.selectValue(LocalDate.now().toString(),LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_NUM);
-                if (createOrderNum >= CurrentUserContent.getCrrentUser().getChildUser().getZiMaxNum()){
+                double createOrderNum = faCompanyDayOpeNumService.selectValue(LocalDate.now().toString(),LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_NUM,faCompanyEntity.getId().longValue());
+                if (createOrderNum >= userDto.getChildUser().getZiMaxNum()){
                     throw new RuntimeException("账户当日下单量已达上限");
                 }
             }
-            order.setZid(CurrentUserContent.getCrrentUser().getChildUser().getChildCompanyId());
+            order.setZid(userDto.getChildUser().getChildCompanyId());
         }
     }
 
@@ -168,6 +178,7 @@ public class CreateCourierOrderDomain {
                 updateEntity.setId(order.getId());
                 billNo = rsp.getWaybillNo();
                 updateEntity.setCourierCompanyWaybillNo(billNo);
+                updateEntity.setCourierCompanyOrderNo(rsp.getOrderNo());
                 faCourierOrderDao.updateById(updateEntity);
             }else {
                 throw new RuntimeException("物流公司未返回运单号");
@@ -194,9 +205,8 @@ public class CreateCourierOrderDomain {
      * 获取预估价格
      * @return
      */
-    private double getEstimatePrice(Integer retio){
-        FreightChargeDto dto =  faCourierOrderService.getCourierFreightCharge(order);
-        return EstimatePriceUtil.getEstimatePrice(retio,dto);
+    private double getPrice(Integer retio){
+        return EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getWeight(),retio);
 
     }
 }

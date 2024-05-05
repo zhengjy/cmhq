@@ -1,15 +1,20 @@
 package com.cmhq.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cmhq.core.dao.FaCompanyCostDao;
 import com.cmhq.core.dao.FaCompanyDao;
 import com.cmhq.core.dao.FaUserDao;
+import com.cmhq.core.model.FaCompanyCostEntity;
 import com.cmhq.core.model.FaCompanyEntity;
 import com.cmhq.core.model.FaUserEntity;
+import com.cmhq.core.model.dto.FaCostFreight;
 import com.cmhq.core.model.param.CompanyQuery;
 import com.cmhq.core.service.FaCompanyService;
 import com.cmhq.core.util.CurrentUserContent;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.QueryResult;
 import me.zhengjie.modules.system.domain.Dept;
@@ -20,7 +25,9 @@ import me.zhengjie.modules.system.service.DeptService;
 import me.zhengjie.modules.system.service.UserService;
 import me.zhengjie.modules.system.service.dto.UserDto;
 import me.zhengjie.utils.SecurityUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,7 +41,7 @@ import java.util.*;
  */
 @Slf4j
 @Service
-public class FaCompanyServiceImpl implements FaCompanyService {
+public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean {
     @Autowired
     private FaCompanyDao faCompanyDao;
     @Resource
@@ -45,6 +52,11 @@ public class FaCompanyServiceImpl implements FaCompanyService {
     private DeptService deptService;
     @Resource
     private  PasswordEncoder passwordEncoder;
+    @Autowired
+    private FaCompanyCostDao faCompanyCostDao;
+
+    public static Cache<String, List<FaCompanyCostEntity>> cache = CacheBuilder.newBuilder().build();
+
 
     @Override
     public QueryResult<FaCompanyEntity> list(CompanyQuery query) {
@@ -98,6 +110,7 @@ public class FaCompanyServiceImpl implements FaCompanyService {
     @Override
     public Integer edit(FaCompanyEntity entity) {
         if (entity.getId() == null){
+            entity.setMoney(0D);
             String pwd = passwordEncoder.encode(entity.getPassword());
             entity.setPassword(pwd);
             User user = new User();
@@ -159,6 +172,17 @@ public class FaCompanyServiceImpl implements FaCompanyService {
         return null;
     }
 
+    @Override
+    public List<FaCompanyCostEntity> selectFaCompanyCostList() {
+        String key = "FaCompanyCosts";
+        List<FaCompanyCostEntity> list = cache.getIfPresent(key);
+        if (CollectionUtils.isEmpty(list)){
+            list = faCompanyCostDao.selectList(new LambdaQueryWrapper<>());
+            cache.put(key,list);
+        }
+        return list;
+    }
+
     @Transactional
     @Override
     public Integer createChildUser(User resources)  {
@@ -170,7 +194,7 @@ public class FaCompanyServiceImpl implements FaCompanyService {
         //保存商户表
         FaCompanyEntity currentCompany = CurrentUserContent.getCurrentCompany();
         FaCompanyEntity entity = new FaCompanyEntity();
-        Integer fcid = entity.getId();
+        Integer fcid = currentCompany.getId();
         entity.setCompanyName(currentCompany.getCompanyName());
         entity.setPassword(resources.getPassword());
         entity.setMobile(resources.getPhone());
@@ -225,5 +249,10 @@ public class FaCompanyServiceImpl implements FaCompanyService {
             }
         }
         return dto;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        new Thread(this::selectFaCompanyCostList).start();
     }
 }

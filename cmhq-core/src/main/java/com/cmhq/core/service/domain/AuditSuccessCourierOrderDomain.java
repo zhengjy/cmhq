@@ -43,9 +43,7 @@ public class AuditSuccessCourierOrderDomain {
                 //正常状态
                 &&  Objects.equals(order.getCancelOrderState(),-1)
                 //没有物流信息
-                && order.getWuliuState() == null &&
-                //未取件
-                Objects.equals( order.getCourierOrderState(),1)){
+                && order.getWuliuState() == null ){
         }else {
             throw new RuntimeException("当前订单状态不允许审核！");
         }
@@ -56,9 +54,9 @@ public class AuditSuccessCourierOrderDomain {
 
         //更新审核通过状态
         faCourierOrderDao.updateById(state);
-        double estimatePrice = order.getEstimatePrice();
+        double price = order.getPrice();
         //插入返还记录 &返还商户或扣除商户金额
-        faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_6,estimatePrice,order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+        faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_6,price,order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
         //调用接口取消
         Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(order.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_CANCEL_COURIER_ORDER.getCodeNickName())));
         UploadResult uploadResult = upload.execute(order);

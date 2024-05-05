@@ -1,29 +1,26 @@
 package com.cmhq.core.controller;
 
 import cn.hutool.core.date.DateUtil;
-import com.cmhq.core.model.FaCompanyMoneyEntity;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
-import com.cmhq.core.model.param.FcCompanyMoneyQuery;
 import com.cmhq.core.service.FaCourierOrderService;
 import me.zhengjie.APIResponse;
 import me.zhengjie.QueryResult;
 import me.zhengjie.annotation.AnonymousAccess;
 import me.zhengjie.annotation.Log;
+import me.zhengjie.annotation.rest.AnonymousGetMapping;
+import me.zhengjie.annotation.rest.AnonymousPostMapping;
 import me.zhengjie.utils.FileUtil;
-import me.zhengjie.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/6 13:48.
@@ -54,6 +51,32 @@ public class FaCourierOrderController {
         return APIResponse.success(id);
     }
 
+    @AnonymousPostMapping("shareCreate")
+    @Log("分享新增CourierOrder")
+    @ApiOperation("分享新增CourierOrder")
+    public APIResponse shareCreateFaCourierOrder(HttpServletRequest request, @RequestBody FaCourierOrderEntity resources) {
+        Integer id = faCourierOrderService.shareCreate( request,resources);
+        return APIResponse.success(id);
+    }
+
+    @AnonymousGetMapping("sharelist")
+    @Log("分享查询CourierOrder")
+    @ApiOperation("分享查询CourierOrder")
+    public APIResponse shareQueryFaCourierOrder(@ModelAttribute CourierOrderQuery query) {
+        return APIResponse.success(faCourierOrderService.queryAll(query));
+    }
+
+
+
+
+    @GetMapping("getOrderNoCompanyIdUserId")
+    @Log("getOrderNoCompanyIdUserId")
+    @ApiOperation("分享链接url拼接订单号公司id用户id")
+    public APIResponse getOrderNoCompanyIdUserId() {
+        Map<String,String> map = faCourierOrderService.getOrderNoCompanyIdUserId();
+        return APIResponse.success(map);
+    }
+
     @PostMapping("getCourierFreightCharge")
     @Log("查询运费CourierOrder")
     @ApiOperation("查询运费CourierOrder")
@@ -68,6 +91,39 @@ public class FaCourierOrderController {
                                           @ApiParam(value = "备注") @RequestParam(required = false) String content,
                                           @ApiParam(value = "id") @RequestParam() Integer id) {
         return APIResponse.success(faCourierOrderService.cancelCourierOrder(stateType,content,id));
+    }
+
+    @ApiOperation("订单删除")
+    @Log("订单删除")
+    @GetMapping("delete")
+    public APIResponse delete(@ApiParam(value = "id") @RequestParam() Integer id) {
+        faCourierOrderService.delete(id);
+        return APIResponse.success();
+    }
+    @ApiOperation("根据订单号查询订单")
+    @Log("根据订单号查询订单")
+    @AnonymousGetMapping("selectOrderByOrderNo")
+    public APIResponse selectOrderByOrderNo( @ApiParam(value = "orderNo") @RequestParam() String orderNo) {
+        CourierOrderQuery query = new CourierOrderQuery();
+        query.setOrderNo(orderNo);
+        QueryResult<FaCourierOrderEntity>  queryResult = faCourierOrderService.queryAll(query);
+        if (queryResult.getTotal() > 0){
+            return APIResponse.success(queryResult.getItems().get(0));
+        }
+        return APIResponse.success();
+    }
+
+    @ApiOperation("根据id号查询订单")
+    @Log("根据id号查询订单")
+    @GetMapping("selectOrderById")
+    public APIResponse selectOrderById(@ApiParam(value = "id") @RequestParam() Integer id) {
+        CourierOrderQuery query = new CourierOrderQuery();
+        query.setId(id);
+        QueryResult<FaCourierOrderEntity>  queryResult = faCourierOrderService.queryAll(query);
+        if (queryResult.getTotal() > 0){
+            return APIResponse.success(queryResult.getItems().get(0));
+        }
+        return APIResponse.success();
     }
 
     @ApiOperation("地址识别")
@@ -98,9 +154,7 @@ public class FaCourierOrderController {
             map.put("宽度", e.getWidth());
             map.put("长度", e.getLength());
             map.put("高", e.getHeight());
-            if (SecurityUtils.getCurrentCompanyId() == null){
-                map.put("预估费用", e.getEstimatePrice());//
-            }
+            map.put("预估费用", e.getEstimatePrice());//
             map.put("实际费用", e.getPrice());
             map.put("期望上门取件时间", e.getTakeGoodsTime());
             //1上门取件2门店自寄
@@ -140,20 +194,18 @@ public class FaCourierOrderController {
             }
             map.put("物流状态", wname);
 
-            //物流公司订单状态：1未调派业务员2已调派业务员3已揽收4已取件5已取消
-            String csname= "";
-            if (e.getCourierOrderState() == 1){
-                csname = "未调派业务员";
-            }else if (e.getCourierOrderState() == 2){
-                csname = "已调派业务员";
-            }else if (e.getCourierOrderState() == 3){
-                csname = "已揽收";
-            }else if (e.getCourierOrderState() == 4){
-                csname = "已取件";
-            }else if (e.getCourierOrderState() == 5){
-                csname = "已取消";
-            }
-            map.put("物流公司订单状态", csname);
+//            //0待取件1已取件2已发出3已签收
+//            String csname= "";
+//            if (e.getOrderState() == 0){
+//                csname = "待取件";
+//            }else if (e.getOrderState() == 1){
+//                csname = "已取件";
+//            }else if (e.getOrderState() == 2){
+//                csname = "已发出";
+//            }else if (e.getOrderState() == 3){
+//                csname= "已签收";
+//            }
+//            map.put("订单状态", csname);
             //0异常1正常
             map.put("是否异常件", e.getOrderIsError() == 0 ? "异常" : "正常");
             //-1:待审核,0取消待审核1正常2审核通过3审核不通过

@@ -23,23 +23,32 @@ public class StoPushOrderStatePush  extends AbstartApiOrderPush<StoPushOrderStat
     }
 
     @Override
+    protected String getCourierOrderState(StoPushOrderStateDto stateDto) {
+        if (stateDto.getChangeInfo() != null) {
+            StoPushOrderStateDto.ChangeInfo changeInfo = stateDto.getChangeInfo();
+            return changeInfo.getStatus();
+        }
+        return "";
+    }
+
+    @Override
     protected CourierOrderStateEnum getOrderState(StoPushOrderStateDto stateDto) {
         if (stateDto.getChangeInfo() != null) {
             StoPushOrderStateDto.ChangeInfo changeInfo = stateDto.getChangeInfo();
             //订单调度状态（2-已调派/1-已分配/5-已完成/6-打回/4-已取消）
-            if (StringUtils.equals(changeInfo.getStatus(),"2")){
+            if (StringUtils.equals(changeInfo.getStatus(),"2") || StringUtils.equals(changeInfo.getStatus(),"1")){
+                return CourierOrderStateEnum.STATE_1;
+            }else if (StringUtils.equals(changeInfo.getStatus(),"5")){
                 return CourierOrderStateEnum.STATE_2;
-            }else if (StringUtils.equals(changeInfo.getStatus(),"4")){
-                return CourierOrderStateEnum.STATE_5;
-            }else if (StringUtils.equals(changeInfo.getStatus(),"5")){//TODO
-                return CourierOrderStateEnum.STATE_4;
+            }else if (StringUtils.equals(changeInfo.getStatus(),"6") || StringUtils.equals(changeInfo.getStatus(),"4")){
+                return CourierOrderStateEnum.STATE_3;
             }
         }
         if (stateDto.getCancelInfo() != null){
-            return CourierOrderStateEnum.STATE_5;
+            return CourierOrderStateEnum.STATE_3;
         }
         if (stateDto.getReturnInfo() != null) {
-            return CourierOrderStateEnum.STATE_5;
+            return CourierOrderStateEnum.STATE_3;
         }
         return null;
     }

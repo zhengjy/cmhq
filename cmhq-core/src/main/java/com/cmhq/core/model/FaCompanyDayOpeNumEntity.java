@@ -8,7 +8,7 @@ import lombok.Data;
 /**
  * 商户操作数
  */
-@TableName("fa_company_day_ope_num")
+@TableName("fa_company_day_ope_num2")
 @Data
 public class FaCompanyDayOpeNumEntity {
     /**订单取消数*/

@@ -31,6 +31,11 @@ public class FaCompanyMoneyEntity {
     private Integer	cid;
     @TableField(exist = false)
     private String	companyName;
+    /**
+     * 分销人名称
+     */
+    @TableField(exist = false)
+    private String	faUsername;
 
     /**
      * <pre>

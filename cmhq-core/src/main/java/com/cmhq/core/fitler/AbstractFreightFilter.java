@@ -2,6 +2,7 @@ package com.cmhq.core.fitler;
 
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.dto.FreightChargeDto;
+import com.cmhq.core.util.EstimatePriceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +25,10 @@ public abstract class AbstractFreightFilter  implements FreightFilter{
     }
 
     private FreightChargeDto doGetFreight(FaCourierOrderEntity order,String courierCompanyCode){
+        FreightChargeDto dto =  EstimatePriceUtil.getCourerCompanyCostPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),order.getWeight(),null);
+        if (StringUtils.isEmpty(courierCompanyCode)){
+            courierCompanyCode = dto.getCourierCompanyCode();
+        }
         List<FreightFilter>  list = FitlerFactory.getFreightFilters();
         FreightChargeDto preDto = null;
         for (FreightFilter filter : list){

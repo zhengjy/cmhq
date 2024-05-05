@@ -1,6 +1,7 @@
 package com.cmhq.core.api.strategy.apipush;
 
 import com.alibaba.fastjson.JSONObject;
+import com.cmhq.core.api.JDResponse;
 import com.cmhq.core.api.JTResponse;
 import com.cmhq.core.api.StoResponse;
 import com.cmhq.core.api.UploadData;
@@ -51,6 +52,28 @@ public abstract class AbstractApiPush<Req extends UploadData> implements ApiPush
             log.error("接收【{}】异常, params{}",supports().getDesc(), JSONObject.toJSONString(req),e);
         }catch (Exception e){
             rsp.setCode("0");
+            rsp.setMsg("发生系统未知异常");
+            log.error("接收【{}】异常, params{}",supports().getDesc(), JSONObject.toJSONString(req),e);
+        }
+        return rsp;
+    }
+    @Transactional
+    @Override
+    public JDResponse jdPushHandle(Req req) {
+
+        JDResponse rsp = new JDResponse();
+        try {
+            log(req);
+            doPushHandle(req);
+            afterHandle(req);
+            rsp.setCode("200");
+
+        }catch (RuntimeException e){
+            rsp.setCode("500");
+            rsp.setMsg(e.getMessage());
+            log.error("接收【{}】异常, params{}",supports().getDesc(), JSONObject.toJSONString(req),e);
+        }catch (Exception e){
+            rsp.setCode("500");
             rsp.setMsg("发生系统未知异常");
             log.error("接收【{}】异常, params{}",supports().getDesc(), JSONObject.toJSONString(req),e);
         }
