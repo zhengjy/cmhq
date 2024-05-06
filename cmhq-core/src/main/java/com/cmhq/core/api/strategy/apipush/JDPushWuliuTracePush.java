@@ -28,11 +28,11 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
         if (param != null){
             JDPushTraceDto d = param;
 
-            if (d.getCategoryName().contains("完成" )){
+            if (d.getCategoryName().contains("完成")){
                 return CourierWuliuStateEnum.STATE_3;
             }else if (d.getCategoryName().contains("派送")){
                 return CourierWuliuStateEnum.STATE_2;
-            }else if (d.getCategoryName().contains("运输") || d.getCategoryName().contains("揽收")){
+            }else if (d.getCategoryName().contains("运输") ){
                 return CourierWuliuStateEnum.STATE_1;
             }else if (d.getCategoryName().contains("取消") ){
                 return CourierWuliuStateEnum.STATE_4;
