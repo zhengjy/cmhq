@@ -50,7 +50,7 @@ public abstract class AbstartApiOrderPush<Req extends UploadData> extends Abstra
                 return;
             }
             //取消订单。返还账户金额
-            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_5, order.getEstimatePrice(),order.getFaCompanyId(),order.getId()+""));
+            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_5, order.getEstimatePrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
         }else {
             faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,req.getUnKey()));
         }

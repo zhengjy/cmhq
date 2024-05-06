@@ -76,7 +76,7 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             orderEntity.setIsJiesuan(1);
             faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
             //订单签收执行
-            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_2, order.getPrice(),order.getFaCompanyId(),order.getId()+""));
+            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_2, order.getPrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
         }else {
             faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
         }
