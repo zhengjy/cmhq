@@ -128,7 +128,7 @@ public class FaCourierOrderController {
     }
 
     @ApiOperation("地址识别")
-    @GetMapping("addressAnalysis")
+    @AnonymousGetMapping("addressAnalysis")
     public APIResponse addressAnalysis( @ApiParam(value = "text") @RequestParam() String text) {
         return APIResponse.success(faCourierOrderService.addressAnalysis(text));
     }
