@@ -32,8 +32,8 @@ public abstract class AbstractJDUpload<Req, T extends JDUploadData> extends Abst
             log.info("发送京东 【{}】 params【{}】",supports().getDesc(),JSONObject.toJSONString(uploadData));
             JDResponse rsp = JSONObject.parseObject(JSONObject.toJSONString(doSend(uploadData)),JDResponse.class);
             if (rsp != null) {
-                uploadResult.setJsonMsg(jsonMsgHandle(rsp.getData()));
                 if (rsp.getSuccess()) {
+                    uploadResult.setJsonMsg(jsonMsgHandle(rsp.getData()));
                     callback.success(rsp);
                     return uploadResult.setFlag(true);
                 } else {

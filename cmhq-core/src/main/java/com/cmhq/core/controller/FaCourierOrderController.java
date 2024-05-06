@@ -3,6 +3,7 @@ package com.cmhq.core.controller;
 import cn.hutool.core.date.DateUtil;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
+import com.cmhq.core.model.param.ShareCreateCourier;
 import com.cmhq.core.service.FaCourierOrderService;
 import me.zhengjie.APIResponse;
 import me.zhengjie.QueryResult;
@@ -54,8 +55,8 @@ public class FaCourierOrderController {
     @AnonymousPostMapping("shareCreate")
     @Log("分享新增CourierOrder")
     @ApiOperation("分享新增CourierOrder")
-    public APIResponse shareCreateFaCourierOrder(HttpServletRequest request, @RequestBody FaCourierOrderEntity resources) {
-        Integer id = faCourierOrderService.shareCreate( request,resources);
+    public APIResponse shareCreateFaCourierOrder( @RequestBody FaCourierOrderEntity resources) {
+        Integer id = faCourierOrderService.shareCreate( resources);
         return APIResponse.success(id);
     }
 

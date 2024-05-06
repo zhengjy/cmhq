@@ -13,6 +13,7 @@ import com.cmhq.core.model.*;
 import com.cmhq.core.model.dto.FaCostFreight;
 import com.cmhq.core.model.dto.FreightChargeDto;
 import com.cmhq.core.model.param.CourierOrderQuery;
+import com.cmhq.core.model.param.ShareCreateCourier;
 import com.cmhq.core.service.FaCourierOrderService;
 import com.cmhq.core.service.domain.AuditSuccessCourierOrderDomain;
 import com.cmhq.core.service.domain.CancelCourierOrderDomain;
@@ -70,20 +71,20 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
 
     @Transactional
     @Override
-    public Integer shareCreate(HttpServletRequest request,FaCourierOrderEntity resources) {
+    public Integer shareCreate(FaCourierOrderEntity resources) {
         try {
-            log.info("分享创建 header orderNo={},companyId={},userId={}",request.getHeader("orderNo"),request.getHeader("companyId"),request.getHeader("userId"));
-            String orderNoStr = new String(Base64.getDecoder().decode(request.getHeader("orderNo")));
+            log.info("分享创建 header orderNo={},companyId={},userId={}",resources.getOrderNoHeader(),resources.getCompanyIdHeader(),resources.getUserIdHeader());
+            String orderNoStr = new String(Base64.getDecoder().decode(resources.getOrderNoHeader()));
             FaCourierOrderShareOrdernoEntity orderShareOrdernoEntity = faCourierOrderShareOrdernoDao.selectOne(new LambdaQueryWrapper<FaCourierOrderShareOrdernoEntity>().eq(FaCourierOrderShareOrdernoEntity::getOrderNo,orderNoStr));
             if (orderShareOrdernoEntity == null){
                 throw new RuntimeException("不允许创建订单，订单号不存在");
             }
-            String companyIdStr = new String(Base64.getDecoder().decode(request.getHeader("companyId")));
+            String companyIdStr = new String(Base64.getDecoder().decode(resources.getCompanyIdHeader()));
             FaCompanyEntity faCompany = faCompanyDao.selectById(Integer.parseInt(companyIdStr));
             if (faCompany == null){
                 throw new RuntimeException("不允许创建订单，商户不存在");
             }
-            String userIdStr = new String(Base64.getDecoder().decode(request.getHeader("userId")));
+            String userIdStr = new String(Base64.getDecoder().decode(resources.getUserIdHeader()));
             UserDto userDto = userService.findById(Long.parseLong(userIdStr));
             if (userDto == null){
                 throw new RuntimeException("不允许创建订单，用户不存在");
@@ -163,8 +164,13 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
 
     @Override
     public void saveOrderExt(Integer id,String cname,String cvalue){
-        faCourierOrderExtDao.delete(new LambdaQueryWrapper<FaCourierOrderExtEntity>().eq(FaCourierOrderExtEntity::getCourierOrderId,id).eq(FaCourierOrderExtEntity::getCname,cname));
-        faCourierOrderExtDao.insert(new FaCourierOrderExtEntity(id,cname, cvalue));
+        FaCourierOrderExtEntity extEntity =new FaCourierOrderExtEntity();
+        extEntity.setCvalue(cvalue);
+        int i = faCourierOrderExtDao.update(extEntity,new LambdaQueryWrapper<FaCourierOrderExtEntity>()
+                .eq(FaCourierOrderExtEntity::getCourierOrderId,id).eq(FaCourierOrderExtEntity::getCname,cname));
+        if (i <= 0){
+            faCourierOrderExtDao.insert(new FaCourierOrderExtEntity(id,cname, cvalue));
+        }
     }
 
     @Transactional

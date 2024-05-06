@@ -45,7 +45,7 @@ public class JDCancelCourierOrder extends AbstractJDUpload<FaCourierOrderEntity,
     protected JDUploadData<CommonOrderCancelRequest> getData(FaCourierOrderEntity param) throws RuntimeException {
         CommonOrderCancelRequest dto = new CommonOrderCancelRequest();
         dto.setWaybillCode(param.getCourierCompanyWaybillNo());
-        dto.setOrderCode(param.getCourierCompanyOrderNo());
+//        dto.setOrderCode(param.getCourierCompanyOrderNo());
         dto.setCustomerCode(getCustomerCode());
         dto.setOrderOrigin(1);
         dto.setCancelReason(param.getReason());

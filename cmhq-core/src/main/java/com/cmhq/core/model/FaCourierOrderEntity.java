@@ -178,5 +178,11 @@ public class FaCourierOrderEntity {
 
     @TableField(exist = false)
     private String	companyName;
+    @TableField(exist = false)
+    private String orderNoHeader;
+    @TableField(exist = false)
+    private String companyIdHeader;
+    @TableField(exist = false)
+    private String userIdHeader;
 
 }

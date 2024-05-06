@@ -44,7 +44,6 @@ public class JDQueryCourierOrderStatus extends AbstractJDUpload<FaCourierOrderEn
     protected JDUploadData<CommonOrderStatusRequest> getData(FaCourierOrderEntity param) throws RuntimeException {
         CommonOrderStatusRequest dto = new CommonOrderStatusRequest();
         dto.setWaybillCode(param.getCourierCompanyWaybillNo());
-        dto.setOrderCode(param.getCourierCompanyOrderNo());
         dto.setCustomerCode(getCustomerCode());
         dto.setOrderOrigin(1);
         JDUploadData<CommonOrderStatusRequest> uploadData = new JDUploadData<>();

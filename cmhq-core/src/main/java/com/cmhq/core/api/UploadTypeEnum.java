@@ -26,6 +26,7 @@ public enum UploadTypeEnum {
     TYPE_JD_CANCEL_COURIER_ORDER("jd_cancel_courier_order","cancel_courier_order",CourierCompanyEnum.COMPANY_JD.getType(),"取消订单"),
 
     TYPE_JD_QUERY_COURIER_ORDER_STATUS("query_courier_order_status","order_status",CourierCompanyEnum.COMPANY_JD.getType(),"查询订单状态"),
+    TYPE_JD_QUERY_COURIER_ORDER_INFO("query_courier_order_info","order_info",CourierCompanyEnum.COMPANY_JD.getType(),"查询订单信息"),
 
     TYPE_BAIDU_ADDRDESS("baidu_addrdess","baidu_addrdess",CourierCompanyEnum.COMPANY_BAIDU.getType(),"百度地址识别"),
     ;

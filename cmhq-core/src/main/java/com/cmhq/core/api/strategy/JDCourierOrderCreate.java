@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.dto.CreateCourierOrderResponseDto;
+import com.google.common.collect.Maps;
 import com.lop.open.api.sdk.DefaultDomainApiClient;
 import com.lop.open.api.sdk.domain.ECAP.CommonCreateOrderApi.commonCreateOrderV1.CommonCargoInfo;
 import com.lop.open.api.sdk.domain.ECAP.CommonCreateOrderApi.commonCreateOrderV1.CommonCreateOrderRequest;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/7 13:56.
@@ -36,7 +38,7 @@ public class JDCourierOrderCreate extends AbstractJDUpload<FaCourierOrderEntity,
     protected Object doSend(JDUploadData<CommonCreateOrderRequest> uploadData) throws Exception {
         CommonCreateOrderRequest dto = uploadData.getRequest();
         //下单前置校验
-        doCheck(uploadData.getRequest());
+//        doCheck(uploadData.getRequest());
         DefaultDomainApiClient client = geDefaultDomainApiClient();
         EcapV1OrdersCreateLopRequest request = new EcapV1OrdersCreateLopRequest();
         request.setRequest(dto);
@@ -64,8 +66,7 @@ public class JDCourierOrderCreate extends AbstractJDUpload<FaCourierOrderEntity,
 
     @Override
     protected Object jsonMsgHandle(Object jsonMsg) {
-        Response resp = JSONObject.parseObject(JSONObject.toJSONString(jsonMsg), Response.class);
-        CommonCreateOrderResponse response = resp.getData();
+        CommonCreateOrderResponse response = JSONObject.parseObject(JSONObject.toJSONString(jsonMsg), CommonCreateOrderResponse.class);
         CreateCourierOrderResponseDto rsp = new CreateCourierOrderResponseDto();
         rsp.setWaybillNo(response.getWaybillCode());
         rsp.setOrderNo(response.getOrderCode());
@@ -108,7 +109,7 @@ public class JDCourierOrderCreate extends AbstractJDUpload<FaCourierOrderEntity,
         commonCargoInfo.setName(param.getGoodsName());
         commonCargoInfo.setQuantity(1);
         commonCargoInfo.setWeight(BigDecimal.valueOf(param.getWeight()));
-        commonCargoInfo.setVolume(BigDecimal.valueOf(0));//TODO 问是否可以不填
+        commonCargoInfo.setVolume(BigDecimal.valueOf(1));//TODO 问是否可以不填
         if (param.getLength() != null){
             commonCargoInfo.setLength(BigDecimal.valueOf(param.getLength().doubleValue()));
         }
@@ -118,7 +119,13 @@ public class JDCourierOrderCreate extends AbstractJDUpload<FaCourierOrderEntity,
         if (param.getHeight() != null){
             commonCargoInfo.setHight(BigDecimal.valueOf(param.getHeight().doubleValue()));
         }
+        cargoes.add(commonCargoInfo);
         dto.setCargoes(cargoes);
+
+        //下单即订阅 1-物流轨迹
+        Map<String,String> extendProps = Maps.newHashMap();
+        extendProps.put("autoSubscribe","1");
+        dto.setExtendProps(extendProps);
         JDUploadData<CommonCreateOrderRequest> uploadData = new JDUploadData<>();
 
         uploadData.setUnKey2(param.getOrderNo());

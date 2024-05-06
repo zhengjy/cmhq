@@ -126,6 +126,7 @@ public class CourierOrderTask {
                 FaCourierOrderEntity updateEntity = new FaCourierOrderEntity();
                 updateEntity.setId(order.getId());
                 billNo = rsp.getWaybillNo();
+                updateEntity.setOrderNo(rsp.getOrderNo());
                 updateEntity.setCourierCompanyWaybillNo(billNo);
                 faCourierOrderDao.updateById(updateEntity);
             }else {

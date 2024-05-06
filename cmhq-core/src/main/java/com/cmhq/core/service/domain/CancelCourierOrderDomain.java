@@ -55,13 +55,6 @@ public class CancelCourierOrderDomain {
         updateState.setCancelType(1);
         entity.setReason(content);
         faCourierOrderDao.updateById(updateState);
-        //取消
-        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(entity.getCourierCompanyCode(), UploadTypeEnum.TYPE_STO_CANCEL_COURIER_ORDER.getCodeNickName())));
-        UploadResult uploadResult = upload.execute(entity);
-        if (uploadResult.getFlag()){
-        }else {
-            throw new RuntimeException("物流公司取消失败:"+uploadResult.getErrorMsg());
-        }
 
     }
 

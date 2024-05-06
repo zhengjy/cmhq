@@ -4,6 +4,7 @@ import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.dto.FaCostFreight;
 import com.cmhq.core.model.dto.FreightChargeDto;
 import com.cmhq.core.model.param.CourierOrderQuery;
+import com.cmhq.core.model.param.ShareCreateCourier;
 import me.zhengjie.QueryResult;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,7 +62,7 @@ public interface FaCourierOrderService {
 
     Map<String, String> getOrderNoCompanyIdUserId();
 
-    Integer shareCreate(HttpServletRequest request,FaCourierOrderEntity resources);
+    Integer shareCreate(FaCourierOrderEntity resources);
 
 //    /**
 //     * 查询所有数据不分页

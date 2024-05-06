@@ -61,12 +61,20 @@ public class JDQueryCourierTrackOrder extends AbstractJDUpload<String, JDUploadD
         if (jsonMsg == null){
             return jsonMsg;
         }
-        Response<CommonOrderTraceResponse> resp = JSONObject.parseObject(JSONObject.toJSONString(jsonMsg), Response.class);
+        CommonOrderTraceResponse resp = JSONObject.parseObject(JSONObject.toJSONString(jsonMsg), CommonOrderTraceResponse.class);
         Map<String,String> map = Maps.newLinkedHashMap();
-        List<CommonOrderTraceDetail> detailList = resp.getData().getTraceDetails().stream()
-                .sorted(Comparator.comparing(CommonOrderTraceDetail::getOperationTime)).collect(Collectors.toList());
+        List<CommonOrderTraceDetail> detailList = resp.getTraceDetails().stream()
+                .sorted(Comparator.comparing(CommonOrderTraceDetail::getOperationTime).reversed()).collect(Collectors.toList());
         for (CommonOrderTraceDetail detail : detailList){
-            map.put(detail.getOperationTime(),detail.getOperationRemark());
+            StringBuilder sb = new StringBuilder();
+            sb.append("【");
+            sb.append(detail.getOperationTitle());
+            sb.append("】");
+            sb.append("-");
+            sb.append(detail.getOperationRemark());
+            sb.append("-");
+            sb.append("【"+detail.getCategoryName()+"】");
+            map.put(detail.getOperationTime(),sb.toString());
         }
         return map;
     }
