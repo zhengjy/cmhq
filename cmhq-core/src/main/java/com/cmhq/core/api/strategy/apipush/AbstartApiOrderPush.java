@@ -37,8 +37,11 @@ public abstract class AbstartApiOrderPush<Req extends UploadData> extends Abstra
         orderEntity.setCourierOrderState(getCourierOrderState(req));
         if (orderStateEnum.getType().equals(CourierOrderStateEnum.STATE_3.getType())){
             //
-            orderEntity.setCancelType(2);
-            orderEntity.setReason(getCanceReason(req));
+            FaCourierOrderEntity entity = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,req.getUnKey()));
+            if (entity != null && entity.getCancelType() == null){
+                orderEntity.setCancelType(2);
+                orderEntity.setReason(getCanceReason(req));
+            }
             faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,req.getUnKey()));
             otherHandle(req);
             FaCourierOrderEntity order = getFaCourierOrder(req);

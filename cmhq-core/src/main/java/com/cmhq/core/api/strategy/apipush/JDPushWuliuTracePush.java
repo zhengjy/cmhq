@@ -1,15 +1,19 @@
 package com.cmhq.core.api.strategy.apipush;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.dto.request.JDPushTraceDto;
 import com.cmhq.core.api.strategy.StrategyFactory;
 import com.cmhq.core.api.strategy.Upload;
 import com.cmhq.core.enums.CourierWuliuStateEnum;
+import com.cmhq.core.model.FaCourierOrderEntity;
 import com.lop.open.api.sdk.domain.ECAP.CommonQueryOrderApi.commonGetOrderInfoV1.CommonOrderInfoResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 
 /**
@@ -26,11 +30,11 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
 
             if (d.getCategoryName().contains("完成" )){
                 return CourierWuliuStateEnum.STATE_3;
-            }else if (d.getScanType().contains("派送")){
+            }else if (d.getCategoryName().contains("派送")){
                 return CourierWuliuStateEnum.STATE_2;
-            }else if (d.getScanType().contains("运输") || d.getScanType().contains("揽收")){
+            }else if (d.getCategoryName().contains("运输") || d.getCategoryName().contains("揽收")){
                 return CourierWuliuStateEnum.STATE_1;
-            }else if (d.getScanType().contains("取消") ){
+            }else if (d.getCategoryName().contains("取消") ){
                 return CourierWuliuStateEnum.STATE_4;
             }
 

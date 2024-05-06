@@ -1,6 +1,7 @@
 package com.cmhq.core.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.cmhq.core.api.JDResponse;
 import com.cmhq.core.api.JTResponse;
 import com.cmhq.core.api.StoResponse;
 import com.cmhq.core.api.dto.request.*;
@@ -69,8 +70,8 @@ public class ExternalInterfaceController {
 
     @ApiOperation("京东物流轨迹推送")
     @AnonymousPostMapping(value = "/jd/pushTrace")
-    public JTResponse jtPushTrace(JDPushTraceDto dto) throws Exception {
-        return StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JT_PUSHTRACE).jtPushHandle(dto);
+    public JDResponse jtPushTrace(@RequestBody JDPushTraceDto dto) throws Exception {
+        return StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JD_PUSHTRACE).jdPushHandle(dto);
     }
 
 }
