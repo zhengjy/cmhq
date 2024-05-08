@@ -35,24 +35,24 @@ public abstract class AbstartApiOrderPush<Req extends UploadData> extends Abstra
         FaCourierOrderEntity orderEntity = new FaCourierOrderEntity();
         orderEntity.setOrderState(Integer.parseInt(orderStateEnum.getType()));
         orderEntity.setCourierOrderState(getCourierOrderState(req));
-        MoneyConsumeMsgEumn eumn = MoneyConsumeMsgEumn.MSG_6;
         if (orderStateEnum.getType().equals(CourierOrderStateEnum.STATE_3.getType())){
             //
             FaCourierOrderEntity entity = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,req.getUnKey()));
             if (entity != null && (entity.getCancelType() == null || !entity.getCancelType().equals(1))){
                 orderEntity.setCancelType(2);
                 orderEntity.setReason(getCanceReason(req));
-                eumn = MoneyConsumeMsgEumn.MSG_5;
+                //快递员取消的才返回金额
+                FaCourierOrderEntity order = getFaCourierOrder(req);
+                if (order == null){
+                    log.error("为查询到订单 params 【{}】", JSONObject.toJSONString(order));
+                    return;
+                }
+                //取消订单。返还账户金额
+                faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_5, order.getEstimatePrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
             }
             faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,req.getUnKey()));
             otherHandle(req);
-            FaCourierOrderEntity order = getFaCourierOrder(req);
-            if (order == null){
-                log.error("为查询到订单 params 【{}】", JSONObject.toJSONString(order));
-                return;
-            }
-            //取消订单。返还账户金额
-            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, eumn, order.getEstimatePrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+
         }else {
             faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,req.getUnKey()));
         }
