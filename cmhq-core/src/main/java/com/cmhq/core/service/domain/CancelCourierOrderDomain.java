@@ -95,7 +95,7 @@ public class CancelCourierOrderDomain {
 
 
         //待取件
-        if (Objects.equals(entity.getOrderState(),0)
+        if ((Objects.equals(entity.getOrderState(),1) || !Objects.equals(entity.getOrderState(),0))
                 //正常状态
                 && (entity.getCancelOrderState() == 0 || entity.getCancelOrderState() == 1 || entity.getCancelOrderState() == 3)
                 //没有物流信息

@@ -14,5 +14,7 @@ public class FreightChargeDto {
     /**快递公司编码*/
     private String courierCompanyCode;
 
+    private String info;
+
     private String errorMsg;
 }

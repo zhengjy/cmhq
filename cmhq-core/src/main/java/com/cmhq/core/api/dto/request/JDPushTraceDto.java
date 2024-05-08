@@ -13,6 +13,8 @@ import java.util.List;
 @Data
 public class JDPushTraceDto extends UploadData {
 
+
+
     /**路由 省*/
     private String routeProvinceName;
     /**
@@ -51,6 +53,8 @@ public class JDPushTraceDto extends UploadData {
     private String operateSite;
     /***/
     private String operationRemark;
+    /**取消原因；在state=200052「终止揽收」节点返回，长度1-100*/
+    private String cancelReason;
 
     @Override
     public String getUnKeyValue() {

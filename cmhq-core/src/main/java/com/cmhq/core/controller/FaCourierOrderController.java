@@ -1,10 +1,14 @@
 package com.cmhq.core.controller;
 
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cmhq.core.dao.FaCourierOrderShareOrdernoDao;
 import com.cmhq.core.model.FaCourierOrderEntity;
+import com.cmhq.core.model.FaCourierOrderShareOrdernoEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import com.cmhq.core.model.param.ShareCreateCourier;
 import com.cmhq.core.service.FaCourierOrderService;
+import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.APIResponse;
 import me.zhengjie.QueryResult;
 import me.zhengjie.annotation.AnonymousAccess;
@@ -12,6 +16,7 @@ import me.zhengjie.annotation.Log;
 import me.zhengjie.annotation.rest.AnonymousGetMapping;
 import me.zhengjie.annotation.rest.AnonymousPostMapping;
 import me.zhengjie.utils.FileUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -26,6 +31,7 @@ import java.util.*;
 /**
  * Created by Jiyang.Zheng on 2024/4/6 13:48.
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @Api(tags = "CourierOrder管理")
@@ -35,6 +41,8 @@ public class FaCourierOrderController {
 
     @Autowired
     private final FaCourierOrderService faCourierOrderService;
+    @Autowired
+    private FaCourierOrderShareOrdernoDao faCourierOrderShareOrdernoDao;
 
 
     @GetMapping("list")
@@ -64,6 +72,21 @@ public class FaCourierOrderController {
     @Log("分享查询CourierOrder")
     @ApiOperation("分享查询CourierOrder")
     public APIResponse shareQueryFaCourierOrder(@ModelAttribute CourierOrderQuery query) {
+        if (StringUtils.isEmpty(query.getOrderNo())){
+            return APIResponse.success(new QueryResult<>());
+        }
+        String orderNoStr;
+        try {
+             orderNoStr = new String(Base64.getDecoder().decode(query.getOrderNo()));
+        }catch (Exception e){
+            log.error("",e.getMessage());
+            return APIResponse.success(new QueryResult<>());
+        }
+        FaCourierOrderShareOrdernoEntity orderShareOrdernoEntity = faCourierOrderShareOrdernoDao.selectOne(new LambdaQueryWrapper<FaCourierOrderShareOrdernoEntity>().eq(FaCourierOrderShareOrdernoEntity::getOrderNo,orderNoStr));
+        if (orderShareOrdernoEntity == null){
+            return APIResponse.success(new QueryResult<>());
+        }
+        query.setOrderNo(orderNoStr);
         return APIResponse.success(faCourierOrderService.queryAll(query));
     }
 
@@ -82,7 +105,7 @@ public class FaCourierOrderController {
     @Log("查询运费CourierOrder")
     @ApiOperation("查询运费CourierOrder")
     public APIResponse getCourierFreightCharge(@Validated @RequestBody FaCourierOrderEntity resources) {
-        return APIResponse.success(faCourierOrderService.getCourierFreightCharge(resources));
+        return APIResponse.success(faCourierOrderService.getCourierFreightCharge(resources,null));
     }
 
     @ApiOperation("状态更新")

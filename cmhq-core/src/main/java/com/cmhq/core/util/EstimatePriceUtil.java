@@ -30,11 +30,16 @@ public class EstimatePriceUtil {
      * @param retio
      * @return
      */
-    public static double getPrice(String fromProv,String toProv,double weight,Integer retio){
+    public static FreightChargeDto getPrice(String fromProv,String toProv,String fromCity, String toCity,Double weight,Integer retio){
         try {
-            FaCostEntity costEntity = getCost(fromProv,toProv);
-
-            return doGetPrice(costEntity.getPrice(),costEntity.getPriceTo(), weight, retio);
+            if (weight == null){
+                weight =1D;
+            }
+            FaCostEntity costEntity = getCost(fromProv,toProv,fromCity,toCity);
+            FreightChargeDto dto = new FreightChargeDto();
+            dto.setTotalPrice(doGetPrice(costEntity.getPrice(),costEntity.getPriceTo(), weight, retio));
+            dto.setInfo(costEntity.getAddress()+"，1kg以内"+costEntity.getPrice()+"元，超出"+costEntity.getPriceTo()+"元/kg，不足1kg按1kg计算");
+            return dto;
 
 
         }catch (Exception e){
@@ -43,11 +48,25 @@ public class EstimatePriceUtil {
         throw new RuntimeException("未查到运费价格");
     }
 
-    private static FaCostEntity getCost(String fromProv,String toProv){
+    private static FaCostEntity getCost(String fromProv,String toProv, String fromCity, String toCity){
+        String toProv2 = "";
+        if (StringUtils.equals(fromProv,toProv)){
+            toProv2 = "省内";
+            if (StringUtils.equals(fromCity,toCity)){
+                toProv2 = "同城";
+            }
+        }
 
         FaCostDao faCostDao = SpringApplicationUtils.getBean(FaCostDao.class);
         List<FaCostEntity> list = faCostDao.selectList(new LambdaQueryWrapper<>());
-        Optional<FaCostEntity> ocostEntity = list.stream().filter(v -> fromProv.contains(v.getProF()) && toProv.contains(v.getProD())).findFirst();
+        String finalToProv = toProv2;
+        Optional<FaCostEntity> ocostEntity = list.stream().filter(v -> {
+            if (fromProv.contains(v.getProF())
+                    && (toProv.contains(v.getProD()) || (StringUtils.isNotEmpty(finalToProv) && (v.getProD().contains(finalToProv) || v.getProD().contains(toProv) )))){
+                return true;
+            }
+            return false;
+        }).findFirst();
         if (ocostEntity.isPresent()){
             return ocostEntity.get();
         }else {
@@ -87,10 +106,10 @@ public class EstimatePriceUtil {
      * @param toCity
      * @param weight
      * @param retio
-     * @param courierCompanyCode 物流 公司编码 如：sto
+     * @param courierCompanyCode 物流 公司编码 多个 如：sto
      * @return
      */
-    public static FreightChargeDto getCourerCompanyCostPriceAndFilterCourierCpanyCode(String fromProv, String toProv, String fromCity, String toCity, double weight, Integer retio,String courierCompanyCode){
+    public static FreightChargeDto getCourerCompanyCostPriceAndFilterCourierCompanyCode(String fromProv, String toProv, String fromCity, String toCity, double weight, Integer retio, String courierCompanyCode){
         try {
             FaCompanyCostEntity costEntity = getCost2(fromProv,toProv,fromCity,toCity,courierCompanyCode);
             FreightChargeDto dto = new FreightChargeDto();
@@ -113,6 +132,7 @@ public class EstimatePriceUtil {
      * @return
      */
     private static FaCompanyCostEntity getCost2(String fromProv,String toProv,String fromCity,String toCity,String courierCompanyCode){
+
         FaCompanyService faCostDao = SpringApplicationUtils.getBean(FaCompanyService.class);
         Environment enumeration = SpringApplicationUtils.getBean(Environment.class);
         String codes = enumeration.getProperty("filter.courier.code");
@@ -121,15 +141,27 @@ public class EstimatePriceUtil {
         Map<String,List<FaCompanyCostEntity>> listMap = list.stream().collect(Collectors.groupingBy(FaCompanyCostEntity::getCourierCompanyCode));
         FaCompanyCostEntity retCost = null;
         Set<String> keys = listMap.keySet();
+        String toProv2 = "";
+        if (StringUtils.equals(fromProv,toProv)){
+            toProv2 = "省内";
+            if (StringUtils.equals(fromCity,toCity)){
+                toProv2 = "同城";
+            }
+        }
         for (String key : keys) {
+            if (StringUtils.isNotEmpty(courierCompanyCode) && courierCompanyCode.contains(key)){
+                continue;
+            }
             if (!codes.contains(key)){
                 continue;
             }
             List<FaCompanyCostEntity> value = listMap.get(key);
             FaCompanyCostEntity currCost = null;
+            String finalToProv = toProv2;
             Optional<FaCompanyCostEntity> ocostEntity = value.stream().filter(v -> {
                 //通过省匹配
-                if (fromProv.contains(v.getProF()) && toProv.contains(v.getProD())){
+                if (fromProv.contains(v.getProF())
+                        && (toProv.contains(v.getProD()) || (StringUtils.isNotEmpty(finalToProv) && (v.getProD().contains(finalToProv) || v.getProD().contains(toProv) )))){
                     //通过城市匹配
                     if (StringUtils.isNotEmpty(v.getCityD())){
                         if ( fromCity.contains(v.getCityF()) && toCity.contains(v.getCityD())){

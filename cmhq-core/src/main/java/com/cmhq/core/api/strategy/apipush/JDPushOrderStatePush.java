@@ -1,58 +1,51 @@
 package com.cmhq.core.api.strategy.apipush;
 
-import com.cmhq.core.api.dto.request.JDPushDto;
+import com.cmhq.core.api.dto.request.JDPushTraceDto;
 import com.cmhq.core.enums.CourierOrderStateEnum;
-import com.lop.open.api.sdk.domain.ECAP.CommonQueryOrderApi.commonGetOrderStatusV1.CommonOrderStatusResponse;
+import com.cmhq.core.enums.CourierWuliuStateEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-/**
+/**https://open.jdl.com/#/open-business-document/access-guide/267/54018
  * Created by Jiyang.Zheng on 2024/4/11 21:38.
  */
 @Component
-public class JDPushOrderStatePush extends AbstartApiOrderPush<JDPushDto<CommonOrderStatusResponse>>{
+public class JDPushOrderStatePush extends AbstartApiOrderPush<JDPushTraceDto>{
     @Override
-    protected String getCanceReason(JDPushDto<CommonOrderStatusResponse> param) {
-        CommonOrderStatusResponse dto = param.getObj();
-        if (dto.getStatusDesc() != null){
-            return dto.getStatusDesc();
-        }
-        return "";
+    protected String getCanceReason(JDPushTraceDto param) {
+
+        return StringUtils.isEmpty(param.getCancelReason()) ? param.getCategoryName() :param.getCancelReason();
     }
 
     @Override
-    protected String getCourierOrderState(JDPushDto<CommonOrderStatusResponse> stateDto) {
-        CommonOrderStatusResponse dto = stateDto.getObj();
-        if (dto != null) {
-            return dto.getStatus();
-        }
-        return "";
+    protected String getCourierOrderState(JDPushTraceDto stateDto) {
+        return stateDto.getOperationTitle();
     }
 
     @Override
-    protected CourierOrderStateEnum getOrderState(JDPushDto<CommonOrderStatusResponse> stateDto) {
-        CommonOrderStatusResponse dto = stateDto.getObj();
-        //100（已接单）；390（已下发）；420（已揽收）；430（运输中）；440（派送中）；480（已拦截）；500（异常终止）；510（妥投）；530（拒收）；690（已取消）
+    protected CourierOrderStateEnum getOrderState(JDPushTraceDto dto) {
         if (dto != null) {
-            if (StringUtils.equals(dto.getStatus(),"100") || StringUtils.equals(dto.getStatus(),"390")){
-                return CourierOrderStateEnum.STATE_1;
-            }else if (StringUtils.equals(dto.getStatus(),"420") ||
-                    StringUtils.equals(dto.getStatus(),"430") ||
-                    StringUtils.equals(dto.getStatus(),"440")){
+            if (dto.getState().equals("200001") || dto.getState().equals("200053")){
                 return CourierOrderStateEnum.STATE_2;
-            }else if (StringUtils.equals(dto.getStatus(),"480") ||
-                    StringUtils.equals(dto.getStatus(),"500") ||
-                    StringUtils.equals(dto.getStatus(),"530") ||
-                    StringUtils.equals(dto.getStatus(),"690")
-            ){
+            }
+             if (dto.getCategoryName().contains("揽收")){
+                return CourierOrderStateEnum.STATE_1;
+            }else if (dto.getCategoryName().contains("取消") || dto.getState().equals("200052")){
                 return CourierOrderStateEnum.STATE_3;
+            }
+            if (dto.getCategoryName().contains("完成")){
+                return CourierOrderStateEnum.STATE_2;
+            }else if (dto.getCategoryName().contains("派送")){
+                return CourierOrderStateEnum.STATE_2;
+            }else if (dto.getCategoryName().contains("运输") ){
+                return CourierOrderStateEnum.STATE_2;
             }
         }
         return null;
     }
 
     @Override
-    protected void otherHandle(JDPushDto<CommonOrderStatusResponse> commonOrderStatusResponseJDPushDto) {
+    protected void otherHandle(JDPushTraceDto commonOrderStatusResponseJDPushDto) {
 
     }
 

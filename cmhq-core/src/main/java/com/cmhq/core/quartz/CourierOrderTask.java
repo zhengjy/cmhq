@@ -1,6 +1,7 @@
 package com.cmhq.core.quartz;
 
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
@@ -13,18 +14,24 @@ import com.cmhq.core.enums.MoneyConsumeEumn;
 import com.cmhq.core.enums.MoneyConsumeMsgEumn;
 import com.cmhq.core.model.*;
 import com.cmhq.core.model.dto.CreateCourierOrderResponseDto;
+import com.cmhq.core.model.dto.FreightChargeDto;
 import com.cmhq.core.service.FaCompanyMoneyService;
 import com.cmhq.core.service.FaCompanyService;
 import com.cmhq.core.service.FaCourierOrderService;
+import com.cmhq.core.service.domain.CreateCourierOrderDomain;
+import com.cmhq.core.util.EstimatePriceUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("courierOrderTask")
@@ -55,6 +62,12 @@ public class CourierOrderTask {
             return;
         }
 
+
+
+        //2、取消订单，返回账户
+
+        //插入新订单
+
         try {
             for (FaCourierOrderEntity order : list){
                 handle(order);
@@ -69,36 +82,34 @@ public class CourierOrderTask {
 
     @Transactional
     public void handle(FaCourierOrderEntity order){
-        //先取消物流公司订单
-        cancel(order);
-        //删除订单
-        faCourierOrderDao.deleteById(order.getId());
-        //重新下单
-        saveOrder(order);
-    }
+        //1、校验自动取消的物流公司
+        List<FaCourierOrderExtEntity> list1 = faCourierOrderExtDao.selectList(new LambdaQueryWrapper<FaCourierOrderExtEntity>().eq(FaCourierOrderExtEntity::getCourierOrderId,order.getId()) );
+        if (CollectionUtils.isNotEmpty(list1)){
+            Map<String,String> map =  list1.stream().collect(Collectors.toMap(FaCourierOrderExtEntity::getCname, FaCourierOrderExtEntity::getCvalue));
+            String courierCompanyCodes = map.get("timeout24HourCourierCompanyCodes");
+            if(StringUtils.isEmpty(courierCompanyCodes)){
+                courierCompanyCodes = order.getCourierCompanyCode()+",";
+            }else {
+                courierCompanyCodes = courierCompanyCodes+order.getCourierCompanyCode()+",";
+            }
+            try {
+                //获取物流公司底价选择最便宜的价格快递公司
+                FreightChargeDto dto =  EstimatePriceUtil.getCourerCompanyCostPriceAndFilterCourierCompanyCode(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),order.getWeight(),null,courierCompanyCodes);
+                if (StringUtils.isNotEmpty(dto.getCourierCompanyCode())){
+                    //先取消物流公司订单
+                    cancel(order);
+                    //删除订单
+                    faCourierOrderDao.deleteById(order.getId());
+                    //记录已经下单过的物流公司
+                    faCourierOrderService.saveOrderExt(order.getId(),"timeout24HourCourierCompanyCodes",courierCompanyCodes);
+                    //重新下单
+                    order.setCourierCompanyCode(dto.getCourierCompanyCode());
+                    new CreateCourierOrderDomain(order,order.getFaCompanyId(),order.getCreateUserId().longValue(),System.currentTimeMillis() + "").handle();
+                }
+            }catch (Exception e){
+                log.error("24小时超时重新换快递公司下单识别 param="+ JSONObject.toJSONString(order),e);
+            }
 
-    private void saveOrder(FaCourierOrderEntity order){
-        double price = 0;
-        try {
-            Integer oldOrderId = order.getId();
-            Integer companyId = order.getFaCompanyId();
-            //  实际费用
-            price = order.getPrice();
-            order.setId(null);
-            //下单
-            faCourierOrderDao.insert(order);
-            //额外字段更新
-            FaCourierOrderExtEntity extEntity = new FaCourierOrderExtEntity();
-            extEntity.setCourierOrderId(order.getId());
-            faCourierOrderExtDao.update(extEntity,new LambdaQueryWrapper<FaCourierOrderExtEntity>().eq(FaCourierOrderExtEntity::getCourierOrderId,order.getId()));
-            //上传订单信息到物流公司
-            String billNo = uploadCourierOrder(order);
-            //插入消费记录
-            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_3,price,companyId, order.getId()+"",billNo));
-
-        }catch (Exception e){
-            log.error("",e);
-            throw new RuntimeException(e.getMessage());
         }
     }
 

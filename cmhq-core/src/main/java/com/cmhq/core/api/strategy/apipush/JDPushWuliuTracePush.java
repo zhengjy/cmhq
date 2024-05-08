@@ -1,24 +1,24 @@
 package com.cmhq.core.api.strategy.apipush;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.dto.request.JDPushTraceDto;
 import com.cmhq.core.api.strategy.StrategyFactory;
 import com.cmhq.core.api.strategy.Upload;
 import com.cmhq.core.enums.CourierWuliuStateEnum;
-import com.cmhq.core.model.FaCourierOrderEntity;
 import com.lop.open.api.sdk.domain.ECAP.CommonQueryOrderApi.commonGetOrderInfoV1.CommonOrderInfoResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 
 
-/**
+/**京东物流状态推送 物流和订单状态同一个接口
  * Created by Jiyang.Zheng on 2024/4/11 21:38.
  */
+@Slf4j
 @Component
 public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
 
@@ -27,6 +27,12 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
     protected CourierWuliuStateEnum getTraceState(JDPushTraceDto param) {
         if (param != null){
             JDPushTraceDto d = param;
+            JDPushTraceDto orderDto = new JDPushTraceDto();
+
+            BeanUtils.copyProperties(param,orderDto);
+            orderDto.setWaybillCode(param.getOrderId());
+            StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JD_PUSHORDERSTATUS).jdPushHandle(orderDto);
+
 
             if (d.getCategoryName().contains("完成")){
                 return CourierWuliuStateEnum.STATE_3;
@@ -34,8 +40,6 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
                 return CourierWuliuStateEnum.STATE_2;
             }else if (d.getCategoryName().contains("运输") ){
                 return CourierWuliuStateEnum.STATE_1;
-            }else if (d.getCategoryName().contains("取消") ){
-                return CourierWuliuStateEnum.STATE_4;
             }
 
         }

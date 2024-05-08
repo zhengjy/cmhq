@@ -28,6 +28,7 @@ public class FaCourierOrderExtEntity {
     /**orderIsErrorMsg:订单异常原因
      * goodsType:sto物品类型
      * jtGoodsType:jt物品类型
+     * timeout24HourCourierCompanyCodes:超时24小时已下单的快递公司编号列表
      * */
     private String cname;
     private String cvalue;

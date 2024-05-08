@@ -14,6 +14,7 @@ public class ZiaddressQuery {
     private String searchTxt;
 
 
+    private Integer companyId;
     private Integer pageNo;
 
     private Integer pageSize;

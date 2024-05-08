@@ -68,18 +68,18 @@ public class CourierGetJDOrderStatusTask {
     }
 
     public void handle(FaCourierOrderEntity order){
-        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(order.getCourierCompanyCode(), UploadTypeEnum.TYPE_JD_QUERY_COURIER_ORDER_STATUS.getCodeNickName())));
-        UploadResult uploadResult = upload.execute(order);
-        if (!uploadResult.getFlag()) {
-            log.error("获取jd物流公司订单状态失败【{}】",uploadResult.getErrorMsg());
-        }else {
-            CommonOrderStatusResponse response = JSONObject.parseObject(JSONObject.toJSONString(uploadResult.getJsonMsg()),CommonOrderStatusResponse.class);
-            JDPushDto<CommonOrderStatusResponse> dto = new JDPushDto<>();
-            dto.setObj(response);
-            dto.setUnKeyValue2(order.getOrderNo());
-            JDResponse jdResponse = StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JD_PUSHORDERSTATUS).jdPushHandle(dto);
-            log.info("获取jd物流公司 courierCompanyWaybillNo【{}】 订单状态 rsp 【{}】",order.getCourierCompanyOrderNo(),jdResponse);
-        }
+//        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(order.getCourierCompanyCode(), UploadTypeEnum.TYPE_JD_QUERY_COURIER_ORDER_STATUS.getCodeNickName())));
+//        UploadResult uploadResult = upload.execute(order);
+//        if (!uploadResult.getFlag()) {
+//            log.error("获取jd物流公司订单状态失败【{}】",uploadResult.getErrorMsg());
+//        }else {
+//            CommonOrderStatusResponse response = JSONObject.parseObject(JSONObject.toJSONString(uploadResult.getJsonMsg()),CommonOrderStatusResponse.class);
+//            JDPushDto<CommonOrderStatusResponse> dto = new JDPushDto<>();
+//            dto.setObj(response);
+//            dto.setUnKeyValue2(order.getOrderNo());
+//            JDResponse jdResponse = StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JD_PUSHORDERSTATUS).jdPushHandle(dto);
+//            log.info("获取jd物流公司 courierCompanyWaybillNo【{}】 订单状态 rsp 【{}】",order.getCourierCompanyOrderNo(),jdResponse);
+//        }
     }
 
 }

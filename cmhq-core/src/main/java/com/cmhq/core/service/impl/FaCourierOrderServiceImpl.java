@@ -19,6 +19,7 @@ import com.cmhq.core.service.domain.AuditSuccessCourierOrderDomain;
 import com.cmhq.core.service.domain.CancelCourierOrderDomain;
 import com.cmhq.core.service.domain.CreateCourierOrderDomain;
 import com.cmhq.core.service.domain.CourierOrderQueryPageDomain;
+import com.cmhq.core.util.EstimatePriceUtil;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.QueryResult;
@@ -99,12 +100,13 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
     }
 
     @Override
-    public FreightChargeDto getCourierFreightCharge(FaCourierOrderEntity entity) {
-        FreightChargeDto freightChargeDto = freightFilter.getFreight(entity);
-        if (freightChargeDto.getTotalPrice() == null){
-            throw new RuntimeException("查询"+freightChargeDto.getCourierCompanyCode()+"运费返回错误:"+freightChargeDto.getErrorMsg());
-        }
-        return freightFilter.getFreight(entity);
+    public FreightChargeDto getCourierFreightCharge(FaCourierOrderEntity entity,Integer retio) {
+//        FreightChargeDto freightChargeDto = freightFilter.getFreight(entity);
+//        if (freightChargeDto.getTotalPrice() == null){
+//            throw new RuntimeException("查询"+freightChargeDto.getCourierCompanyCode()+"运费返回错误:"+freightChargeDto.getErrorMsg());
+//        }
+        FreightChargeDto fcd = EstimatePriceUtil.getPrice(entity.getFromProv(),entity.getToProv(),entity.getFromCity(),entity.getToCity(),entity.getWeight(),retio);
+        return fcd;
     }
 
     @Override
@@ -177,7 +179,11 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
     @Override
     public void delete(Integer id) {
         FaCourierOrderEntity  order = faCourierOrderDao.selectById(id);
-        if ((order.getOrderState() == 0 || order.getOrderState() == 3) && (order.getCancelOrderState() == 1 || order.getCancelOrderState() == 2)){
+        if(order == null){
+            return;
+        }
+        if ((order.getOrderState() == 0 || order.getOrderState() == 1 || order.getOrderState() == 3)
+                || (order.getWuliuState() == 3 || order.getWuliuState() == 4)){
             faCourierOrderDao.deleteById(id);
             faCourierOrderExtDao.delete(new LambdaQueryWrapper<FaCourierOrderExtEntity>().eq(FaCourierOrderExtEntity::getCourierOrderId,id));
         }

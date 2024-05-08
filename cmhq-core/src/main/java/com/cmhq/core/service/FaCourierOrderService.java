@@ -29,7 +29,7 @@ public interface FaCourierOrderService {
      * @param entity
      * @return
      */
-    FreightChargeDto getCourierFreightCharge(FaCourierOrderEntity entity);
+    FreightChargeDto getCourierFreightCharge(FaCourierOrderEntity entity,Integer retio);
     /**
      * 获取所有物流的最低成本价，筛选最低价格
      * @return

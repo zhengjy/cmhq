@@ -11,6 +11,7 @@ import com.lop.open.api.sdk.plugin.LopPlugin;
 import com.lop.open.api.sdk.request.ECAP.EcapV1OrdersTraceQueryLopRequest;
 import com.lop.open.api.sdk.response.ECAP.EcapV1OrdersTraceQueryLopResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -63,6 +64,9 @@ public class JDQueryCourierTrackOrder extends AbstractJDUpload<String, JDUploadD
         }
         CommonOrderTraceResponse resp = JSONObject.parseObject(JSONObject.toJSONString(jsonMsg), CommonOrderTraceResponse.class);
         Map<String,String> map = Maps.newLinkedHashMap();
+        if (resp == null || CollectionUtils.isEmpty(resp.getTraceDetails())){
+            return jsonMsg;
+        }
         List<CommonOrderTraceDetail> detailList = resp.getTraceDetails().stream()
                 .sorted(Comparator.comparing(CommonOrderTraceDetail::getOperationTime).reversed()).collect(Collectors.toList());
         for (CommonOrderTraceDetail detail : detailList){

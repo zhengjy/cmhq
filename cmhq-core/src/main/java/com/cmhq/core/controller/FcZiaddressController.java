@@ -14,6 +14,7 @@ import me.zhengjie.APIResponse;
 import me.zhengjie.QueryResult;
 import me.zhengjie.annotation.AnonymousAccess;
 import me.zhengjie.annotation.Log;
+import me.zhengjie.annotation.rest.AnonymousGetMapping;
 import me.zhengjie.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,15 +36,19 @@ public class FcZiaddressController {
     private FaZiaddressDao faZiaddressDao;
 
     @ApiOperation("列表查询")
-    @RequestMapping(value = "list", method = RequestMethod.GET)
+    @AnonymousGetMapping(value = "list")
     public APIResponse list(@ModelAttribute ZiaddressQuery query) {
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         LambdaQueryWrapper<FaZiaddressEntity> queryWrapper = new LambdaQueryWrapper<>();
         if (StringUtils.isNotEmpty(query.getSearchTxt())){
             queryWrapper.like(FaZiaddressEntity::getAddress,query.getSearchTxt()).or().like(FaZiaddressEntity::getName,query.getSearchTxt());
         }
-        if(SecurityUtils.getCurrentCompanyId() != null){
-            queryWrapper.eq(FaZiaddressEntity::getCid,SecurityUtils.getCurrentCompanyId());
+        if (query.getCompanyId() != null){
+            queryWrapper.eq(FaZiaddressEntity::getCid,query.getCompanyId());
+        }else {
+            if(SecurityUtils.getCurrentCompanyId() != null){
+                queryWrapper.eq(FaZiaddressEntity::getCid,SecurityUtils.getCurrentCompanyId());
+            }
         }
         List<FaZiaddressEntity> list = faZiaddressDao.selectList(queryWrapper);
         PageInfo<FaZiaddressEntity> page = new PageInfo<>(list);

@@ -91,15 +91,15 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             //物流返回重量大于填写的实际重量
             if (traceWeight > weight){
                 //通过返回重量  重新计算运费
-                double price = EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getWeight(),faCompanyEntity.getRatio());
+                FreightChargeDto price = EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),order.getWeight(),faCompanyEntity.getRatio());
                 //更新实际重量和价格
                 FaCourierOrderEntity editOrder = new FaCourierOrderEntity();
                 editOrder.setId(order.getId());
-                editOrder.setPrice(price);
+                editOrder.setPrice(price.getTotalPrice());
                 editOrder.setWeightto(traceWeight);
                 faCourierOrderDao.updateById(editOrder);
                 //最新运费 - 历史运费
-                double price2 = EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),traceWeight,faCompanyEntity.getRatio()) - order.getPrice();
+                double price2 = EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),traceWeight,faCompanyEntity.getRatio()).getTotalPrice() - order.getPrice();
 
                 //插入消费记录 ,因为填写的重量和实际重量不一致,导致价格有变动,所以还需要扣除商户金额,增加消费记录
                 faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_7,price2,order.getFaCompanyId(), order.getId()+"",order.getCourierCompanyWaybillNo()));

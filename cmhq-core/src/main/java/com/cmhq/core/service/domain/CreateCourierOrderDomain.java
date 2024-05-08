@@ -46,14 +46,23 @@ public class CreateCourierOrderDomain {
         if (order.getType() == null){
             order.setType(1);
         }
+        if (order.getWeight() == null){
+            order.setWeight(1D);
+        }
         order.setOrderState(0);
+        order.setCourierOrderState("");
+        order.setCourierWuliuState("");
         order.setCancelOrderState(1);
         order.setOrderNo(orderNo);
         order.setIsJiesuan(0);
         order.setOrderIsError(1);
         order.setCreateUserId(userId.intValue());
         order.setFaCompanyId(companyId);
-
+        //获取物流公司底价选择最便宜的价格快递公司
+        if (StringUtils.isEmpty(order.getCourierCompanyCode())){
+            FreightChargeDto dto =  EstimatePriceUtil.getCourerCompanyCostPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),order.getWeight(),null);
+            order.setCourierCompanyCode(dto.getCourierCompanyCode());
+        }
         this.order = order;
         faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
         faCourierOrderService = SpringApplicationUtils.getBean(FaCourierOrderService.class);
@@ -61,6 +70,7 @@ public class CreateCourierOrderDomain {
         faCompanyMoneyService = SpringApplicationUtils.getBean(FaCompanyMoneyService.class);
         faCompanyDayOpeNumService = SpringApplicationUtils.getBean(FaCompanyDayOpeNumService.class);
     }
+
 
 
 
@@ -80,11 +90,7 @@ public class CreateCourierOrderDomain {
             price = getPrice(faCompanyEntity.getRatio());
 
             check(price,faCompanyEntity);
-            //这里获取物流公司的预估价，但是这个价格只是给商户看，还需要获取最低价的物流公司需要取  匹配底价表才能知道 那个物流公司价格最低
-            FreightChargeDto dto =  EstimatePriceUtil.getCourerCompanyCostPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),order.getWeight(),null);
-            FreightChargeDto dto2 =  faCourierOrderService.getCourierFreightCharge(order);
-            order.setCourierCompanyCode(dto.getCourierCompanyCode());
-            order.setEstimatePrice(dto2.getTotalPrice());
+            order.setEstimatePrice(price);
             order.setPrice(price);
             if (order.getType() ==null){
                 order.setType(1);
@@ -206,7 +212,7 @@ public class CreateCourierOrderDomain {
      * @return
      */
     private double getPrice(Integer retio){
-        return EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getWeight(),retio);
+        return faCourierOrderService.getCourierFreightCharge(order,retio).getTotalPrice();
 
     }
 }
