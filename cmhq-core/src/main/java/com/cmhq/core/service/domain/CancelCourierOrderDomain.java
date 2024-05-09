@@ -11,6 +11,7 @@ import com.cmhq.core.model.FaCompanyEntity;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.dto.CreateCourierOrderResponseDto;
 import com.cmhq.core.service.FaCompanyDayOpeNumService;
+import com.cmhq.core.service.FaCompanyService;
 import com.cmhq.core.service.FaCourierOrderService;
 import com.cmhq.core.util.CurrentUserContent;
 import com.cmhq.core.util.SpringApplicationUtils;
@@ -46,15 +47,16 @@ public class CancelCourierOrderDomain {
         if (entity == null){
             throw new RuntimeException("订单不存在");
         }
-        check(entity);
-        FaCourierOrderEntity updateState = new FaCourierOrderEntity();
-        updateState.setId(orderId);
-        updateState.setCancelOrderState(-1);
-        updateState.setCancelTime(new Date());
-        updateState.setReason(content);
-        updateState.setCancelType(1);
-        entity.setReason(content);
-        faCourierOrderDao.updateById(updateState);
+        //待取件
+        if ((Objects.equals(entity.getOrderState(),1) || !Objects.equals(entity.getOrderState(),0))
+                //正常状态
+                && (entity.getCancelOrderState() == 0 || entity.getCancelOrderState() == 1 || entity.getCancelOrderState() == 3)
+                //没有物流信息
+                && entity.getWuliuState() == null){
+        }else {
+            throw new RuntimeException("当前订单状态不允许取消！");
+        }
+        doCancel(entity);
 
     }
 
@@ -93,15 +95,44 @@ public class CancelCourierOrderDomain {
             }
         }
 
+    }
 
-        //待取件
-        if ((Objects.equals(entity.getOrderState(),1) || !Objects.equals(entity.getOrderState(),0))
-                //正常状态
-                && (entity.getCancelOrderState() == 0 || entity.getCancelOrderState() == 1 || entity.getCancelOrderState() == 3)
-                //没有物流信息
-                && entity.getWuliuState() == null){
-        }else {
-            throw new RuntimeException("当前订单状态不允许取消！");
+    private void doCancel(FaCourierOrderEntity entity){
+        try {
+            //触发限制则审核
+            check(entity);
+        }catch (RuntimeException e){
+            faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CANCEL_NUM,1);
+            faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CANCEL_MAX_MONEY,entity.getPrice());
+            FaCourierOrderEntity updateState = new FaCourierOrderEntity();
+            updateState.setId(orderId);
+            updateState.setCancelOrderState(-1);
+            updateState.setCancelTime(new Date());
+            updateState.setReason(content);
+            updateState.setCancelType(1);
+            entity.setReason(content);
+            faCourierOrderDao.updateById(updateState);
+            return;
         }
+        FaCourierOrderEntity updateState = new FaCourierOrderEntity();
+        updateState.setId(orderId);
+        updateState.setCancelOrderState(-1);
+        updateState.setCancelTime(new Date());
+        updateState.setReason(content);
+        updateState.setCancelType(1);
+        entity.setReason(content);
+        faCourierOrderDao.updateById(updateState);
+        faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CANCEL_NUM,1);
+        faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CANCEL_MAX_MONEY,entity.getPrice());
+        //未触发限制直接审核通过取消
+        new AuditSuccessCourierOrderDomain("", entity.getId()).handle();
+//        FaCourierOrderEntity updateState = new FaCourierOrderEntity();
+//        updateState.setId(orderId);
+//        updateState.setCancelOrderState(-1);
+//        updateState.setCancelTime(new Date());
+//        updateState.setReason(content);
+//        updateState.setCancelType(1);
+//        entity.setReason(content);
+//        faCourierOrderDao.updateById(updateState);
     }
 }

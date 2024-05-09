@@ -67,6 +67,7 @@ public class JTCourierOrderCreate extends AbstractJTUpload<FaCourierOrderEntity,
         dto.setSendEndTime(param.getTakeGoodsTime());
 
         dto.setGoodsType((String) map.get("jtGoodsType"));
+        dto.setRemark("发货分区号："+param.getFromPartitionNumber() +"；收货分区号："+param.getToPartitionNumber()+"；"+param.getMsg());
 
         if (param.getLength() != null){
             dto.setLength(param.getLength().doubleValue());

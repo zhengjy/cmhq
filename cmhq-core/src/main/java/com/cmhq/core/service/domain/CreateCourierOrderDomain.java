@@ -105,14 +105,12 @@ public class CreateCourierOrderDomain {
             String billNo = uploadCourierOrder();
             //插入消费记录
             faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_3,price,companyId, order.getId()+"",billNo));
-        }catch (Exception e){
-            log.error("",e);
-            throw new RuntimeException(e.getMessage());
-        }finally {
             //记录统计量
             faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(),FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_NUM,1,companyId);
             faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(),FaCompanyDayOpeNumEntity.TYPE_ORDER_CREATE_MAX_MONEY,price,companyId);
-
+        }catch (Exception e){
+            log.error("",e);
+            throw new RuntimeException(e.getMessage());
         }
         return order.getId();
     }

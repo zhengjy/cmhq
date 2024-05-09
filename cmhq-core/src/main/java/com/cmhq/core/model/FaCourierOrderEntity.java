@@ -95,6 +95,9 @@ public class FaCourierOrderEntity {
 
     @ApiModelProperty(value = "发货手机号")
     private String fromMobile;
+    @ApiModelProperty(value = "发货分区号")
+    @TableField(exist = false)
+    private String fromPartitionNumber;
 
     @ApiModelProperty(value = "发出省份")
     private String fromProv;
@@ -113,6 +116,9 @@ public class FaCourierOrderEntity {
 
     @ApiModelProperty(value = "收货手机号")
     private String toMobile;
+    @ApiModelProperty(value = "收货分区号")
+    @TableField(exist = false)
+    private String toPartitionNumber;
 
     @ApiModelProperty(value = "收货省份")
     private String toProv;

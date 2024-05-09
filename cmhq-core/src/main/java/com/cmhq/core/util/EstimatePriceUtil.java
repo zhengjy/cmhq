@@ -164,11 +164,20 @@ public class EstimatePriceUtil {
                         && (toProv.contains(v.getProD()) || (StringUtils.isNotEmpty(finalToProv) && (v.getProD().contains(finalToProv) || v.getProD().contains(toProv) )))){
                     //通过城市匹配
                     if (StringUtils.isNotEmpty(v.getCityD())){
-                        if ( fromCity.contains(v.getCityF()) && toCity.contains(v.getCityD())){
-                            return true;
+                        if (fromCity.equals("市辖区")){
+                            if (toCity.contains(v.getCityD())){
+                                return true;
+                            }else {
+                                return false;
+                            }
                         }else {
-                            return false;
+                            if ( fromCity.contains(v.getCityF()) && toCity.contains(v.getCityD())){
+                                return true;
+                            }else {
+                                return false;
+                            }
                         }
+
                     }
                     return true;
                 }
@@ -183,7 +192,7 @@ public class EstimatePriceUtil {
                 Optional<FaCompanyCostEntity> ocostEntity2 = value.stream()
                         .filter(v -> fromProv.contains(v.getProF()) && toProv.contains(v.getProD())).max(Comparator.comparing(FaCompanyCostEntity::getPrice));
                 if (ocostEntity2.isPresent()){
-                    currCost = ocostEntity.get();
+                    currCost = ocostEntity2.get();
                 }
             }
             if (currCost != null){

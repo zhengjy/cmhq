@@ -34,12 +34,18 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
             StrategyFactory.getApiPush(ApiPushTypeEumn.TYPE_JD_PUSHORDERSTATUS).jdPushHandle(orderDto);
 
 
-            if (d.getCategoryName().contains("完成")){
+            if (d.getCategoryName().contains("完成") || d.getState().equals("10034")){
                 return CourierWuliuStateEnum.STATE_3;
-            }else if (d.getCategoryName().contains("派送")){
+            }else if (d.getCategoryName().contains("派送")
+                    || d.getState().equals("11000")
+                    || d.getState().equals("200023")
+                    || d.getState().equals("200003")
+            ){
                 return CourierWuliuStateEnum.STATE_2;
             }else if (d.getCategoryName().contains("运输") ){
                 return CourierWuliuStateEnum.STATE_1;
+            }else if (d.getState().equals("10035")){
+                return CourierWuliuStateEnum.STATE_4;
             }
 
         }

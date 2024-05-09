@@ -45,6 +45,8 @@ public class JTCourierOrderDto extends JTUploadData {
     private String postSiteName;
     private String postSiteAddress;
     private String realName;
+    //备注
+    private String remark;
 
     // Getters and Setters
     @Data
