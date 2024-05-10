@@ -66,7 +66,7 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
         }
         CommonOrderInfoResponse infoResponse = JSONObject.parseObject(uploadResult.getJsonMsg()+"", CommonOrderInfoResponse.class);
         if (CollectionUtils.isNotEmpty(infoResponse.getCargoes())){
-            return infoResponse.getCargoes().get(0).getWeight();
+            return infoResponse.getCargoes().get(0).getAgainWeight();
         }
         return "";
     }

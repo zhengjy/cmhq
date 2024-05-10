@@ -19,6 +19,7 @@ public class CompanyQuery {
     @ApiModelProperty(value = "结束时间")
     private String eTime;
 
+    private String notCid;
     private Integer id;
 
     private Integer pageNo=1;

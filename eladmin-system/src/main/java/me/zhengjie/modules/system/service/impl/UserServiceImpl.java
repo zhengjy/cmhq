@@ -91,9 +91,9 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByUsername(resources.getUsername()) != null) {
             throw new EntityExistException(User.class, "username", resources.getUsername());
         }
-        if (userRepository.findByEmail(resources.getEmail()) != null) {
-            throw new EntityExistException(User.class, "email", resources.getEmail());
-        }
+//        if (userRepository.findByEmail(resources.getEmail()) != null) {
+//            throw new EntityExistException(User.class, "email", resources.getEmail());
+//        }
         if (userRepository.findByPhone(resources.getPhone()) != null) {
             throw new EntityExistException(User.class, "phone", resources.getPhone());
         }
@@ -147,6 +147,9 @@ public class UserServiceImpl implements UserService {
         user.setPhone(resources.getPhone());
         user.setNickName(resources.getNickName());
         user.setGender(resources.getGender());
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(resources.getPassword())){
+            user.setPassword(user.getPassword());
+        }
 
         ChildUser childUser = resources.getChildUser();
         resources.setChildUser(null);
@@ -214,6 +217,12 @@ public class UserServiceImpl implements UserService {
     public void updatePass(String username, String pass) {
         userRepository.updatePass(username, pass, new Date());
         flushCache(username);
+    }
+
+    @Override
+    public void updateEnable(Long id,String username, boolean enable) {
+        userRepository.updateEnable(id);
+        delCaches(id,username);
     }
 
     @Override

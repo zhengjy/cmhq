@@ -176,4 +176,6 @@ public class FaCompanyEntity {
      * </pre>
      */
     private String	currdaydate;
+    //是否删除Y/N
+    private String isDelete;
 }

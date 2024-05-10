@@ -102,19 +102,20 @@ public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
             e.setKoufeiType(1);
             //更新商户金额
             faCompanyDao.addMoney(param.getCompanyId(),param.getMoney());
-        //扣款
-        }else if (param.getConsumeEumn().getType().equals(MoneyConsumeEumn.CONSUM_3.getType())){
+        //创建订单扣款
+        }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_3.getDesc())){
             e.setAfter(faCompanyEntity.getMoney()-param.getMoney());
             //更新商户金额
             //扣除余额，更新预扣款
-            int num = faCompanyDao.minusMoney(param.getCompanyId(),param.getMoney());
+            int num = faCompanyDao.minusMoneyAndEstimatePrice(param.getCompanyId(),param.getMoney());
             if (num < 1){
                 throw new RuntimeException("更新账户余额失败");
             }
         //取消订单退回预估费用
         }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_6.getDesc())
                 || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_5.getDesc())
-                || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_8.getDesc())){
+                || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_8.getDesc())
+        ){
             e.setAfter(faCompanyEntity.getMoney()+param.getMoney());
             int num = faCompanyDao.addMoney(param.getCompanyId(),param.getMoney());
             if (num < 1){
@@ -122,10 +123,17 @@ public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
             }
         //货物签收退回预估费用
         }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_4.getDesc())){
-            e.setAfter(faCompanyEntity.getMoney());
-            int num = faCompanyDao.minusEstimatePrice(param.getCompanyId(),param.getMoney());
+            e.setAfter(faCompanyEntity.getMoney()+param.getMoney());
+            int num = faCompanyDao.addMoneyAndEstimatePrice(param.getCompanyId(),param.getMoney());
             if (num < 1){
                 throw new RuntimeException("货物签收退回预估费用");
+            }
+            //货物签收退扣除费用
+        }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_2.getDesc())){
+            e.setAfter(faCompanyEntity.getMoney()-param.getMoney());
+            int num = faCompanyDao.minusMoney(param.getCompanyId(),param.getMoney());
+            if (num < 1){
+                throw new RuntimeException("货物签收扣除费用");
             }
         }
         faCompanyMoneyDao.insert(e);

@@ -80,6 +80,7 @@ public interface UserService {
      * @param encryptPassword 密码
      */
     void updatePass(String username, String encryptPassword);
+    void updateEnable(Long id,String username, boolean enable);
 
     /**
      * 修改头像

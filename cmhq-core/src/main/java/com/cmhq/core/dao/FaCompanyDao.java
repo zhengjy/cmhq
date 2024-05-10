@@ -9,7 +9,8 @@ import org.apache.ibatis.annotations.Param;
 public interface FaCompanyDao  extends BaseMapper<FaCompanyEntity> {
 
     int minusMoney(@Param("companyId") Integer companyId, @Param("money") Double money);
-    int minusEstimatePrice(@Param("companyId") Integer companyId, @Param("money") Double money);
+    int minusMoneyAndEstimatePrice(@Param("companyId") Integer companyId, @Param("money") Double money);
+    int addMoneyAndEstimatePrice(@Param("companyId") Integer companyId, @Param("money") Double money);
     int restMoney(@Param("companyId") Integer companyId, @Param("money") Double money);
     int addMoney(@Param("companyId") Integer companyId, @Param("money") Double money);
 }

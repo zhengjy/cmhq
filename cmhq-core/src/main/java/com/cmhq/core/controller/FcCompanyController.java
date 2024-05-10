@@ -55,6 +55,7 @@ public class FcCompanyController {
     @ApiOperation("列表查询")
     @RequestMapping(value = "list", method = RequestMethod.GET)
     public APIResponse list(@ModelAttribute CompanyQuery query) {
+        query.setNotCid("1");
         return APIResponse.success(faCompanyService.list(query));
     }
     @ApiOperation("获取当前商户信息")

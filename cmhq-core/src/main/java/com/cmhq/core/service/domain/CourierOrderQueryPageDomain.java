@@ -90,6 +90,7 @@ public class CourierOrderQueryPageDomain {
             }
         }
 
+        lam.eq(FaCourierOrderEntity::getXdelkid,0);
 
         if (StringUtils.isNotEmpty(query.getCourierCompanyCode())){
             lam.eq(FaCourierOrderEntity::getCourierCompanyCode,query.getCourierCompanyCode());

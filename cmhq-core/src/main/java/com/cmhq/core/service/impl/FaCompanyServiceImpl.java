@@ -17,6 +17,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.QueryResult;
+import me.zhengjie.config.RsaProperties;
 import me.zhengjie.modules.system.domain.Dept;
 import me.zhengjie.modules.system.domain.Job;
 import me.zhengjie.modules.system.domain.Role;
@@ -24,11 +25,13 @@ import me.zhengjie.modules.system.domain.User;
 import me.zhengjie.modules.system.service.DeptService;
 import me.zhengjie.modules.system.service.UserService;
 import me.zhengjie.modules.system.service.dto.UserDto;
+import me.zhengjie.utils.RsaUtils;
 import me.zhengjie.utils.SecurityUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,10 +75,13 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
         if (StringUtils.isNotEmpty(query.getCompanyName())){
             queryWrapper.like(FaCompanyEntity::getName,query.getCompanyName());
         }
+        if (StringUtils.isNotEmpty(query.getNotCid())){
+            queryWrapper.gt(FaCompanyEntity::getFid,0);
+        }
         if (query.getId() != null){
             queryWrapper.eq(FaCompanyEntity::getId, query.getId());
         }
-
+        queryWrapper.eq(FaCompanyEntity::getIsDelete,"N");
         List<FaCompanyEntity>  list = faCompanyDao.selectList(queryWrapper);
         PageInfo<FaCompanyEntity> page = new PageInfo<>(list);
         if (list != null){
@@ -186,21 +192,49 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
     @Transactional
     @Override
     public Integer createChildUser(User resources)  {
-        // 默认密码 123456
-        resources.setPassword(passwordEncoder.encode(resources.getPassword()));
+        UserDto userDto = userService.findById(SecurityUtils.getCurrentUserId());
+        Dept dept = new Dept();
+        dept.setName(userDto.getDept().getName());
+        dept.setId(userDto.getDept().getId());
+        resources.setDept(dept);
+
+        Set<Job> jobs = new HashSet<>();
+        Job job = new Job();
+        job.setId(12L);//运维人员
+        jobs.add(job);
+        resources.setJobs(jobs);
+
+        dept.setEnabled(true);
+        dept.setSubCount(0);
+        resources.setDept(dept);
+
+        Set<Role> roles = new HashSet<>();
+        Role role = new Role();
+        role.setId(5L);//商户运维人员角色
+        roles.add(role);
+        resources.setRoles(roles);
+
+
+        resources.setUsername(resources.getPhone());
+        resources.setEmail(resources.getPhone()+"@qq.com");
+        resources.setGender("男");
+        resources.setEnabled(true);
+
         resources.setPlatform("company");
         resources.setAvatarName("avatar.jpg");
         resources.setAvatarPath("/usr/app/file/");
-        //保存商户表
-        FaCompanyEntity currentCompany = CurrentUserContent.getCurrentCompany();
-        FaCompanyEntity entity = new FaCompanyEntity();
-        Integer fcid = currentCompany.getId();
-        entity.setCompanyName(currentCompany.getCompanyName());
-        entity.setPassword(resources.getPassword());
-        entity.setMobile(resources.getPhone());
-        entity.setFid(fcid);
-        entity.setStatus(currentCompany.getStatus());
-        entity.setAvatar(currentCompany.getAvatar());
+        if (resources.getId() == null){
+            resources.setPassword(passwordEncoder.encode(resources.getPassword()));
+            //保存商户表
+            FaCompanyEntity currentCompany = CurrentUserContent.getCurrentCompany();
+            FaCompanyEntity entity = new FaCompanyEntity();
+            Integer fcid = currentCompany.getId();
+            entity.setCompanyName(currentCompany.getCompanyName());
+            entity.setPassword(resources.getPassword());
+            entity.setMobile(resources.getPhone());
+            entity.setFid(fcid);
+            entity.setStatus(currentCompany.getStatus());
+            entity.setAvatar(currentCompany.getAvatar());
 //        if (resources.getChildUser() != null){
 //            entity.setZiMaxNum(resources.getChildUser().getZiMaxNum());
 //            entity.setZiMaxMoney(resources.getChildUser().getZiMaxMoney());
@@ -209,28 +243,44 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
 //            entity.setCancelMaxNum(resources.getChildUser().getCancelMaxNum());
 //
 //        }
-        entity.setName(resources.getUsername());
-        entity.setHobbydata(currentCompany.getHobbydata());
-        faCompanyDao.insert(entity);
-        if (resources.getChildUser() != null){
-            resources.getChildUser().setChildCompanyId(entity.getId());
+            entity.setName(resources.getUsername());
+            entity.setHobbydata(currentCompany.getHobbydata());
+            faCompanyDao.insert(entity);
+            if (resources.getChildUser() != null){
+                resources.getChildUser().setChildCompanyId(entity.getId());
+            }
+            resources.setCompanyId(SecurityUtils.getCurrentCompanyId());
+            userService.create(resources);
+            return resources.getId().intValue();
+        }else {
+            try {
+                UserDto userDto1 = userService.findById(resources.getId());
+                if(StringUtils.isEmpty(resources.getPassword())){
+                    resources.setPassword(userDto1.getPassword());
+                }else {
+                    resources.setPassword(passwordEncoder.encode(resources.getPassword()));
+                }
+                userService.update(resources);
+            }catch (Exception e){
+                log.error("",e);
+            }
         }
-        resources.setCompanyId(SecurityUtils.getCurrentCompanyId());
-        userService.create(resources);
-        return resources.getId().intValue();
+        return null;
+
+
     }
 
     @Transactional
     @Override
     public void delete(Integer id) {
         FaCompanyEntity entity = selectById(id);
-        faCompanyDao.deleteById(id);
+        FaCompanyEntity ee= new FaCompanyEntity();
+        ee.setId(id);
+        ee.setIsDelete("Y");
+        faCompanyDao.updateById(ee);
         UserDto dto = getUserDto(entity);
-
         if (dto != null){
-            Set set = new HashSet<>();
-            set.add(dto.getId());
-            userService.delete(set);
+            userService.updateEnable(dto.getId(),dto.getUsername(),true);
         }
     }
 

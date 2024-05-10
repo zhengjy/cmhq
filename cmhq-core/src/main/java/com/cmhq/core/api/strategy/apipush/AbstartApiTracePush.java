@@ -62,7 +62,6 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             log.error("未匹配到物流状态 params 【{}】", JSONObject.toJSONString(req));
             return;
         }
-        doHandle(order,req);
         //获取状态
         FaCourierOrderEntity orderEntity = new FaCourierOrderEntity();
         orderEntity.setWuliuState(Integer.parseInt(wuliuStateEnum.getType()));
@@ -72,11 +71,8 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg",getIsErrorMsg(req));
         }
         if (wuliuStateEnum.getType().equals(CourierWuliuStateEnum.STATE_3.getType())){
-            //
-            orderEntity.setIsJiesuan(1);
-            faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
-            //订单签收执行
-            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_2, order.getPrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+            //签收处理
+            doHandle(order, req);
         }else {
             faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
         }
@@ -87,23 +83,24 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
         if (StringUtils.isNotEmpty(getWeight(req))){
             double traceWeight = Double.parseDouble(getWeight(req));
             double weight = order.getWeight() == null ? 0D : order.getWeight();
+            //计算是否超过商户配置的比例
             saveRecord(order,faCompanyEntity,traceWeight,weight,req);
-            //物流返回重量大于填写的实际重量
-            if (traceWeight > weight){
-                //通过返回重量  重新计算运费
-                FreightChargeDto price = EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),order.getWeight(),faCompanyEntity.getRatio());
-                //更新实际重量和价格
-                FaCourierOrderEntity editOrder = new FaCourierOrderEntity();
-                editOrder.setId(order.getId());
-                editOrder.setPrice(price.getTotalPrice());
-                editOrder.setWeightto(traceWeight);
-                faCourierOrderDao.updateById(editOrder);
-                //最新运费 - 历史运费
-                double price2 = EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),traceWeight,faCompanyEntity.getRatio()).getTotalPrice() - order.getPrice();
 
-                //插入消费记录 ,因为填写的重量和实际重量不一致,导致价格有变动,所以还需要扣除商户金额,增加消费记录
-                faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_7,price2,order.getFaCompanyId(), order.getId()+"",order.getCourierCompanyWaybillNo()));
+            FreightChargeDto price = EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),traceWeight,faCompanyEntity.getRatio());
+            //插入记录  返还商户预估费用& 扣除商户金额
+            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_4,order.getPrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+            try {
+                //会出现创建时间相同
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_2,price.getTotalPrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+            //更新实际费用和重量
+            order.setPrice(price.getTotalPrice());
+            order.setWeightto(traceWeight);
+            order.setIsJiesuan(1);
+            faCourierOrderDao.update(order, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
         }
     }
 

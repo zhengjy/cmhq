@@ -59,6 +59,13 @@ public class FaCourierOrderController {
         Integer id = faCourierOrderService.create(resources);
         return APIResponse.success(id);
     }
+    @PostMapping("batchCreate")
+    @Log("新增CourierOrder")
+    @ApiOperation("批量新增CourierOrder")
+    public APIResponse batchCreateFaCourierOrder(@Validated @RequestBody List<FaCourierOrderEntity> resources) {
+        Object o = faCourierOrderService.batchCreate(resources);
+        return APIResponse.success(o);
+    }
 
     @AnonymousPostMapping("shareCreate")
     @Log("分享新增CourierOrder")
@@ -156,7 +163,7 @@ public class FaCourierOrderController {
         return APIResponse.success(faCourierOrderService.addressAnalysis(text));
     }
     @ApiOperation("物流轨迹查询")
-    @GetMapping("queryCourierTrack")
+    @AnonymousGetMapping("queryCourierTrack")
     public APIResponse queryCourierTrack( @ApiParam(value = "id") @RequestParam() Integer id) {
         return APIResponse.success(faCourierOrderService.queryCourierTrack(id));
     }

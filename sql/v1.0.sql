@@ -137,3 +137,4 @@ CREATE TABLE `fa_courier_order_share_orderno` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='快递订单分享订单号';
 
 ALTER TABLE fa_expressorder MODIFY COLUMN msg varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '备注';
+ALTER TABLE fa_company ADD is_delete varchar(2) DEFAULT 'N' NULL COMMENT '是否删除Y/N';

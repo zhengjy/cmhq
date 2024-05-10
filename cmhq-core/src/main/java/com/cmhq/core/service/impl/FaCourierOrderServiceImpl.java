@@ -13,7 +13,6 @@ import com.cmhq.core.model.*;
 import com.cmhq.core.model.dto.FaCostFreight;
 import com.cmhq.core.model.dto.FreightChargeDto;
 import com.cmhq.core.model.param.CourierOrderQuery;
-import com.cmhq.core.model.param.ShareCreateCourier;
 import com.cmhq.core.service.FaCourierOrderService;
 import com.cmhq.core.service.domain.AuditSuccessCourierOrderDomain;
 import com.cmhq.core.service.domain.CancelCourierOrderDomain;
@@ -31,9 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -70,6 +69,22 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
 
     }
 
+    @Override
+    public Object batchCreate(List<FaCourierOrderEntity> resources) {
+            resources.forEach(v ->{
+                try {
+                    CreateCourierOrderDomain domain = new CreateCourierOrderDomain(v);
+                    domain.handle();
+                }catch (Exception e){
+                    log.error("创建失败: param【{}】",JSONObject.toJSONString(v));
+                    log.error("",e);
+                }
+            });
+            return null;
+
+
+    }
+
     @Transactional
     @Override
     public Integer shareCreate(FaCourierOrderEntity resources) {
@@ -98,6 +113,7 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
             throw new RuntimeException("执行分享创建失败:"+e.getMessage());
         }
     }
+
 
     @Override
     public FreightChargeDto getCourierFreightCharge(FaCourierOrderEntity entity,Integer retio) {
@@ -182,12 +198,10 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
         if(order == null){
             return;
         }
-        if ((order.getOrderState() == 0 || order.getOrderState() == 1 || order.getOrderState() == 3)
-                || (order.getWuliuState() == 3 || order.getWuliuState() == 4)){
-            faCourierOrderDao.deleteById(id);
-            faCourierOrderExtDao.delete(new LambdaQueryWrapper<FaCourierOrderExtEntity>().eq(FaCourierOrderExtEntity::getCourierOrderId,id));
-        }
-        throw new RuntimeException("当前状态不允许删除");
+        FaCourierOrderEntity entity = new FaCourierOrderEntity();
+        entity.setId(id);
+        entity.setXdelkid(1);
+        faCourierOrderDao.updateById(entity);
     }
 
     @Override

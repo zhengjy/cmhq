@@ -8,6 +8,7 @@ import com.cmhq.core.model.param.ShareCreateCourier;
 import me.zhengjie.QueryResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,6 +64,8 @@ public interface FaCourierOrderService {
     Map<String, String> getOrderNoCompanyIdUserId();
 
     Integer shareCreate(FaCourierOrderEntity resources);
+
+    Object batchCreate(List<FaCourierOrderEntity> resources);
 
 //    /**
 //     * 查询所有数据不分页

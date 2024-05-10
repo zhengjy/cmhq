@@ -33,7 +33,7 @@ public class JDPushOrderStatePush extends AbstartApiOrderPush<JDPushTraceDto>{
             }else if (dto.getCategoryName().contains("取消") || dto.getState().equals("200052")){
                 return CourierOrderStateEnum.STATE_3;
             }
-            if (dto.getCategoryName().contains("完成")){
+            if (dto.getCategoryName().contains("完成") || dto.getState().equals("10034") || dto.getState().equals("10035")){
                 return CourierOrderStateEnum.STATE_2;
             }else if (dto.getCategoryName().contains("派送")){
                 return CourierOrderStateEnum.STATE_2;
