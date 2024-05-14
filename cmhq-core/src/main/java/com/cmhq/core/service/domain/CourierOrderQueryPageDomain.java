@@ -2,7 +2,6 @@ package com.cmhq.core.service.domain;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.cmhq.core.dao.FaCompanyDao;
 import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.dao.FaCourierOrderExtDao;
 import com.cmhq.core.model.FaCompanyEntity;
@@ -10,8 +9,6 @@ import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.FaCourierOrderExtEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import com.cmhq.core.service.FaCompanyService;
-import com.cmhq.core.util.ContextHolder;
-import com.cmhq.core.util.CurrentUserContent;
 import com.cmhq.core.util.SpringApplicationUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -19,7 +16,6 @@ import me.zhengjie.QueryResult;
 import me.zhengjie.modules.system.service.UserService;
 import me.zhengjie.modules.system.service.dto.UserDto;
 import me.zhengjie.utils.SecurityUtils;
-import net.dreamlu.mica.core.spring.SpringContextUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -92,8 +88,23 @@ public class CourierOrderQueryPageDomain {
 
         lam.eq(FaCourierOrderEntity::getXdelkid,0);
 
+
         if (StringUtils.isNotEmpty(query.getCourierCompanyCode())){
             lam.eq(FaCourierOrderEntity::getCourierCompanyCode,query.getCourierCompanyCode());
+        }
+        if (StringUtils.isNotEmpty(query.getPagetype()) ){
+            //页面菜单：1：商户-订单列表，2：商户-订单取消记录，3：商户-取消订单，4：总后台-发货订单，5：总后台-订单取消记录，6：总后台-取消订单审核，7：总后台-台账管理
+            if (StringUtils.equals(query.getPagetype(),"1") || StringUtils.equals(query.getPagetype(),"4")){
+                lam.eq(FaCourierOrderEntity::getCancelType,0);
+            }else if (StringUtils.equals(query.getPagetype(),"2") || StringUtils.equals(query.getPagetype(),"5")){
+                lam.notIn(FaCourierOrderEntity::getCancelType,0);
+            }else if (StringUtils.equals(query.getPagetype(),"3") ){
+                lam.in(FaCourierOrderEntity::getOrderState,0,1);
+            }else if (StringUtils.equals(query.getPagetype(),"6")){
+                lam.in(FaCourierOrderEntity::getCancelOrderState,-1);
+            }else {
+                lam.eq(FaCourierOrderEntity::getCancelType,0);
+            }
         }
         if (StringUtils.isNotEmpty(query.getOrderNo())){
             lam.eq(FaCourierOrderEntity::getOrderNo,query.getOrderNo());
@@ -113,6 +124,10 @@ public class CourierOrderQueryPageDomain {
 
         if (CollectionUtils.isNotEmpty(query.getOrderState())){
             lam.in(FaCourierOrderEntity::getOrderState,query.getOrderState());
+        }
+
+        if (CollectionUtils.isNotEmpty(query.getWuliuState())){
+            lam.in(FaCourierOrderEntity::getWuliuState,query.getWuliuState());
         }
 
         if (CollectionUtils.isNotEmpty(query.getCancelOrderState())){

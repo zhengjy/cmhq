@@ -70,7 +70,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query(value = "update sys_user set email = ?2 where username = ?1",nativeQuery = true)
     void updateEmail(String username, String email);
     @Modifying
-    @Query(value = "update sys_user set enabled = 0 where id = ?1",nativeQuery = true)
+    @Query(value = "update sys_user set enabled = 0 where user_id = ?1",nativeQuery = true)
     void updateEnable(Long id);
 
     /**

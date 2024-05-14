@@ -76,7 +76,7 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
             queryWrapper.like(FaCompanyEntity::getName,query.getCompanyName());
         }
         if (StringUtils.isNotEmpty(query.getNotCid())){
-            queryWrapper.gt(FaCompanyEntity::getFid,0);
+            queryWrapper.eq(FaCompanyEntity::getFid,0);
         }
         if (query.getId() != null){
             queryWrapper.eq(FaCompanyEntity::getId, query.getId());
@@ -278,10 +278,15 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
         ee.setId(id);
         ee.setIsDelete("Y");
         faCompanyDao.updateById(ee);
-        UserDto dto = getUserDto(entity);
-        if (dto != null){
-            userService.updateEnable(dto.getId(),dto.getUsername(),true);
+        try {
+            UserDto dto = getUserDto(entity);
+            if (dto != null){
+                userService.updateEnable(dto.getId(),dto.getUsername(),true);
+            }
+        }catch (Exception e){
+            log.error("",e);
         }
+
     }
 
     private UserDto getUserDto(FaCompanyEntity entity){

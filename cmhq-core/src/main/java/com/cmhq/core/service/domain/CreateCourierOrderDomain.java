@@ -91,7 +91,7 @@ public class CreateCourierOrderDomain {
 
             check(price,faCompanyEntity);
             order.setEstimatePrice(price);
-            order.setPrice(price);
+            order.setPrice(0D);
             if (order.getType() ==null){
                 order.setType(1);
             }

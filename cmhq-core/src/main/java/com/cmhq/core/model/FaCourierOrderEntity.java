@@ -41,7 +41,7 @@ public class FaCourierOrderEntity {
 
     @ApiModelProperty(value = "子账户id")
     @TableField("zid")
-    private Integer zid; //TODO
+    private Integer zid;
 
     @ApiModelProperty(value = "物品分类ID")
     @Deprecated
@@ -69,9 +69,9 @@ public class FaCourierOrderEntity {
     private Integer height;
 
     //
-    @ApiModelProperty(value = "预估费用（快递公司返回的费用）")
+    @ApiModelProperty(value = "预估费用（第一次填写的重量预估）")
     private Double estimatePrice;
-    @ApiModelProperty(value = "实际费用（真实扣费的费用）")
+    @ApiModelProperty(value = "实际费用（真实扣费的费用，快递公司返回）")
     private Double price;
     @ApiModelProperty(value = "本地实际费用")
     private Double priceto;
@@ -164,7 +164,7 @@ public class FaCourierOrderEntity {
     private String reason;
 
     @ApiModelProperty(value = "预计结算时间戳签收7天后")
-    private Date jiesuanTime;
+    private Integer jiesuanTime;
     @ApiModelProperty(value = "0未结算1已结算")
     private Integer isJiesuan;
 

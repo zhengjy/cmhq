@@ -52,10 +52,10 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             log.error("为查询到订单 params 【{}】", JSONObject.toJSONString(req));
             return;
         }
-//        if (order.getWuliuState() != null && order.getWuliuState().toString().equals(CourierWuliuStateEnum.STATE_3.getType())){TODO
-//            log.error("订单已签收 params 【{}】", JSONObject.toJSONString(req));
-//            return;
-//        }
+        if (order.getWuliuState() != null && order.getWuliuState().toString().equals(CourierWuliuStateEnum.STATE_3.getType())){
+            log.error("订单已签收 params 【{}】", JSONObject.toJSONString(req));
+            return;
+        }
         //获取状态
         CourierWuliuStateEnum wuliuStateEnum = getTraceState(req);
         if (wuliuStateEnum == null){
@@ -73,9 +73,8 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
         if (wuliuStateEnum.getType().equals(CourierWuliuStateEnum.STATE_3.getType())){
             //签收处理
             doHandle(order, req);
-        }else {
-            faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
         }
+        faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
     }
 
     private void doHandle(FaCourierOrderEntity order,Req req){

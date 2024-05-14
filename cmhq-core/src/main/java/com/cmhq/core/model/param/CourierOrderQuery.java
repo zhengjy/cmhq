@@ -24,6 +24,8 @@ public class CourierOrderQuery extends BaseQuery{
     private String courierCompanyWaybillNo;
     @ApiModelProperty(value = "物品名称")
     private String goodsName;
+    @ApiModelProperty(value = "页面菜单：1：商户-订单列表，2：商户-订单取消记录，3：商户-取消订单审核，4：总后台-发货订单，5：总后台-订单取消记录，6：总后台-取消订单审核")
+    private String pagetype;
 
     @ApiModelProperty(value = "本系统自定义状态:0待取件1调派2已取件3:已取消")
     private List<Integer> orderState;
