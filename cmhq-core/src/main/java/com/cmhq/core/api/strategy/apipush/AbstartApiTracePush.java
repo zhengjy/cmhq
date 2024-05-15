@@ -111,6 +111,9 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
      * @param weight
      */
     private void saveRecord(FaCourierOrderEntity order,FaCompanyEntity faCompanyEntity,double traceWeight,double weight,Req req){
+	if (faCompanyEntity.getCheckWeightRatio() == null ){
+            return;
+        }
         double difference = traceWeight - weight;
         //判断下单时填写的重量和实际重量相差是否大于配置商户的触发比例
         double percentDifference = new BigDecimal((difference / weight ) * 100).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
