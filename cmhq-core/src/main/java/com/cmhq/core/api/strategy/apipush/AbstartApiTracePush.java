@@ -87,7 +87,7 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
 
             FreightChargeDto price = EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),traceWeight,faCompanyEntity.getRatio());
             //插入记录  返还商户预估费用& 扣除商户金额
-            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_4,order.getPrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_4,order.getEstimatePrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
             try {
                 //会出现创建时间相同
                 Thread.sleep(1000);
