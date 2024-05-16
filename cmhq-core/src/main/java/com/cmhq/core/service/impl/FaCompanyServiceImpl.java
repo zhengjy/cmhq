@@ -146,8 +146,8 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
             user.setGender("男");
             user.setPhone(entity.getMobile());
             user.setEmail(System.currentTimeMillis()+"@qq.com");
-            user.setAvatarName("avatar.jpg");
-            user.setAvatarPath("/usr/app/file/");
+            user.setAvatarName("avatar-20240516101826966.png");
+            user.setAvatarPath("/home/eladmin/avatar/avatar-20240516101826966.png");
             user.setPassword(pwd);
 
             user.setIsAdmin(false);
@@ -223,8 +223,8 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
         resources.setEnabled(true);
 
         resources.setPlatform("company");
-        resources.setAvatarName("avatar.jpg");
-        resources.setAvatarPath("/usr/app/file/");
+        resources.setAvatarName("avatar-20240516101826966.png");
+        resources.setAvatarPath("/home/eladmin/avatar/avatar-20240516101826966.png");
         if (resources.getId() == null){
             resources.setPassword(passwordEncoder.encode(resources.getPassword()));
             //保存商户表
