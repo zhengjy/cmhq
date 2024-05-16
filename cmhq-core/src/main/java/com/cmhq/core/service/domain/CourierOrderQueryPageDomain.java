@@ -72,12 +72,14 @@ public class CourierOrderQueryPageDomain {
         //获取当前用户是运维账户,还是商户管理员
         if (StringUtils.isEmpty(query.getOrderNo() ) && query.getId() == null){
             if (SecurityUtils.isPlatformCompany()){
-                if (SecurityUtils.isCompanyChildUser()){
-                    lam.eq(FaCourierOrderEntity::getFaCompanyId,SecurityUtils.getCurrentCompanyId());
-                    lam.eq(FaCourierOrderEntity::getCreateUserId,SecurityUtils.getCurrentUserId());
-                }else if (SecurityUtils.isCompanyUser()){
-                    lam.eq(FaCourierOrderEntity::getFaCompanyId,SecurityUtils.getCurrentCompanyId());
-                }
+
+                lam.eq(FaCourierOrderEntity::getFaCompanyId,SecurityUtils.getCurrentCompanyId());
+//                if (SecurityUtils.isCompanyChildUser()){
+//                    lam.eq(FaCourierOrderEntity::getFaCompanyId,SecurityUtils.getCurrentCompanyId());
+//                    lam.eq(FaCourierOrderEntity::getCreateUserId,SecurityUtils.getCurrentUserId());
+//                }else if (SecurityUtils.isCompanyUser()){
+//                    lam.eq(FaCourierOrderEntity::getFaCompanyId,SecurityUtils.getCurrentCompanyId());
+//                }
             }
             if (SecurityUtils.isPlatformCompany()){
                 if (StringUtils.isNotEmpty(query.getUserName())){
