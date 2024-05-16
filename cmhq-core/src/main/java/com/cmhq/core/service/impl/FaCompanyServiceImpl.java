@@ -198,11 +198,13 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
         dept.setId(userDto.getDept().getId());
         resources.setDept(dept);
 
-        Set<Job> jobs = new HashSet<>();
-        Job job = new Job();
-        job.setId(12L);//运维人员
-        jobs.add(job);
-        resources.setJobs(jobs);
+        if (resources.getJobs() == null){
+            Set<Job> jobs = new HashSet<>();
+            Job job = new Job();
+            job.setId(12L);//运维人员
+            jobs.add(job);
+            resources.setJobs(jobs);
+        }
 
         dept.setEnabled(true);
         dept.setSubCount(0);
