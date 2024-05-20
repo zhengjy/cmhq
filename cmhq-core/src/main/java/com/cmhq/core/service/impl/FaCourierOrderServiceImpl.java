@@ -73,6 +73,7 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
     public Object batchCreate(List<FaCourierOrderEntity> resources) {
             resources.forEach(v ->{
                 try {
+			v.setId(null);
                     CreateCourierOrderDomain domain = new CreateCourierOrderDomain(v);
                     domain.handle();
                 }catch (Exception e){

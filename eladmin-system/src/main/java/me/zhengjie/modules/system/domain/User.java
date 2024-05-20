@@ -61,9 +61,9 @@ public class User extends BaseEntity implements Serializable {
 
     @JoinColumn(name = "user_id")
     @OneToOne(cascade = { CascadeType.ALL })
-    @JoinTable(name = "sys_childuser",
-            joinColumns = {@JoinColumn(name = "user_id",referencedColumnName = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "user_id",referencedColumnName = "user_id")})
+//    @JoinTable(name = "sys_childuser",
+//            joinColumns = {@JoinColumn(name = "user_id",referencedColumnName = "user_id")},
+//           inverseJoinColumns = {@JoinColumn(name = "user_id",referencedColumnName = "user_id")})
     private ChildUser childUser;
 
     @OneToOne
