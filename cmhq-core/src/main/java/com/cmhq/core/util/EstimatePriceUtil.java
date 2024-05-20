@@ -219,7 +219,7 @@ public class EstimatePriceUtil {
             double baseWeight = 1.0; // 首重
             double baseCost = costPrice; // 首重费用
             double additionalWeightCost = costPriceTo; // 续重费用
-            double actualWeight = Math.round(weight); // 四舍五入取整
+            double actualWeight = Math.ceil(weight); // 向上取整
             double cost = baseCost + (actualWeight - baseWeight) * additionalWeightCost; // 实际费用计算公式
             DecimalFormat df = new DecimalFormat("#.00"); // 格式化输出为两位小数
             price = Double.parseDouble(df.format(cost));
