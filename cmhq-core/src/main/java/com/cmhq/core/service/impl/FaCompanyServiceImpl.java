@@ -210,11 +210,15 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
         dept.setSubCount(0);
         resources.setDept(dept);
 
-        Set<Role> roles = new HashSet<>();
-        Role role = new Role();
-        role.setId(5L);//商户运维人员角色
-        roles.add(role);
-        resources.setRoles(roles);
+        if (resources.getRoles() == null){
+            Set<Role> roles = new HashSet<>();
+            Role role = new Role();
+            role.setId(5L);//商户运维人员角色
+            roles.add(role);
+            resources.setRoles(roles);
+        }
+
+
 
 
         resources.setUsername(resources.getPhone());
