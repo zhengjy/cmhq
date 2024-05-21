@@ -1,5 +1,6 @@
 package com.cmhq.core.api.strategy.apipush;
 
+import org.apache.commons.lang3.StringUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
@@ -66,8 +67,20 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
         }
         CommonOrderInfoResponse infoResponse = JSONObject.parseObject(uploadResult.getJsonMsg()+"", CommonOrderInfoResponse.class);
         if (CollectionUtils.isNotEmpty(infoResponse.getCargoes())){
-            return infoResponse.getCargoes().get(0).getAgainWeight();
-        }
+            //实际重量【按实际重量与体积重量（计泡重量）两者取最大值计算运费】
+            String againVolume = infoResponse.getCargoes().get(0).getAgainVolume();
+            Double weight = 0D;
+            if (StringUtils.isNotEmpty(againVolume)){
+                weight = Double.parseDouble(againVolume) / 8000;
+            }
+            String againWeight = infoResponse.getCargoes().get(0).getAgainWeight();
+            if (StringUtils.isNotEmpty(againWeight)){
+                weight = Math.max(Double.parseDouble(againWeight),weight) ;
+            }
+            if (weight > 0){
+                return weight+"";
+            }
+	}
         return "";
     }
 
