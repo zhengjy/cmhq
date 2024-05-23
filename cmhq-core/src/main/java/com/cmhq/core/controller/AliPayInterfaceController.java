@@ -86,7 +86,7 @@ public class AliPayInterfaceController {
             log.info("商户订单号" + outTradeNo + "  " + "第三方交易号" + tradeNo);
 
 
-            faRechargeService.applySuccessHandle(outTradeNo,tradeNo);
+//            faRechargeService.applySuccessHandle(outTradeNo,tradeNo);
             // 根据业务需要返回数据，这里统一返回OK
             return new ResponseEntity<>("payment successful", HttpStatus.OK);
         } else {
@@ -114,7 +114,8 @@ public class AliPayInterfaceController {
             String tradeNo = new String(request.getParameter("trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
             //付款金额
             String totalAmount = new String(request.getParameter("total_amount").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-            //验证
+  	    log.info("商户订单号" + outTradeNo + "  " + "第三方交易号" + tradeNo + "付款金额" + totalAmount);
+  	    //验证
             if (tradeStatus.equals(AliPayStatusEnum.SUCCESS.getValue()) || tradeStatus.equals(AliPayStatusEnum.FINISHED.getValue())) {
                 faRechargeService.applySuccessHandle(outTradeNo,tradeNo);
             }else {
