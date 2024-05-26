@@ -99,6 +99,10 @@ public class FaRechargeServiceImpl  implements FaRechargeService {
         if (faRecharge == null){
             log.error("接支付返回状态，未查询到订单信息，更新失败。{},{}",outTradeNo,tradeNo);
             return;
+	}
+	if (faRecharge.getStatus().equals(1)){
+            log.warn("接支付返回状态，已支付成功。{},{}",outTradeNo,tradeNo);
+            return;
         }
         FaRechargeEntity ue = new FaRechargeEntity();
         ue.setApplyTradeNo(tradeNo);
