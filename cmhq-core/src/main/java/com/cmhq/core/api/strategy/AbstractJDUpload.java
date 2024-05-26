@@ -38,8 +38,8 @@ public abstract class AbstractJDUpload<Req, T extends JDUploadData> extends Abst
                     return uploadResult.setFlag(true);
                 } else {
                     callback.fail(rsp,null);
-                    uploadResult.setErrorJsonMsg(rsp.getMsg()).setFlag(false);
-                    return uploadResult.setErrorJsonMsg(rsp.getMsg()).setErrorMsg(rsp.getMsg()).setFlag(false);
+                    uploadResult.setErrorJsonMsg(rsp.getMsg()+rsp.getMsg()).setFlag(false);
+                    return uploadResult.setErrorJsonMsg(rsp.getMsg()+rsp.getMsg()).setErrorMsg(rsp.getMsg()+rsp.getMsg()).setFlag(false);
                 }
             } else {
                 callback.fail("对方服务器响应异常", null);
