@@ -70,7 +70,12 @@ public class AliPayServiceImpl implements AliPayService {
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
 
         // 订单完成后返回的页面和异步通知地址
-        request.setReturnUrl(alipay.getReturnUrl());
+        if (trade.getBusinessType() == 2){
+            request.setReturnUrl("?orderNo="+trade.getOrderCode());
+        }else {
+            request.setReturnUrl(alipay.getReturnUrl());
+
+        }
         request.setNotifyUrl(alipay.getNotifyUrl());
         // 填充订单参数
         request.setBizContent("{" +

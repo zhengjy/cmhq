@@ -3,10 +3,13 @@ package com.cmhq.core.controller;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.dao.FaCourierOrderShareOrdernoDao;
+import com.cmhq.core.dao.FaRechargeDao;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.FaCourierOrderExtEntity;
 import com.cmhq.core.model.FaCourierOrderShareOrdernoEntity;
+import com.cmhq.core.model.FaRechargeEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import com.cmhq.core.model.param.ShareCreateCourier;
 import com.cmhq.core.service.FaCourierOrderService;
@@ -46,6 +49,10 @@ public class FaCourierOrderController {
     private final FaCourierOrderService faCourierOrderService;
     @Autowired
     private FaCourierOrderShareOrdernoDao faCourierOrderShareOrdernoDao;
+    @Autowired
+    private FaRechargeDao faRechargeDao;
+    @Autowired
+    private FaCourierOrderDao faCourierOrderDao;
 
 
     @GetMapping("list")
@@ -144,6 +151,30 @@ public class FaCourierOrderController {
         if (queryResult.getTotal() > 0){
             return APIResponse.success(queryResult.getItems().get(0));
         }
+        return APIResponse.success();
+    }
+
+    @ApiOperation("根据订单号查询订单是否已付款")
+    @Log("根据订单号查询订单是否已付款:true已经付款")
+    @AnonymousGetMapping("selectOrderPayByOrderNo")
+    public APIResponse selectOrderPayByOrderNo( @ApiParam(value = "orderNo") @RequestParam() String orderNo) {
+        List<FaRechargeEntity> list = faRechargeDao.selectList(new LambdaQueryWrapper<FaRechargeEntity>().eq(FaRechargeEntity::getOrderid,orderNo).eq(FaRechargeEntity::getBusinessType,2));
+        if (CollectionUtils.isNotEmpty(list)){
+            return APIResponse.success(true);
+        }
+        return APIResponse.success(false);
+    }
+
+    @ApiOperation("更新收货时间")
+    @Log("更新收货时间")
+    @AnonymousPostMapping("updateGoodTime")
+    public APIResponse updateGoodTime(
+                                          @ApiParam(value = "time") @RequestParam(required = false) String time,
+                                          @ApiParam(value = "id") @RequestParam() Integer id) {
+        FaCourierOrderEntity order = new FaCourierOrderEntity();
+        order.setId(id);
+        order.setTakeGoodsTime(time);
+        faCourierOrderDao.updateById(order);
         return APIResponse.success();
     }
 
@@ -248,10 +279,10 @@ public class FaCourierOrderController {
             map.put("备注", e.getMsg());
             map.put("发货人", e.getFromName());
             map.put("发货手机号", e.getFromMobile());
-            map.put("发出地址", e.getFromAddress());
+            map.put("发出地址", e.getFromProv()+e.getFromCity()+e.getFromArea()+e.getFromAddress());
             map.put("收货人", e.getToName());
             map.put("收货手机号", e.getToMobile());
-            map.put("收货地址", e.getToAddress());
+            map.put("收货地址", e.getToProv()+e.getToCity()+e.getToArea()+e.getToAddress());
             map.put("公司", e.getCompanyName());
 
 //            map.put("宽度", e.getWidth());
