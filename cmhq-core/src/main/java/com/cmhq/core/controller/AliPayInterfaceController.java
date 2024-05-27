@@ -1,5 +1,6 @@
 package com.cmhq.core.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.dao.FaRechargeDao;
 import com.cmhq.core.model.FaRechargeEntity;
 import com.cmhq.core.service.FaRechargeService;
@@ -88,6 +89,7 @@ public class AliPayInterfaceController {
         faRecharge.setCid(SecurityUtils.getCurrentCompanyId());
         faRecharge.setMoney(Double.parseDouble(trade.getTotalAmount()));
         faRecharge.setStatus(0);
+        faRecharge.setCid(trade.getCompanyId());
         faRecharge.setBusinessType(2);
         faRecharge.setOrderid(ordercode);
         faRecharge.setCreateTime(new Date());
