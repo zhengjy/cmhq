@@ -1,13 +1,11 @@
 package com.cmhq.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.dao.FaRechargeDao;
 import com.cmhq.core.enums.MoneyConsumeEumn;
 import com.cmhq.core.enums.MoneyConsumeMsgEumn;
-import com.cmhq.core.model.CompanyMoneyParam;
-import com.cmhq.core.model.FaCompanyEntity;
-import com.cmhq.core.model.FaCompanyMoneyEntity;
-import com.cmhq.core.model.FaRechargeEntity;
+import com.cmhq.core.model.*;
 import com.cmhq.core.model.param.FaRechargeQuery;
 import com.cmhq.core.service.FaCompanyMoneyService;
 import com.cmhq.core.service.FaCompanyService;
@@ -18,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.QueryResult;
 import me.zhengjie.annotation.Log;
 import me.zhengjie.utils.SecurityUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +35,8 @@ public class FaRechargeServiceImpl  implements FaRechargeService {
     private FaCompanyMoneyService faCompanyMoneyService;
     @Autowired
     private FaCompanyService faCompanyService;
+    @Autowired
+    private FaCourierOrderDao faCourierOrderDao;
 
     @Autowired
     private FaRechargeDao faRechargeDao;
@@ -114,7 +115,12 @@ public class FaRechargeServiceImpl  implements FaRechargeService {
         faRechargeDao.updateById(ue);
 
         if (faRecharge.getBusinessType() == 2){
-            CompanyMoneyParam param = new CompanyMoneyParam(1,MoneyConsumeEumn.CONSUM_2, MoneyConsumeMsgEumn.MSG_7, faRecharge.getMoney(),faRecharge.getCid(),outTradeNo);
+            String billNo = outTradeNo;
+            List<FaCourierOrderEntity> list = faCourierOrderDao.selectList(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,outTradeNo));
+            if (CollectionUtils.isNotEmpty(list)){
+                billNo = list.get(0).getCourierCompanyWaybillNo();
+            }
+            CompanyMoneyParam param = new CompanyMoneyParam(1,MoneyConsumeEumn.CONSUM_2, MoneyConsumeMsgEumn.MSG_7, faRecharge.getMoney(),faRecharge.getCid(),billNo);
             //插入消费记录
             faCompanyMoneyService.saveRecord(param );
         }else {

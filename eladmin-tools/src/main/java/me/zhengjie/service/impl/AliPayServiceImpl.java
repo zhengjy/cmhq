@@ -71,7 +71,7 @@ public class AliPayServiceImpl implements AliPayService {
 
         // 订单完成后返回的页面和异步通知地址
         if (trade.getBusinessType() == 2){
-            request.setReturnUrl("?orderNo="+trade.getOrderCode());
+            request.setReturnUrl("http://b.ahjttd.com:81/mngall/#/outServeList?orderNo="+trade.getOrderCode());
         }else {
             request.setReturnUrl(alipay.getReturnUrl());
 
