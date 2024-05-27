@@ -40,6 +40,14 @@ public class TradeVo {
     /** （必填）商户订单号，应该由后台生成 */
     @ApiModelProperty(hidden = true)
     private String outTradeNo;
+    /** 业务类型: 1:充值,2:用户下单扣款 */
+    private Integer businessType = 1;
+
+    public Integer getBusinessType() {
+        return businessType == null ? 1 : businessType;
+    }
+    private String orderCode;
+    private Integer companyId;
 
     /** （必填）第三方订单号 */
     @ApiModelProperty(hidden = true)

@@ -23,6 +23,9 @@ public class FaRechargeEntity {
      */
     @TableId(type = IdType.AUTO)
     private Integer	id;
+    
+    /** 业务类型: 1:充值,2:用户下单扣款 */
+    private Integer businessType = 1;
 
     /**
      * <pre>

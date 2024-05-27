@@ -99,19 +99,28 @@ public class FaRechargeServiceImpl  implements FaRechargeService {
         if (faRecharge == null){
             log.error("接支付返回状态，未查询到订单信息，更新失败。{},{}",outTradeNo,tradeNo);
             return;
-	}
-	if (faRecharge.getStatus().equals(1)){
+	    }
+	    if (faRecharge.getStatus().equals(1)){
             log.warn("接支付返回状态，已支付成功。{},{}",outTradeNo,tradeNo);
             return;
         }
+
+
         FaRechargeEntity ue = new FaRechargeEntity();
         ue.setApplyTradeNo(tradeNo);
         ue.setStatus(1);
         ue.setId(faRecharge.getId());
         ue.setUpdateTime(new Date());
         faRechargeDao.updateById(ue);
-        CompanyMoneyParam param = new CompanyMoneyParam(1,MoneyConsumeEumn.CONSUM_2, MoneyConsumeMsgEumn.MSG_1, faRecharge.getMoney(),faRecharge.getCid(),outTradeNo);
-        //插入消费记录
-        faCompanyMoneyService.saveRecord(param );
+
+        if (faRecharge.getBusinessType() == 2){
+            CompanyMoneyParam param = new CompanyMoneyParam(1,MoneyConsumeEumn.CONSUM_2, MoneyConsumeMsgEumn.MSG_7, faRecharge.getMoney(),faRecharge.getCid(),outTradeNo);
+            //插入消费记录
+            faCompanyMoneyService.saveRecord(param );
+        }else {
+            CompanyMoneyParam param = new CompanyMoneyParam(1,MoneyConsumeEumn.CONSUM_2, MoneyConsumeMsgEumn.MSG_1, faRecharge.getMoney(),faRecharge.getCid(),outTradeNo);
+            //插入消费记录
+            faCompanyMoneyService.saveRecord(param );
+        }
     }
 }

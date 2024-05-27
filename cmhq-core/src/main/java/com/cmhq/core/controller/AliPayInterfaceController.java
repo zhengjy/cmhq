@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/9 17:50.
@@ -46,26 +47,57 @@ public class AliPayInterfaceController {
     @Autowired
     private FaRechargeService faRechargeService;
 
+    
     @Log("支付宝PC网页支付")
-    @ApiOperation("支付宝PC网页支付")
+    @ApiOperation("支付宝PC网页支付2")
     @PostMapping(value = "/toPayAsPC")
     @AnonymousAccess
     @Transactional
     public APIResponse<String> toPayAsPc(@Validated @RequestBody TradeVo trade) throws Exception {
         AlipayConfig aliPay = alipayService.find();
         String ordercode = alipayUtils.getOrderCode();
-        trade.setOutTradeNo(ordercode);
+        trade.setOutTradeNo(alipayUtils.getOrderCode());
         String payUrl = alipayService.toPayAsPc(aliPay, trade);
         FaRechargeEntity faRecharge = new FaRechargeEntity();
         faRecharge.setCid(SecurityUtils.getCurrentCompanyId());
         faRecharge.setMoney(Double.parseDouble(trade.getTotalAmount()));
         faRecharge.setStatus(0);
+        faRecharge.setBusinessType(1);
         faRecharge.setOrderid(ordercode);
         faRecharge.setCreateTime(new Date());
         faRecharge.setUpdateTime(new Date());
         faRecharge.setDelkid(0);
         faRecharge.setXdelkid(0);
         faRechargeDao.insert(faRecharge);
+        return APIResponse.success(payUrl);
+    }
+    @Log("支付宝PC网页支付")
+    @ApiOperation("支付宝PC网页支付-")
+    @PostMapping(value = "/toPayAsPC2")
+    @AnonymousAccess
+    @Transactional
+    public APIResponse<String> toPayAsPc2(@Validated @RequestBody TradeVo trade) throws Exception {
+        AlipayConfig aliPay = alipayService.find();
+        String ordercode = "";
+        if (StringUtils.isEmpty(trade.getTradeNo())){
+            ordercode = alipayUtils.getOrderCode();
+        }
+        trade.setOutTradeNo(ordercode);
+        String payUrl = alipayService.toPayAsPc(aliPay, trade);
+        FaRechargeEntity faRecharge = new FaRechargeEntity();
+        faRecharge.setCid(SecurityUtils.getCurrentCompanyId());
+        faRecharge.setMoney(Double.parseDouble(trade.getTotalAmount()));
+        faRecharge.setStatus(0);
+        faRecharge.setBusinessType(2);
+        faRecharge.setOrderid(ordercode);
+        faRecharge.setCreateTime(new Date());
+        faRecharge.setUpdateTime(new Date());
+        faRecharge.setDelkid(0);
+        faRecharge.setXdelkid(0);
+        int i = faRechargeDao.update(faRecharge,new LambdaQueryWrapper<>(faRecharge).eq(FaRechargeEntity::getOrderid,ordercode));
+        if (i <= 0){
+            faRechargeDao.insert(faRecharge);
+        }
         return APIResponse.success(payUrl);
     }
 
