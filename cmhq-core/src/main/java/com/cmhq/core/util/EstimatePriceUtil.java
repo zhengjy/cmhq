@@ -37,6 +37,7 @@ public class EstimatePriceUtil {
             }
             FaCostEntity costEntity = getCost(fromProv,toProv,fromCity,toCity);
             FreightChargeDto dto = new FreightChargeDto();
+            dto.setTotalPriceInit(costEntity.getPrice());
             dto.setTotalPrice(doGetPrice(costEntity.getPrice(),costEntity.getPriceTo(), weight, retio));
             dto.setInfo(costEntity.getAddress()+"，1kg以内"+costEntity.getPrice()+"元，超出"+costEntity.getPriceTo()+"元/kg，不足1kg按1kg计算");
             return dto;
@@ -89,6 +90,7 @@ public class EstimatePriceUtil {
         try {
             FaCompanyCostEntity costEntity = getCost2(fromProv,toProv,fromCity,toCity,null);
             FreightChargeDto dto = new FreightChargeDto();
+            dto.setTotalPriceInit(costEntity.getPrice());
             dto.setCourierCompanyCode(costEntity.getCourierCompanyCode());
             dto.setTotalPrice(doGetPrice(costEntity.getPrice(),costEntity.getPriceTo(), weight, retio));
             return dto;
@@ -113,6 +115,7 @@ public class EstimatePriceUtil {
         try {
             FaCompanyCostEntity costEntity = getCost2(fromProv,toProv,fromCity,toCity,courierCompanyCode);
             FreightChargeDto dto = new FreightChargeDto();
+            dto.setTotalPriceInit(costEntity.getPrice());
             dto.setCourierCompanyCode(costEntity.getCourierCompanyCode());
             dto.setTotalPrice(doGetPrice(costEntity.getPrice(),costEntity.getPriceTo(), weight, retio));
             return dto;

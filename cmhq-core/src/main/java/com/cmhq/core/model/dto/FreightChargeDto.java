@@ -11,6 +11,8 @@ public class FreightChargeDto {
 
     /**预估运费（单位元）*/
     private Double totalPrice;
+    /**首重*/
+    private Double totalPriceInit;
     /**快递公司编码*/
     private String courierCompanyCode;
 
