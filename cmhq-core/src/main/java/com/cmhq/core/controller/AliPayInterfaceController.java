@@ -80,7 +80,7 @@ public class AliPayInterfaceController {
     public APIResponse<String> toPayAsPc2(@Validated @RequestBody TradeVo trade) throws Exception {
         AlipayConfig aliPay = alipayService.find();
         String ordercode = trade.getOrderCode();
-        if (StringUtils.isEmpty(trade.getTradeNo())){
+        if (StringUtils.isEmpty(ordercode)){
             ordercode = alipayUtils.getOrderCode();
         }
         trade.setOutTradeNo(ordercode);
