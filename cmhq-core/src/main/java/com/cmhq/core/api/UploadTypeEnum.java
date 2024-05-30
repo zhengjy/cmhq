@@ -29,6 +29,8 @@ public enum UploadTypeEnum {
     TYPE_JD_QUERY_COURIER_ORDER_INFO("query_courier_order_info","order_info",CourierCompanyEnum.COMPANY_JD.getType(),"查询订单信息"),
 
     TYPE_BAIDU_ADDRDESS("baidu_addrdess","baidu_addrdess",CourierCompanyEnum.COMPANY_BAIDU.getType(),"百度地址识别"),
+
+    TYPE_JD_ORDER_MODIFY("jd_courier_order_modify","courier_order_modify", CourierCompanyEnum.COMPANY_JD.getType(),"订单修改"),
     ;
     private String code;
     private String codeNickName;

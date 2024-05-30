@@ -155,7 +155,7 @@ public class EstimatePriceUtil {
             if (StringUtils.isNotEmpty(courierCompanyCode) && courierCompanyCode.contains(key)){
                 continue;
             }
-            if (!codes.contains(key)){
+            if (!codes.contains(key) && !key.contains("成本价")){
                 continue;
             }
             List<FaCompanyCostEntity> value = listMap.get(key);

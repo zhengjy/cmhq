@@ -61,6 +61,8 @@ public interface FaCourierOrderService {
 
     void delete(Integer id);
 
+    void modifyOrder(FaCourierOrderEntity order);
+
     Map<String, String> getOrderNoCompanyIdUserId();
 
     Integer shareCreate(FaCourierOrderEntity resources);

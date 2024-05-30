@@ -19,7 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -126,6 +129,17 @@ public class JDCourierOrderCreate extends AbstractJDUpload<FaCourierOrderEntity,
         Map<String,String> extendProps = Maps.newHashMap();
         extendProps.put("autoSubscribe","1");
         dto.setExtendProps(extendProps);
+
+        SimpleDateFormat ft2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date date = ft2.parse(param.getTakeGoodsTime());
+            date.setTime(date.getTime() - 1000);
+            dto.setPickupStartTime(date);
+            dto.setPickupEndTime(ft2.parse(param.getTakeGoodsTime()));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
         JDUploadData<CommonCreateOrderRequest> uploadData = new JDUploadData<>();
 
         uploadData.setUnKey2(param.getOrderNo());

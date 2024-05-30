@@ -206,6 +206,16 @@ public class FaCourierOrderServiceImpl implements FaCourierOrderService {
     }
 
     @Override
+    public void modifyOrder(FaCourierOrderEntity order) {
+        FaCourierOrderEntity orderEntity = faCourierOrderDao.selectById(order.getId());
+        Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(orderEntity.getCourierCompanyCode(), UploadTypeEnum.TYPE_JD_ORDER_MODIFY.getCodeNickName())));
+        UploadResult uploadResult = upload.execute(order);
+        if (uploadResult.getFlag()){
+            faCourierOrderDao.updateById(order);
+        }
+    }
+
+    @Override
     public Map<String, String> getOrderNoCompanyIdUserId() {
         FaCourierOrderShareOrdernoEntity entity = new FaCourierOrderShareOrdernoEntity();
         entity.setOrderNo(System.currentTimeMillis()+"");

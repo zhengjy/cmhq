@@ -124,6 +124,13 @@ public class FaCourierOrderController {
     public APIResponse getCourierFreightCharge(@Validated @RequestBody FaCourierOrderEntity resources) {
         return APIResponse.success(faCourierOrderService.getCourierFreightCharge(resources,null));
     }
+    @AnonymousGetMapping("getCourierCompanyFreightCharge")
+    @Log("查询快递公司成本价运费CourierOrder")
+    @ApiOperation("查询快递公司成本价运费CourierOrder")
+    public APIResponse getCourierCompanyFreightCharge( @ApiParam(value = "id") @RequestParam() Integer id) {
+
+        return APIResponse.success();
+    }
 
     @ApiOperation("状态更新")
     @Log("状态更新")
@@ -174,7 +181,7 @@ public class FaCourierOrderController {
         FaCourierOrderEntity order = new FaCourierOrderEntity();
         order.setId(id);
         order.setTakeGoodsTime(time);
-        faCourierOrderDao.updateById(order);
+        faCourierOrderService.modifyOrder(order);
         return APIResponse.success();
     }
 
