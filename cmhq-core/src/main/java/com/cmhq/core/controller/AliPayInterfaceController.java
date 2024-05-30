@@ -57,7 +57,7 @@ public class AliPayInterfaceController {
     public APIResponse<String> toPayAsPc(@Validated @RequestBody TradeVo trade) throws Exception {
         AlipayConfig aliPay = alipayService.find();
         String ordercode = alipayUtils.getOrderCode();
-        trade.setOutTradeNo(alipayUtils.getOrderCode());
+        trade.setOutTradeNo(ordercode);
         String payUrl = alipayService.toPayAsPc(aliPay, trade);
         FaRechargeEntity faRecharge = new FaRechargeEntity();
         faRecharge.setCid(SecurityUtils.getCurrentCompanyId());
