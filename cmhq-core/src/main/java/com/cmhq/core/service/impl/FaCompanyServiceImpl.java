@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  Created by Jiyang.Zheng on 2024/4/5 9:31.
@@ -58,7 +59,7 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
     @Autowired
     private FaCompanyCostDao faCompanyCostDao;
 
-    public static Cache<String, List<FaCompanyCostEntity>> cache = CacheBuilder.newBuilder().build();
+    public static Cache<String, List<FaCompanyCostEntity>> cache = CacheBuilder.newBuilder().expireAfterWrite(12, TimeUnit.HOURS).build();
 
 
     @Override

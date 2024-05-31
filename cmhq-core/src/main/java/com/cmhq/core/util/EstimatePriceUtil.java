@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.dao.FaCostDao;
 import com.cmhq.core.model.FaCompanyCostEntity;
 import com.cmhq.core.model.FaCostEntity;
+import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.dto.FreightChargeDto;
 import com.cmhq.core.service.FaCompanyService;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,50 @@ public class EstimatePriceUtil {
         throw new RuntimeException("未查到运费价格");
     }
 
+
+    /**
+     * 查询每个物流公司底价 得到最便宜的物流价格
+     * @param fromProv
+     * @param toProv
+     * @param fromCity
+     * @param toCity
+     * @param weight
+     * @param retio
+     * @return
+     */
+    public static FreightChargeDto getCourerCompanyCostPrice(String fromProv, String toProv, String fromCity, String toCity, double weight, Integer retio){
+        try {
+            FaCompanyCostEntity costEntity = getCost2(fromProv,toProv,fromCity,toCity,null);
+            FreightChargeDto dto = new FreightChargeDto();
+            dto.setTotalPriceInit(costEntity.getPrice());
+            dto.setCourierCompanyCode(costEntity.getCourierCompanyCode());
+            dto.setTotalPrice(doGetPrice(costEntity.getPrice(),costEntity.getPriceTo(), weight, retio));
+            return dto;
+        }catch (Exception e){
+            log.error("获取运费价格失败",e);
+        }
+        throw new RuntimeException("未查到运费价格");
+    }
+
+    /**
+     * 查询成本价
+     * @param order
+     * @return
+     */
+    public static FreightChargeDto getCourerCompanyCostPrice(FaCourierOrderEntity order){
+        try {
+            FaCompanyCostEntity costEntity = getCost3(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),order.getCourierCompanyCode());
+            FreightChargeDto dto = new FreightChargeDto();
+            dto.setTotalPriceInit(costEntity.getPrice());
+            dto.setCourierCompanyCode(costEntity.getCourierCompanyCode());
+            dto.setTotalPrice(doGetPrice(costEntity.getPrice(),costEntity.getPriceTo(), 1, null));
+            return dto;
+        }catch (Exception e){
+            log.error("获取运费价格失败",e);
+        }
+        throw new RuntimeException("未查到运费价格");
+    }
+
     private static FaCostEntity getCost(String fromProv,String toProv, String fromCity, String toCity){
         String toProv2 = "";
         if (StringUtils.equals(fromProv,toProv)){
@@ -77,27 +122,89 @@ public class EstimatePriceUtil {
 
 
     /**
-     * 查询每个物流公司底价 得到最便宜的物流价格
+     * 通过省、城市匹配，未匹配则通过省份匹配最大价格
      * @param fromProv
      * @param toProv
      * @param fromCity
      * @param toCity
-     * @param weight
-     * @param retio
      * @return
      */
-    public static FreightChargeDto getCourerCompanyCostPrice(String fromProv, String toProv, String fromCity, String toCity, double weight, Integer retio){
-        try {
-            FaCompanyCostEntity costEntity = getCost2(fromProv,toProv,fromCity,toCity,null);
-            FreightChargeDto dto = new FreightChargeDto();
-            dto.setTotalPriceInit(costEntity.getPrice());
-            dto.setCourierCompanyCode(costEntity.getCourierCompanyCode());
-            dto.setTotalPrice(doGetPrice(costEntity.getPrice(),costEntity.getPriceTo(), weight, retio));
-            return dto;
-        }catch (Exception e){
-            log.error("获取运费价格失败",e);
+    private static FaCompanyCostEntity getCost3(String fromProv,String toProv,String fromCity,String toCity,String courierCompanyCode){
+
+        FaCompanyService faCostDao = SpringApplicationUtils.getBean(FaCompanyService.class);
+        List<FaCompanyCostEntity> list = faCostDao.selectFaCompanyCostList();
+        list = list.stream().filter(v -> v.getCourierCompanyCode().equals(courierCompanyCode+"成本价")).collect(Collectors.toList());
+        return getFaCompanyCostEntity(list,fromProv,toProv,fromCity,toCity);
+
+    }
+
+    private static FaCompanyCostEntity getFaCompanyCostEntity(List<FaCompanyCostEntity> list,String fromProv,String toProv,String fromCity,String toCity){
+        Map<String,List<FaCompanyCostEntity>> listMap = list.stream().collect(Collectors.groupingBy(FaCompanyCostEntity::getCourierCompanyCode));
+        FaCompanyCostEntity retCost = null;
+        Set<String> keys = listMap.keySet();
+        String toProv2 = "";
+        if (StringUtils.equals(fromProv,toProv)){
+            toProv2 = "省内";
+            if (StringUtils.equals(fromCity,toCity)){
+                toProv2 = "同城";
+            }
         }
-        throw new RuntimeException("未查到运费价格");
+        for (String key : keys) {
+            List<FaCompanyCostEntity> value = listMap.get(key);
+            FaCompanyCostEntity currCost = null;
+            String finalToProv = toProv2;
+            Optional<FaCompanyCostEntity> ocostEntity = value.stream().filter(v -> {
+                //通过省匹配
+                if (fromProv.contains(v.getProF())
+                        && (toProv.contains(v.getProD()) || (StringUtils.isNotEmpty(finalToProv) && (v.getProD().contains(finalToProv) || v.getProD().contains(toProv) )))){
+                    //通过城市匹配
+                    if (StringUtils.isNotEmpty(v.getCityD())){
+                        if (fromCity.equals("市辖区")){
+                            if (toCity.contains(v.getCityD())){
+                                return true;
+                            }else {
+                                return false;
+                            }
+                        }else {
+                            if ( fromCity.contains(v.getCityF()) && toCity.contains(v.getCityD())){
+                                return true;
+                            }else {
+                                return false;
+                            }
+                        }
+
+                    }
+                    return true;
+                }
+                return false;
+            }).findFirst();
+            //匹配到
+            if (ocostEntity.isPresent()){
+                currCost = ocostEntity.get();
+                //未匹配到
+            }else {
+                //未匹配则通过省份匹配最大价格
+                Optional<FaCompanyCostEntity> ocostEntity2 = value.stream()
+                        .filter(v -> fromProv.contains(v.getProF()) && toProv.contains(v.getProD())).max(Comparator.comparing(FaCompanyCostEntity::getPrice));
+                if (ocostEntity2.isPresent()){
+                    currCost = ocostEntity2.get();
+                }
+            }
+            if (currCost != null){
+                if (retCost != null){
+                    if (currCost.getPrice()  < retCost.getPrice()){
+                        retCost = currCost;
+                    }
+                }else {
+                    retCost = currCost;
+                }
+            }
+        }
+        if (retCost != null){
+            return retCost;
+        }else {
+            throw new RuntimeException("未匹配到省份报价费用");
+        }
     }
 
     /**

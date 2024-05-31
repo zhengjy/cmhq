@@ -7,12 +7,11 @@ import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.dao.FaCourierOrderShareOrdernoDao;
 import com.cmhq.core.dao.FaRechargeDao;
 import com.cmhq.core.model.FaCourierOrderEntity;
-import com.cmhq.core.model.FaCourierOrderExtEntity;
 import com.cmhq.core.model.FaCourierOrderShareOrdernoEntity;
 import com.cmhq.core.model.FaRechargeEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
-import com.cmhq.core.model.param.ShareCreateCourier;
 import com.cmhq.core.service.FaCourierOrderService;
+import com.cmhq.core.util.EstimatePriceUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.APIResponse;
 import me.zhengjie.QueryResult;
@@ -29,7 +28,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
@@ -128,8 +126,8 @@ public class FaCourierOrderController {
     @Log("查询快递公司成本价运费CourierOrder")
     @ApiOperation("查询快递公司成本价运费CourierOrder")
     public APIResponse getCourierCompanyFreightCharge( @ApiParam(value = "id") @RequestParam() Integer id) {
-
-        return APIResponse.success();
+        FaCourierOrderEntity order = faCourierOrderDao.selectById(id);
+        return APIResponse.success(EstimatePriceUtil.getCourerCompanyCostPrice(order));
     }
 
     @ApiOperation("状态更新")
