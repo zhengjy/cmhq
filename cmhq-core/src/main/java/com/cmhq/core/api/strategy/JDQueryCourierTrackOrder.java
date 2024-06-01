@@ -2,6 +2,7 @@ package com.cmhq.core.api.strategy;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.UploadTypeEnum;
+import com.cmhq.core.api.dto.response.JDCourierTrackRspDto;
 import com.google.common.collect.Maps;
 import com.lop.open.api.sdk.DefaultDomainApiClient;
 import com.lop.open.api.sdk.domain.ECAP.CommonQueryOrderApi.commonGetOrderTraceV1.CommonOrderTraceDetail;
@@ -54,7 +55,8 @@ public class JDQueryCourierTrackOrder extends AbstractJDUpload<String, JDUploadD
         request.addLopPlugin(lopPlugin);
         EcapV1OrdersTraceQueryLopResponse rsp  = client.execute(request);
         log.info("EcapV1OrdersTraceQueryLopResponse = {}",JSONObject.toJSONString(rsp));
-        return rsp.getResult();
+        JDCourierTrackRspDto dto = JSONObject.parseObject(rsp.getMsg(),JDCourierTrackRspDto.class);
+        return dto.getResponse().getContent();
     }
 
     @Override
@@ -62,19 +64,22 @@ public class JDQueryCourierTrackOrder extends AbstractJDUpload<String, JDUploadD
         if (jsonMsg == null){
             return jsonMsg;
         }
-        CommonOrderTraceResponse resp = JSONObject.parseObject(JSONObject.toJSONString(jsonMsg), CommonOrderTraceResponse.class);
+        JDCourierTrackRspDto.Data resp = JSONObject.parseObject(JSONObject.toJSONString(jsonMsg), JDCourierTrackRspDto.Data.class);
         Map<String,String> map = Maps.newLinkedHashMap();
         if (resp == null || CollectionUtils.isEmpty(resp.getTraceDetails())){
             return jsonMsg;
         }
-        List<CommonOrderTraceDetail> detailList = resp.getTraceDetails().stream()
-                .sorted(Comparator.comparing(CommonOrderTraceDetail::getOperationTime).reversed()).collect(Collectors.toList());
-        for (CommonOrderTraceDetail detail : detailList){
+        List<JDCourierTrackRspDto.TraceDetails> detailList = resp.getTraceDetails().stream()
+                .sorted(Comparator.comparing(JDCourierTrackRspDto.TraceDetails::getOperationTime).reversed()).collect(Collectors.toList());
+        for (JDCourierTrackRspDto.TraceDetails detail : detailList){
             StringBuilder sb = new StringBuilder();
             sb.append("【");
             sb.append(detail.getOperationTitle());
             sb.append("】");
             sb.append("-");
+            if (detail.getCategory()==390 ||  detail.getCategory()== 420){
+                sb.append("联系电话:"+detail.getOperatorPhone()+"-");
+            }
             sb.append(detail.getOperationRemark());
             sb.append("-");
             sb.append("【"+detail.getCategoryName()+"】");
