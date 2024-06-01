@@ -125,7 +125,10 @@ public class JDCourierOrderCreate extends AbstractJDUpload<FaCourierOrderEntity,
         }
         cargoes.add(commonCargoInfo);
         dto.setCargoes(cargoes);
-        dto.setRemark("发货分区号："+param.getFromPartitionNumber() +"；收货分区号："+param.getToPartitionNumber()+"；"+param.getMsg());
+        String s1 = (StringUtils.isNotEmpty(param.getFromPartitionNumber()) ? param.getFromPartitionNumber() : "") ;
+        String s2 = (StringUtils.isNotEmpty(param.getToPartitionNumber()) ? param.getToPartitionNumber() : "") ;
+        String s3 = (StringUtils.isNotEmpty(param.getMsg()) ? param.getMsg() : "") ;
+        dto.setRemark("发货分区号："+s1 +"；收货分区号："+s2 +"；" +s3);
         //下单即订阅 1-物流轨迹
         Map<String,String> extendProps = Maps.newHashMap();
         extendProps.put("autoSubscribe","1");
