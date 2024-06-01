@@ -18,6 +18,7 @@ import com.lop.open.api.sdk.response.ECAP.EcapV1OrdersCreateLopResponse;
 import com.lop.open.api.sdk.response.ECAP.EcapV1OrdersModifyLopResponse;
 import com.lop.open.api.sdk.response.ECAP.EcapV1OrdersPrecheckLopResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -68,16 +69,28 @@ public class JDCourierOrderModify extends AbstractJDUpload<FaCourierOrderEntity,
     protected JDUploadData<CommonModifyCancelOrderRequest> getData(FaCourierOrderEntity param) throws RuntimeException {
 
         CommonModifyCancelOrderRequest dto = new CommonModifyCancelOrderRequest();
+
         dto.setOrderId(param.getOrderNo());
-        SimpleDateFormat ft2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            Date date = ft2.parse(param.getTakeGoodsTime());
-            date.setTime(date.getTime() - 1000* 60);
-            dto.setPickupStartTime(date);
-            dto.setPickupEndTime(ft2.parse(param.getTakeGoodsTime()));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+        if (StringUtils.isNotEmpty(param.getTakeGoodsTimeEnd())){
+            SimpleDateFormat ft2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                dto.setPickupStartTime(ft2.parse(param.getTakeGoodsTime()));
+                dto.setPickupEndTime(ft2.parse(param.getTakeGoodsTimeEnd()));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }else {
+            SimpleDateFormat ft2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                Date date = ft2.parse(param.getTakeGoodsTime());
+                date.setTime(date.getTime() - 1000* 60);
+                dto.setPickupStartTime(date);
+                dto.setPickupEndTime(ft2.parse(param.getTakeGoodsTime()));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
         }
+
         dto.setOrderOrigin(1);
         dto.setCustomerCode(getCustomerCode());
 

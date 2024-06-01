@@ -13,6 +13,7 @@ import com.lop.open.api.sdk.request.ECAP.EcapV1OrdersTraceQueryLopRequest;
 import com.lop.open.api.sdk.response.ECAP.EcapV1OrdersTraceQueryLopResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -77,7 +78,7 @@ public class JDQueryCourierTrackOrder extends AbstractJDUpload<String, JDUploadD
             sb.append(detail.getOperationTitle());
             sb.append("】");
             sb.append("-");
-            if (detail.getCategory()==390 ||  detail.getCategory()== 420){
+            if (StringUtils.isNotEmpty(detail.getOperatorPhone()) && (detail.getCategory()==390 ||  detail.getCategory()== 420)){
                 sb.append("联系电话:"+detail.getOperatorPhone()+"-");
             }
             sb.append(detail.getOperationRemark());

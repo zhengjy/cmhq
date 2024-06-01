@@ -78,6 +78,8 @@ public class FaCourierOrderEntity {
 
     @ApiModelProperty(value = "期望上门取件时间")
     private String takeGoodsTime;
+    @ApiModelProperty(value = "期望上门取件时间结束")
+    private String takeGoodsTimeEnd;
 
     @ApiModelProperty(value = "1上门取件2门店自寄")
     private Integer type;

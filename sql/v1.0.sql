@@ -141,3 +141,5 @@ ALTER TABLE fa_company ADD is_delete varchar(2) DEFAULT 'N' NULL COMMENT '是否
 ALTER TABLE sys_menu DROP KEY uniq_name;
 ALTER TABLE sys_menu DROP KEY uniq_title;
 ALTER TABLE fa_recharge ADD business_type int(2) DEFAULT 1 NULL COMMENT '业务类型: 1:充值,2:用户下单扣款';
+
+ALTER TABLE fa_expressorder ADD take_goods_time_end varchar(100) NULL COMMENT '上门取件结束时间';
