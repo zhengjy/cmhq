@@ -72,7 +72,7 @@ public class JDCourierOrderModify extends AbstractJDUpload<FaCourierOrderEntity,
         SimpleDateFormat ft2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             Date date = ft2.parse(param.getTakeGoodsTime());
-            date.setTime(date.getTime() - 1000);
+            date.setTime(date.getTime() - 1000* 60);
             dto.setPickupStartTime(date);
             dto.setPickupEndTime(ft2.parse(param.getTakeGoodsTime()));
         } catch (ParseException e) {
