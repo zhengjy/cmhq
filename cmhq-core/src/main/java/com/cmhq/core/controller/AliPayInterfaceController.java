@@ -1,9 +1,13 @@
 package com.cmhq.core.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.dao.FaRechargeDao;
+import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.FaRechargeEntity;
+import com.cmhq.core.model.dto.FreightChargeDto;
 import com.cmhq.core.service.FaRechargeService;
+import com.cmhq.core.util.EstimatePriceUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +51,8 @@ public class AliPayInterfaceController {
     private FaRechargeDao faRechargeDao;
     @Autowired
     private FaRechargeService faRechargeService;
+    @Autowired
+    private FaCourierOrderDao faCourierOrderDao;
 
     
     @Log("支付宝PC网页支付")
@@ -80,13 +86,12 @@ public class AliPayInterfaceController {
     public APIResponse<String> toPayAsPc2(@Validated @RequestBody TradeVo trade) throws Exception {
         AlipayConfig aliPay = alipayService.find();
         String ordercode = trade.getOrderCode();
-        if (StringUtils.isEmpty(ordercode)){
-            ordercode = alipayUtils.getOrderCode();
-        }
         trade.setOutTradeNo(ordercode);
         String payUrl = alipayService.toPayAsPc(aliPay, trade);
         FaRechargeEntity faRecharge = new FaRechargeEntity();
-        faRecharge.setMoney(Double.parseDouble(trade.getTotalAmount()));
+        FaCourierOrderEntity order = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,trade.getOrderCode()));
+        FreightChargeDto fcd = EstimatePriceUtil.getCourerCompanyCostPrice(order);
+        faRecharge.setMoney(fcd.getTotalPriceInit());
         faRecharge.setStatus(0);
         faRecharge.setCid(trade.getCompanyId());
         faRecharge.setBusinessType(2);
