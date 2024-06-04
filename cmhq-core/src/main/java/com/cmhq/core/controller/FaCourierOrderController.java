@@ -174,11 +174,13 @@ public class FaCourierOrderController {
     @Log("更新收货时间")
     @AnonymousPostMapping("updateGoodTime")
     public APIResponse updateGoodTime(
-                                          @ApiParam(value = "time") @RequestParam(required = false) String time,
+                                          @ApiParam(value = "takeGoodsTime") @RequestParam(required = false) String takeGoodsTime,
+                                          @ApiParam(value = "takeGoodsTimeEnd") @RequestParam(required = false) String takeGoodsTimeEnd,
                                           @ApiParam(value = "id") @RequestParam() Integer id) {
         FaCourierOrderEntity order = new FaCourierOrderEntity();
         order.setId(id);
-        order.setTakeGoodsTime(time);
+        order.setTakeGoodsTime(takeGoodsTime);
+        order.setTakeGoodsTimeEnd(takeGoodsTimeEnd);
         faCourierOrderService.modifyOrder(order);
         return APIResponse.success();
     }
