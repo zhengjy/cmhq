@@ -90,8 +90,9 @@ public class AliPayInterfaceController {
         String payUrl = alipayService.toPayAsPc(aliPay, trade);
         FaRechargeEntity faRecharge = new FaRechargeEntity();
         FaCourierOrderEntity order = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,trade.getOrderCode()));
-        FreightChargeDto fcd = EstimatePriceUtil.getCourerCompanyCostPrice(order);
-        faRecharge.setMoney(fcd.getTotalPriceInit());
+        // FreightChargeDto fcd = EstimatePriceUtil.getCourerCompanyCostPrice(order);
+        // faRecharge.setMoney(fcd.getTotalPriceInit());
+        faRecharge.setMoney(0.01);
         faRecharge.setStatus(0);
         faRecharge.setCid(trade.getCompanyId());
         faRecharge.setBusinessType(2);
