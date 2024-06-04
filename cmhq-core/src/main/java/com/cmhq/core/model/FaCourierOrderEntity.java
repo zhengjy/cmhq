@@ -133,6 +133,19 @@ public class FaCourierOrderEntity {
 
     @ApiModelProperty(value = "收货地址")
     private String toAddress;
+    
+    @ApiModelProperty(value = "拼接全部收货地址")
+    @TableField(exist = false)
+    private String toAllAddress;
+    @ApiModelProperty(value = "拼接全部发货地址")
+    @TableField(exist = false)
+    private String fromAllAddress;
+    // public String getFromAllAddress() {
+    //     return getFromProv()+getFromCity()+getFromArea()+getFromAddress();
+    // }
+    // public String getToAddress() {
+    //     return getToProv()+getToCity()+getToArea()+getToAddress();
+    // }
 
 
     @ApiModelProperty(value = "本系统自定义物流息状态：1运输中2派件中3已签收4异常")

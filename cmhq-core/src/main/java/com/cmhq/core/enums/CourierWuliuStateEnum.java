@@ -11,6 +11,7 @@ public enum CourierWuliuStateEnum {
     STATE_2("2","派件中"),
     STATE_3("3","已签收"),
     STATE_4("4","異常件"),
+    STATE_5("5","退货件"),
 
     ;
     private String type;

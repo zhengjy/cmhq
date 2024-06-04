@@ -47,6 +47,8 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
                 return CourierWuliuStateEnum.STATE_1;
             }else if (d.getState().equals("10035")){
                 return CourierWuliuStateEnum.STATE_4;
+            }else if (d.getState().equals("200020")){
+                return CourierWuliuStateEnum.STATE_5;
             }
 
         }

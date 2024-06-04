@@ -69,7 +69,7 @@ public class JDCourierOrderModify extends AbstractJDUpload<FaCourierOrderEntity,
     protected JDUploadData<CommonModifyCancelOrderRequest> getData(FaCourierOrderEntity param) throws RuntimeException {
 
         CommonModifyCancelOrderRequest dto = new CommonModifyCancelOrderRequest();
-
+        dto.setWaybillCode(param.getCourierCompanyWaybillNo());
         dto.setOrderId(param.getOrderNo());
         if (StringUtils.isNotEmpty(param.getTakeGoodsTimeEnd())){
             SimpleDateFormat ft2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

@@ -90,18 +90,7 @@ public class FaCourierOrderController {
         if (StringUtils.isEmpty(query.getOrderNo())){
             return APIResponse.success(new QueryResult<>());
         }
-        String orderNoStr;
-        try {
-             orderNoStr = new String(Base64.getDecoder().decode(query.getOrderNo()));
-        }catch (Exception e){
-            log.error("",e.getMessage());
-            return APIResponse.success(new QueryResult<>());
-        }
-        FaCourierOrderShareOrdernoEntity orderShareOrdernoEntity = faCourierOrderShareOrdernoDao.selectOne(new LambdaQueryWrapper<FaCourierOrderShareOrdernoEntity>().eq(FaCourierOrderShareOrdernoEntity::getOrderNo,orderNoStr));
-        if (orderShareOrdernoEntity == null){
-            return APIResponse.success(new QueryResult<>());
-        }
-        query.setOrderNo(orderNoStr);
+        query.setOrderNo(query.getOrderNo());
         return APIResponse.success(faCourierOrderService.queryAll(query));
     }
 
@@ -163,7 +152,11 @@ public class FaCourierOrderController {
     @Log("根据订单号查询订单是否已付款:true已经付款")
     @AnonymousGetMapping("selectOrderPayByOrderNo")
     public APIResponse selectOrderPayByOrderNo( @ApiParam(value = "orderNo") @RequestParam() String orderNo) {
-        List<FaRechargeEntity> list = faRechargeDao.selectList(new LambdaQueryWrapper<FaRechargeEntity>().eq(FaRechargeEntity::getOrderid,orderNo).eq(FaRechargeEntity::getBusinessType,2));
+        List<FaRechargeEntity> list = faRechargeDao.selectList(new LambdaQueryWrapper<FaRechargeEntity>()
+                .eq(FaRechargeEntity::getOrderid,orderNo)
+                .eq(FaRechargeEntity::getBusinessType,2)
+                .eq(FaRechargeEntity::getStatus,1)
+        );
         if (CollectionUtils.isNotEmpty(list)){
             return APIResponse.success(true);
         }
