@@ -89,7 +89,7 @@ public class AliPayInterfaceController {
         trade.setOutTradeNo(ordercode);
         trade.setSubject("支付");
         trade.setBusinessType(2);
-//        FaCourierOrderEntity order = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,trade.getOrderCode()));
+        FaCourierOrderEntity order = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,trade.getOrderCode()));
 //        FreightChargeDto fcd = EstimatePriceUtil.getCourerCompanyCostPrice(order);
 //        trade.setTotalAmount(fcd.getTotalPriceInit()+"");
         trade.setTotalAmount("0.01");
@@ -98,7 +98,7 @@ public class AliPayInterfaceController {
         FaRechargeEntity faRecharge = new FaRechargeEntity();
         faRecharge.setMoney(Double.parseDouble(trade.getTotalAmount()));
         faRecharge.setStatus(0);
-        faRecharge.setCid(trade.getCompanyId());
+        faRecharge.setCid(order.getFaCompanyId());
         faRecharge.setBusinessType(2);
         faRecharge.setOrderid(ordercode);
         faRecharge.setCreateTime(new Date());

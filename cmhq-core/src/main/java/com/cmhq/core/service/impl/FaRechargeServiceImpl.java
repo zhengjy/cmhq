@@ -120,7 +120,7 @@ public class FaRechargeServiceImpl  implements FaRechargeService {
             if (CollectionUtils.isNotEmpty(list)){
                 billNo = list.get(0).getCourierCompanyWaybillNo();
             }
-            CompanyMoneyParam param = new CompanyMoneyParam(1,MoneyConsumeEumn.CONSUM_2, MoneyConsumeMsgEumn.MSG_7, faRecharge.getMoney(),faRecharge.getCid(),billNo);
+            CompanyMoneyParam param = new CompanyMoneyParam(1,MoneyConsumeEumn.CONSUM_2, MoneyConsumeMsgEumn.MSG_9, faRecharge.getMoney(),faRecharge.getCid(),outTradeNo,billNo);
             //插入消费记录
             faCompanyMoneyService.saveRecord(param );
         }else {

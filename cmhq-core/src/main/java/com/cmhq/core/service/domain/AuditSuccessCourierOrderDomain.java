@@ -54,7 +54,7 @@ public class AuditSuccessCourierOrderDomain {
 
         //更新审核通过状态
         faCourierOrderDao.updateById(state);
-        double price = order.getPrice();
+        double price = order.getPrice() == 0 ? order.getEstimatePrice() : order.getPrice();
         //插入返还记录 &返还商户或扣除商户金额
         faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_6,price,order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
         //调用接口取消

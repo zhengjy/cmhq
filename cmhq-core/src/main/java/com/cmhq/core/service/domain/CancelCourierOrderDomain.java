@@ -103,7 +103,7 @@ public class CancelCourierOrderDomain {
             check(entity);
         }catch (RuntimeException e){
             faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CANCEL_NUM,1);
-            faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CANCEL_MAX_MONEY,entity.getPrice());
+            faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CANCEL_MAX_MONEY,entity.getEstimatePrice());
             FaCourierOrderEntity updateState = new FaCourierOrderEntity();
             updateState.setId(orderId);
             updateState.setCancelOrderState(-1);
@@ -123,7 +123,7 @@ public class CancelCourierOrderDomain {
         entity.setReason(content);
         faCourierOrderDao.updateById(updateState);
         faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CANCEL_NUM,1);
-        faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CANCEL_MAX_MONEY,entity.getPrice());
+        faCompanyDayOpeNumService.updateValue(LocalDate.now().toString(), FaCompanyDayOpeNumEntity.TYPE_ORDER_CANCEL_MAX_MONEY,entity.getEstimatePrice());
         //未触发限制直接审核通过取消
         new AuditSuccessCourierOrderDomain("", entity.getId()).handle();
 //        FaCourierOrderEntity updateState = new FaCourierOrderEntity();

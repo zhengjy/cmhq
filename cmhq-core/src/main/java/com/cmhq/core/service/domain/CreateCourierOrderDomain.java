@@ -49,6 +49,9 @@ public class CreateCourierOrderDomain {
         if (order.getWeight() == null){
             order.setWeight(1D);
         }
+        if (StringUtils.isEmpty(order.getGoodsName())){
+            order.setGoodsName("灯具");
+        }
         order.setOrderState(0);
         order.setCourierOrderState("");
         order.setCourierWuliuState("");

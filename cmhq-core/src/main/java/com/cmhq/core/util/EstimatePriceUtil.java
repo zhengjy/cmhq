@@ -336,7 +336,7 @@ public class EstimatePriceUtil {
         }else {
             price = costPrice;
         }
-        if (retio != null){
+        if (retio != null && retio > 0){
             BigDecimal b = new BigDecimal(price * ((double) retio /100));
             return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
         }
