@@ -103,7 +103,8 @@ public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
             //更新商户金额
             faCompanyDao.addMoney(param.getCompanyId(),param.getMoney());
         //创建订单扣款
-        }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_3.getDesc())){
+            e.setAfter(faCompanyEntity.getMoney()-param.getMoney());
+        }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_3.getDesc()) || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_7.getDesc())){
             e.setAfter(faCompanyEntity.getMoney()-param.getMoney());
             //更新商户金额
             //扣除余额，更新预扣款

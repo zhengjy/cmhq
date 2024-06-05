@@ -1,5 +1,7 @@
 package com.cmhq.core.api.strategy.apipush;
 
+import com.cmhq.core.model.FaCourierOrderEntity;
+import com.cmhq.core.service.domain.ReturnOrderCreateCourierOrderDomain;
 import org.apache.commons.lang3.StringUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.UploadResult;
@@ -14,6 +16,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**京东物流状态推送 物流和订单状态同一个接口
@@ -89,6 +93,21 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
     @Override
     protected String getIsErrorMsg(JDPushTraceDto param) {
 
+        return "";
+    }
+
+    @Override
+    protected String getRetWaybillNo(JDPushTraceDto dto) {
+        String input = "新运单号JDVC24498388029";
+        String regex = "JDVC\\d+";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(input);
+
+        if (matcher.find()) {
+            return matcher.group();
+        } else {
+            log.error("未能提取到运单号 【{}】",JSONObject.toJSONString(dto));
+        }
         return "";
     }
 

@@ -15,6 +15,7 @@ import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.dto.FreightChargeDto;
 import com.cmhq.core.service.FaCompanyDayOpeNumService;
 import com.cmhq.core.service.FaCompanyService;
+import com.cmhq.core.service.domain.ReturnOrderCreateCourierOrderDomain;
 import com.cmhq.core.util.EstimatePriceUtil;
 import com.cmhq.core.util.SpringApplicationUtils;
 import io.swagger.models.auth.In;
@@ -69,6 +70,17 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
         if (wuliuStateEnum.getType().equals(CourierWuliuStateEnum.STATE_4.getType())){
             orderEntity.setOrderIsError(0);
             faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg",getIsErrorMsg(req));
+        }if (wuliuStateEnum.getType().equals(CourierWuliuStateEnum.STATE_5.getType())){
+            orderEntity.setWuliuState(Integer.parseInt(CourierWuliuStateEnum.STATE_4.getType()));
+            orderEntity.setOrderIsError(0);
+            //签收处理
+            doHandle(order, req);
+            faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg","换单打印");
+            //生成退货订单
+            FaCourierOrderEntity faCourierOrderEntity = getFaCourierOrder(req);
+            faCourierOrderEntity.setCourierCompanyWaybillNo(getRetWaybillNo(req));
+            ReturnOrderCreateCourierOrderDomain domain = new ReturnOrderCreateCourierOrderDomain(faCourierOrderEntity);
+            domain.handle();
         }
         if (wuliuStateEnum.getType().equals(CourierWuliuStateEnum.STATE_3.getType())){
             //签收处理
@@ -158,6 +170,8 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
     protected abstract String getCourierWuliuState(Req req);
     protected abstract String getWeight(Req req);
     protected abstract String getIsErrorMsg(Req req);
+
+    protected abstract String getRetWaybillNo(Req req);
 
     @Override
     protected FaCourierOrderEntity getFaCourierOrder(Req req) {
