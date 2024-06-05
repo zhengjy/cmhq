@@ -83,6 +83,11 @@ public class JTPushWuliuTracePush extends AbstartApiTracePush<JTPushDto<JTPushTr
     }
 
     @Override
+    protected String getRetWaybillNo(JTPushDto<JTPushTraceDto> jtPushTraceDtoJTPushDto) {
+        return null;
+    }
+
+    @Override
     public ApiPushTypeEumn supports() {
         return ApiPushTypeEumn.TYPE_JT_PUSHTRACE;
     }

@@ -63,6 +63,11 @@ public class StoPushWuliuTracePush extends AbstartApiTracePush<StoPushTraceDto>{
     }
 
     @Override
+    protected String getRetWaybillNo(StoPushTraceDto stoPushTraceDto) {
+        return null;
+    }
+
+    @Override
     public ApiPushTypeEumn supports() {
         return ApiPushTypeEumn.TYPE_STO_PUSHTRACE;
     }
