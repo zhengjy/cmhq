@@ -51,9 +51,13 @@ public class CourierOrderQueryPageDomain {
                     v.setCompanyName(faCompanyEntity.getCompanyName());
                 }
                 if (faCompanyEntity != null && faCompanyEntity.getFid() != null && v.getCreateUserId() != null){
-                    UserDto dto = userService.findById(v.getCreateUserId());
-                    if (dto != null){
-                        v.setCreateUserName(dto.getNickName());
+                    try {
+                        UserDto dto = userService.findById(v.getCreateUserId());
+                        if (dto != null){
+                            v.setCreateUserName(dto.getNickName());
+                        }
+                    }catch (Exception e){
+                        
                     }
                 }
                 List<FaCourierOrderExtEntity> extEntityList = faCourierOrderExtDao.selectList(new LambdaQueryWrapper<FaCourierOrderExtEntity>().eq(FaCourierOrderExtEntity::getCourierOrderId,v.getId()));

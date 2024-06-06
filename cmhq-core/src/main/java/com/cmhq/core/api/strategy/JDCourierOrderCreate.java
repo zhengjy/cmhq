@@ -142,7 +142,7 @@ public class JDCourierOrderCreate extends AbstractJDUpload<FaCourierOrderEntity,
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
-        }else {
+        }else if (StringUtils.isNotEmpty(param.getTakeGoodsTime())){
             SimpleDateFormat ft2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             try {
                 Date date = ft2.parse(param.getTakeGoodsTime());

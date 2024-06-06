@@ -143,3 +143,9 @@ ALTER TABLE sys_menu DROP KEY uniq_title;
 ALTER TABLE fa_recharge ADD business_type int(2) DEFAULT 1 NULL COMMENT '业务类型: 1:充值,2:用户下单扣款';
 
 ALTER TABLE fa_expressorder ADD take_goods_time_end varchar(100) NULL COMMENT '上门取件结束时间';
+
+ALTER TABLE fa_product_category ADD categore_code varchar(100) NULL COMMENT '商品编码';
+ALTER TABLE fa_product_category ADD `weight` double(10,2) DEFAULT NULL COMMENT '重量';
+ALTER TABLE fa_product_category ADD `width` int(10) DEFAULT NULL COMMENT '宽度';
+ALTER TABLE fa_product_category ADD `length` int(10) DEFAULT NULL COMMENT '长度';
+ALTER TABLE fa_product_category ADD `height` int(10) DEFAULT NULL COMMENT '高';
