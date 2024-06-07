@@ -39,6 +39,13 @@ public class CourierOrderImport {
     private String fromAddress;
     @ExcelProperty("发货地址")
     private String toAddress;
+    
+    @ExcelProperty(value = "发货分区号")
+    private String fromPartitionNumber;
+    @ExcelProperty(value = "收获分区号")
+    private String toPartitionNumber;
+    @ExcelProperty(value = "备注")
+    private String msg;
 
 
 }

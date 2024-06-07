@@ -52,6 +52,12 @@ public class CreateCourierOrderDomain {
         if (StringUtils.isEmpty(order.getGoodsName())){
             order.setGoodsName("灯具");
         }
+        if (StringUtils.isNotEmpty(order.getTakeGoodsTime()) && order.getTakeGoodsTime().length() == 16){
+            order.setTakeGoodsTime(order.getTakeGoodsTime() +":00");
+        }
+        if (StringUtils.isNotEmpty(order.getTakeGoodsTimeEnd()) && order.getTakeGoodsTimeEnd().length() == 16){
+            order.setTakeGoodsTimeEnd(order.getTakeGoodsTimeEnd() +":00");
+        }
         order.setOrderState(0);
         order.setCourierOrderState("");
         order.setCourierWuliuState("");

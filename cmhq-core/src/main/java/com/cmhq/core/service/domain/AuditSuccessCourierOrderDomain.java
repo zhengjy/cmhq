@@ -39,7 +39,7 @@ public class AuditSuccessCourierOrderDomain {
         FaCourierOrderEntity order = faCourierOrderDao.selectById(orderId);
         //校验状态
         //待取件
-        if ((Objects.equals(order.getOrderState(),1) || !Objects.equals(order.getOrderState(),0))
+        if ((Objects.equals(order.getOrderState(),1) || Objects.equals(order.getOrderState(),0))
                 //正常状态
                 &&  Objects.equals(order.getCancelOrderState(),-1)
                 //没有物流信息
