@@ -21,13 +21,13 @@ public class CourierOrderImport {
     @ExcelProperty("产品名称")
     private String goodsName;
 
-    @ExcelProperty(value = "重量")
+    @ExcelProperty(value = "重量(kg)")
     private Double weight;
-    @ExcelProperty(value = "长度")
+    @ExcelProperty(value = "长(cm)")
     private Integer length;
-    @ExcelProperty(value = "宽度")
+    @ExcelProperty(value = "宽(cm)")
     private Integer width;
-    @ExcelProperty(value = "高")
+    @ExcelProperty(value = "高(cm)")
     private Integer height;
 
     @ExcelProperty(value = "上门取件时间")
@@ -35,14 +35,14 @@ public class CourierOrderImport {
     @ExcelProperty(value = "上门取件结束时间")
     private String takeGoodsTimeEnd;
 
-    @ExcelProperty("发货地址")
+    @ExcelProperty("发货地址*")
     private String fromAddress;
-    @ExcelProperty("发货地址")
+    @ExcelProperty("收货地址*")
     private String toAddress;
     
     @ExcelProperty(value = "发货分区号")
     private String fromPartitionNumber;
-    @ExcelProperty(value = "收获分区号")
+    @ExcelProperty(value = "收货分区号")
     private String toPartitionNumber;
     @ExcelProperty(value = "备注")
     private String msg;

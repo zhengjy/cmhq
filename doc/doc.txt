@@ -135,3 +135,9 @@ private Integer cancelType;
  【查看预付款】京东大客户网址：wl.jdl.com
  账号：安徽惠普
  密码：aa123456
+
+ 小程序名称：极兔通达
+ 账号：chuangmeihuaqi2@163.com
+ 密码：ahjttd@123
+ AppID:wxaae38489c13b5ec2
+ AppSecret：04dc4d16c3b3e4dc70a276b54f2a7038

@@ -1,4 +1,5 @@
 package com.cmhq.core.model;
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -8,7 +9,7 @@ import lombok.Data;
 @TableName("fa_product_category")
 @Data
 public class FaProductEntity {
-
+    @ExcelIgnore
     @TableId(type = IdType.AUTO)
     private Integer id;
 
@@ -21,16 +22,16 @@ public class FaProductEntity {
     private String categoryName;
 
     /**重量*/
-    @ExcelProperty("重量")
+    @ExcelProperty("重量(kg)")
     private Double weight;
     /**长度*/
-    @ExcelProperty("长")
+    @ExcelProperty("长(cm)")
     private Integer length;
     /**宽度*/
-    @ExcelProperty("宽")
+    @ExcelProperty("宽(cm)")
     private Integer width;
     /**高*/
-    @ExcelProperty("高")
+    @ExcelProperty("高(cm)")
     private Integer height;
 
 

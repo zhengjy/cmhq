@@ -100,6 +100,10 @@ public class FaCompanyEntity {
     /**检验下单重量和结算重量单位百，30：就是百分之30*/
     private Integer checkWeightRatio;
 
+    /**是否凍結：Y:是，N：否*/
+    private String isPay;
+    /**去收款比例*/
+    private Integer payRetio;
     /**
      * <pre>
      * 添加时间

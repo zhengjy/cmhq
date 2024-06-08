@@ -7,10 +7,10 @@ import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.dao.FaCourierOrderShareOrdernoDao;
 import com.cmhq.core.dao.FaRechargeDao;
 import com.cmhq.core.model.FaCourierOrderEntity;
-import com.cmhq.core.model.FaCourierOrderShareOrdernoEntity;
 import com.cmhq.core.model.FaRechargeEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import com.cmhq.core.service.FaCourierOrderService;
+import com.cmhq.core.service.domain.ImportCourierOrderDomain;
 import com.cmhq.core.util.EstimatePriceUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.APIResponse;
@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -200,6 +201,12 @@ public class FaCourierOrderController {
     @AnonymousGetMapping("queryCourierTrack")
     public APIResponse queryCourierTrack( @ApiParam(value = "id") @RequestParam() Integer id) {
         return APIResponse.success(faCourierOrderService.queryCourierTrack(id));
+    }
+    @Log("导入")
+    @PostMapping(value = "uploadExcel",consumes = "multipart/form-data")
+    public APIResponse uploadExcel(@RequestPart("file") MultipartFile file) {
+        new ImportCourierOrderDomain(file).handle();
+        return APIResponse.success();
     }
 
 

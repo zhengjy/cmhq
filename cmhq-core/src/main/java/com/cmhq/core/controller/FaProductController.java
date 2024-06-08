@@ -10,6 +10,7 @@ import com.cmhq.core.dao.FaProductDao;
 import com.cmhq.core.model.FaCompanyCostEntity;
 import com.cmhq.core.model.FaProductEntity;
 import com.cmhq.core.model.param.ProductQuery;
+import com.cmhq.core.util.CurrentUserContent;
 import com.cmhq.core.util.SpringApplicationUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -97,7 +98,7 @@ public class FaProductController {
         try {
             inputStream = file.getInputStream();
             // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
-            EasyExcel.read(inputStream, FaProductEntity.class, new ProductDataListener()).headRowNumber(2).sheet().doRead();
+            EasyExcel.read(inputStream, FaProductEntity.class, new ProductDataListener()).headRowNumber(1).sheet().doRead();
         } catch (IOException e) {
             log.error("",e);
         }
@@ -128,6 +129,7 @@ class ProductDataListener extends AnalysisEventListener<FaProductEntity> {
     public void invoke(FaProductEntity data, AnalysisContext context) {
         log.info("解析到一条数据:{}", JSONObject.toJSONString(data));//使用需要导入json依赖
         log.info("{} 数据，开始存储数据库！",i);
+        data.setCid(CurrentUserContent.getCurrentCompany().getId());
         FaProductDao dao = SpringApplicationUtils.getBean(FaProductDao.class);
         int num = dao.update(data,new LambdaQueryWrapper<FaProductEntity>()
                 .eq(FaProductEntity::getCategoreCode,data.getCategoreCode())

@@ -1,61 +1,62 @@
 package com.cmhq.core.service.domain;
 
+import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.api.dto.response.BaiduAddressAnlsDto;
-import com.cmhq.core.dao.FaCostDao;
 import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.dao.FaProductDao;
-import com.cmhq.core.model.FaCostEntity;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.FaProductEntity;
 import com.cmhq.core.model.param.CourierOrderImport;
 import com.cmhq.core.service.FaCourierOrderService;
+import com.cmhq.core.util.CurrentUserContent;
 import com.cmhq.core.util.SpringApplicationUtils;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.ValidationException;
-import javax.validation.Validator;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by Jiyang.Zheng on 2024/6/6 18:57.
  */
+@Slf4j
 public class ImportCourierOrderDomain {
-    private Validator validator = null;
-    FaProductDao faProductDao;
-    FaCourierOrderDao faCourierOrderDao;
-    FaCourierOrderService faCourierOrderService;
+    private static FaProductDao faProductDao;
+    private static FaCourierOrderDao faCourierOrderDao;
+    private static FaCourierOrderService faCourierOrderService;
+    private MultipartFile file;
     public ImportCourierOrderDomain(MultipartFile file){
         faProductDao = SpringApplicationUtils.getBean(FaProductDao.class);
         faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
         faCourierOrderService = SpringApplicationUtils.getBean(FaCourierOrderService.class);
-        validator = Validation.buildDefaultValidatorFactory().getValidator();
+        this.file = file;
     }
 
-    private void checkParam(Object data) throws ValidationException {
-        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(data);
-        Iterator<ConstraintViolation<Object>> iterator = constraintViolations.iterator();
-        if (iterator.hasNext()) {
-            String message = iterator.next().getMessage();
-            throw new ValidationException(message);
+    public Object handle(){
+        //1 获取文件输入流
+        InputStream inputStream = null;
+        try {
+            inputStream = file.getInputStream();
+            // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
+            EasyExcel.read(inputStream, CourierOrderImport.class, new CourierImportListener()).headRowNumber(2).sheet().doRead();
+        } catch (IOException e) {
+            log.error("",e);
         }
-
+        return null;
     }
+
 
     @Slf4j
-    class CourierImportListener extends AnalysisEventListener<CourierOrderImport> {
+    public static class CourierImportListener extends AnalysisEventListener<CourierOrderImport> {
         /**
          * 
          */
@@ -73,8 +74,11 @@ public class ImportCourierOrderDomain {
          */
         @Override
         public void invoke(CourierOrderImport data, AnalysisContext context) {
+            if (context.getCurrentRowNum() <=2){//是模板
+                return;
+            }
             count ++;
-            int index = context.getCurrentRowNum();
+            int index = context.getCurrentRowNum()+1;
             log.info("解析到{}数据:{}",index, JSONObject.toJSONString(data));//使用需要导入json依赖
             FaCourierOrderEntity order = new FaCourierOrderEntity();
             JSONObject jo = new JSONObject();
@@ -101,14 +105,16 @@ public class ImportCourierOrderDomain {
             }
             //产品名称编码查询
             if (StringUtils.isNotEmpty(data.getGoodsCode())){
-                FaProductEntity faProductEntity = faProductDao.selectOne(new LambdaQueryWrapper<FaProductEntity>().eq(FaProductEntity::getCategoreCode, data.getGoodsCode()).last(" limit 1"));
+                FaProductEntity faProductEntity = faProductDao.selectOne(new LambdaQueryWrapper<FaProductEntity>().eq(FaProductEntity::getCid, CurrentUserContent.getCurrentCompany().getId()).eq(FaProductEntity::getCategoreCode, data.getGoodsCode()).last(" limit 1"));
                 if (faProductEntity != null){
                     order.setGoodsName(faProductEntity.getCategoryName());
                     order.setWeight(faProductEntity.getWeight());
                     order.setHeight(faProductEntity.getHeight());
                     order.setLength(faProductEntity.getLength());
+                }else {
+                    fails.add("第"+index+"行,商品编码不存在");
+                    return;
                 }
-                return;
             }else {
                 order.setGoodsName(data.getGoodsName());
                 order.setWeight(data.getWeight());
@@ -140,7 +146,14 @@ public class ImportCourierOrderDomain {
             //地址解析
             try {
                 Object o = faCourierOrderService.addressAnalysis(data.getFromAddress());
-                BaiduAddressAnlsDto dto = JSONObject.parseObject(JSONObject.toJSONString(o), BaiduAddressAnlsDto.class);
+                if (StringUtils.isEmpty(o.toString())){
+                    fails.add("第"+index+"行,收货地址未解析出省市地址");
+                    return;
+                }
+                String s = o.toString();
+//                s =s.replaceFirst("\"","");
+//                s = s.substring(0,s.length()-1);
+                BaiduAddressAnlsDto dto = JSONObject.parseObject(s, BaiduAddressAnlsDto.class);
                 if (StringUtils.isEmpty(dto.getProvince())
                         || StringUtils.isEmpty(dto.getCity())
                         || StringUtils.isEmpty(dto.getDetail()) ){
@@ -165,11 +178,20 @@ public class ImportCourierOrderDomain {
                 order.setFromArea(dto.getCounty());
                 order.setFromAddress(dto.getDetail());
             }catch (Exception e){
+                log.error("",e);
                 fails.add("第"+index+"行,发货地址解析错误");
+                return;
             }
             try {
                 Object o = faCourierOrderService.addressAnalysis(data.getToAddress());
-                BaiduAddressAnlsDto dto = JSONObject.parseObject(JSONObject.toJSONString(o), BaiduAddressAnlsDto.class);
+                if (StringUtils.isEmpty(o.toString())){
+                    fails.add("第"+index+"行,收货地址未解析出省市地址");
+                    return;
+                }
+                String s = o.toString();
+//                s =s.replaceFirst("\"","");
+//                s = s.substring(0,s.length()-1);
+                BaiduAddressAnlsDto dto = JSONObject.parseObject(s, BaiduAddressAnlsDto.class);
                 if (StringUtils.isEmpty(dto.getProvince())
                         || StringUtils.isEmpty(dto.getCity())
                         || StringUtils.isEmpty(dto.getDetail()) ){
@@ -193,7 +215,9 @@ public class ImportCourierOrderDomain {
                 order.setToArea(dto.getCounty());
                 order.setToAddress(dto.getDetail());
             }catch (Exception e){
+                log.error("",e);
                 fails.add("第"+index+"行,收货地址解析错误");
+                return;
             }
 
             order.setFromPartitionNumber(data.getFromPartitionNumber());

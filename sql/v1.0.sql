@@ -149,3 +149,7 @@ ALTER TABLE fa_product_category ADD `weight` double(10,2) DEFAULT NULL COMMENT '
 ALTER TABLE fa_product_category ADD `width` int(10) DEFAULT NULL COMMENT '宽度';
 ALTER TABLE fa_product_category ADD `length` int(10) DEFAULT NULL COMMENT '长度';
 ALTER TABLE fa_product_category ADD `height` int(10) DEFAULT NULL COMMENT '高';
+ALTER TABLE fa_withdrawal MODIFY COLUMN `day` varchar(255) NULL COMMENT '提现日期';
+
+ALTER TABLE fa_company ADD is_pay varchar(20) DEFAULT 'N' NULL COMMENT '是否开启去付款按钮：Y:是，N：否';
+ALTER TABLE fa_company ADD pay_retio int(11) DEFAULT NULL COMMENT '去收款比例单位百';
