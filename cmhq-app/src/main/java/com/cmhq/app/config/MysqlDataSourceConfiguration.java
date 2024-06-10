@@ -1,4 +1,4 @@
-package com.cmhq.app.controller;
+package com.cmhq.app.config;
 
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
