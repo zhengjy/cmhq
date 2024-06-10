@@ -3,17 +3,16 @@ package com.cmhq.app.controller;
 
 import com.cmhq.app.config.LoginAuthenticationProvider;
 import com.cmhq.app.dao.FaUserDao;
-import com.cmhq.app.model.APIResponse;
 import com.cmhq.app.model.AuthUserDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.zhengjie.APIResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -37,7 +36,7 @@ public class LoginController {
 
     @ApiOperation("登录授权")
     @PostMapping(value = "login")
-    public APIResponse login( AuthUserDto authUser, HttpServletRequest request) throws Exception {
+    public APIResponse login(AuthUserDto authUser, HttpServletRequest request) throws Exception {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(authUser.getUsername(), authUser.getPassword());
         Authentication authentication = loginAuthenticationProvider.authenticate(authenticationToken);

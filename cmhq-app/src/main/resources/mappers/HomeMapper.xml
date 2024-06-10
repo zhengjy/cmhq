@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmhq.app.dao.HomeDao">
+
+    <select id="selectCompanyList"  parameterType="com.cmhq.app.model.param.HomeQuery"
+            resultType="com.cmhq.app.model.rsp.HomeCompanyRsp">
+        select company_name,cnt as all_orders,epr as yugufenyong,pr as all_fenyong from (
+            select username,nickname,company_name,distribution_ratio,sum(estimate_price) estimate_price,sum(price) price,
+                   sum(jiesuan_cnt) jiesuan_cnt,sum(not_jiesuan_cnt) not_jiesuan_cnt,
+                   IFNULL( sum(estimate_price) / distribution_ratio,0) epr,IFNULL( sum(price) / distribution_ratio,0) pr,
+                   count(1) cnt
+            from (
+                     SELECT  u.username ,u.nickname ,c.mobile ,c.company_name,c.distribution_ratio,o.estimate_price,o.price,
+                             case when is_jiesuan=1 then 1
+                                  else 0 end jiesuan_cnt,
+                             case when is_jiesuan=0 then 1
+                                  else 0 end not_jiesuan_cnt
+                     from fa_user u
+                              inner join  fa_company c on c.f_user = u.id
+                              inner join fa_expressorder o on o.cid = c.id
+                     where  1=1
+                     <if test="company_name != null and company_name != '">
+                         c.company_name = #{company_name}
+                     </if>
+                    <if test="ed != null and ed != '">
+                        o.create_time = >= #{sd} and o.create_time &lt;= #{ed}
+                    </if>
+                 ) t
+            group by username ,nickname ,mobile ,company_name,distribution_ratio
+        ) d
+    </select>
+    <select id="selectOrderList"  parameterType="com.cmhq.app.model.param.HomeOrderQuery"
+            resultType="com.cmhq.app.model.rsp.HomeOrderRsp">
+select * from (
+        select billCode as orderid,create_time,company_name as company_name,fy_price as yugufenyong,
+               case when status ='cancel' then '3'
+                    when  status ='success' then '2'
+                    else '1' end cancel
+        from (
+                 SELECT  u.username ,u.nickname ,c.mobile ,c.company_name,c.distribution_ratio,o.estimate_price,o.price,
+                         o.billCode,
+                         o.create_time,
+                         case when cancel !=1 then 'cancel'
+                              when is_jiesuan=1 then 'success'
+                              else 'in' end status,
+                         IFNULL(
+                                 case when is_jiesuan=1 then o.price /c.distribution_ratio
+                                      else o.estimate_price /c.distribution_ratio end
+                             ,0) fy_price
+                 from fa_user u
+                          inner join  fa_company c on c.f_user = u.id
+                          inner join fa_expressorder o on o.cid = c.id
+                where  1=1
+                <if test="company_name != null and company_name != '">
+                    c.company_name = #{company_name}
+                </if>
+             ) t
+        ) a
+        where  1=1
+        <if test="current != null and current != '">
+            cancel = #{current}
+        </if>
+    </select>
+
+
+
+
+</mapper>
