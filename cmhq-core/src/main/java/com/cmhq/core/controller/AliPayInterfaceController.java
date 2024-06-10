@@ -3,9 +3,11 @@ package com.cmhq.core.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.dao.FaRechargeDao;
+import com.cmhq.core.model.FaCompanyEntity;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.FaRechargeEntity;
 import com.cmhq.core.model.dto.FreightChargeDto;
+import com.cmhq.core.service.FaCompanyService;
 import com.cmhq.core.service.FaRechargeService;
 import com.cmhq.core.util.EstimatePriceUtil;
 import io.swagger.annotations.Api;
@@ -30,6 +32,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
@@ -53,6 +57,8 @@ public class AliPayInterfaceController {
     private FaRechargeService faRechargeService;
     @Autowired
     private FaCourierOrderDao faCourierOrderDao;
+    @Autowired
+    private FaCompanyService faCompanyService;
 
     
     @Log("支付宝PC网页支付")
@@ -91,7 +97,13 @@ public class AliPayInterfaceController {
         trade.setBusinessType(2);
         FaCourierOrderEntity order = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,trade.getOrderCode()));
         FreightChargeDto fcd = EstimatePriceUtil.getCourerCompanyCostPrice(order);
-        trade.setTotalAmount(fcd.getTotalPriceInit()+"");
+
+        FaCompanyEntity company = faCompanyService.selectById(order.getFaCompanyId());
+        if (company.getPayRetio() != null && company.getPayRetio() > 0){
+            trade.setTotalAmount(BigDecimal.valueOf((double)fcd.getTotalPriceInit() * ((double) company.getPayRetio()/100) ).setScale(2, RoundingMode.HALF_UP).doubleValue()+"");
+        }else {
+            trade.setTotalAmount(fcd.getTotalPriceInit()+"");
+        }
         // trade.setTotalAmount("0.01");
         trade.setBody("支付退单运费");
         String payUrl = alipayService.toPayAsPc(aliPay, trade);
