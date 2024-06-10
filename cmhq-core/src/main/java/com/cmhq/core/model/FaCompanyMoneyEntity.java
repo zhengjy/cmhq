@@ -115,7 +115,7 @@ public class FaCompanyMoneyEntity {
      * 运单号
      * </pre>
      */
-    @TableField(value = "billCode")
+    @TableField( "billCode")
     private String	billCode;
 
     /**

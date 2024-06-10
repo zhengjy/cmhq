@@ -7,7 +7,7 @@ import com.cmhq.core.api.strategy.Upload;
 import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.enums.MoneyConsumeEumn;
 import com.cmhq.core.enums.MoneyConsumeMsgEumn;
-import com.cmhq.core.model.CompanyMoneyParam;
+import com.cmhq.core.model.param.CompanyMoneyParam;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.service.FaCompanyMoneyService;
 import com.cmhq.core.service.FaCourierOrderService;

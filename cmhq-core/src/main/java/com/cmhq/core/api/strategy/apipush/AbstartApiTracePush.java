@@ -3,24 +3,24 @@ package com.cmhq.core.api.strategy.apipush;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.api.UploadData;
-import com.cmhq.core.dao.FaCompanyDao;
 import com.cmhq.core.enums.CourierWuliuStateEnum;
 import com.cmhq.core.enums.MoneyConsumeEumn;
 import com.cmhq.core.enums.MoneyConsumeMsgEumn;
+import com.cmhq.core.enums.UserMoneyConsumeMsgEumn;
 import com.cmhq.core.fitler.FreightFilter;
-import com.cmhq.core.model.CompanyMoneyParam;
+import com.cmhq.core.model.param.CompanyMoneyParam;
 import com.cmhq.core.model.FaCompanyDayOpeNumEntity;
 import com.cmhq.core.model.FaCompanyEntity;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.model.dto.FreightChargeDto;
+import com.cmhq.core.model.param.UserMoneyParam;
 import com.cmhq.core.service.FaCompanyDayOpeNumService;
 import com.cmhq.core.service.FaCompanyService;
+import com.cmhq.core.service.FaUserMoneyService;
+import com.cmhq.core.service.FaUserService;
 import com.cmhq.core.service.domain.ReturnOrderCreateCourierOrderDomain;
 import com.cmhq.core.util.EstimatePriceUtil;
-import com.cmhq.core.util.SpringApplicationUtils;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
-import net.dreamlu.mica.core.spring.SpringContextUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +46,8 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
     FaCompanyService faCompanyService;
     @Autowired
     FaCompanyDayOpeNumService faCompanyDayOpeNumService;
+    @Autowired
+    FaUserMoneyService faUserMoneyService;
     @Override
     public void doPushHandle(Req req) {
         FaCourierOrderEntity order = getFaCourierOrder(req);
@@ -100,6 +102,10 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             FreightChargeDto price = EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),traceWeight,faCompanyEntity.getRatio());
             //插入记录  返还商户预估费用& 扣除商户金额
             faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_4,order.getEstimatePrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+            if (faCompanyEntity.getFUser() != null){
+                faUserMoneyService.saveRecord(new UserMoneyParam(1, UserMoneyConsumeMsgEumn.MSG_1,order.getPrice(),order.getFaCompanyId(),faCompanyEntity.getFUser(),faCompanyEntity.getDistributionRatio(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+            }
+
             try {
                 //会出现创建时间相同
                 Thread.sleep(1000);

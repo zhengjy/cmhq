@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmhq.core.dao.FaUserDao">
+
+
+
+
+    <update id="minusMoney" >
+        update fa_user set yongjin = yongjin-#{money} where id = #{id}
+
+    </update>
+
+    <update id="restMoney" >
+        update fa_user set yongjin = yongjin+#{money} where id = #{id}
+    </update>
+    <update id="addMoney" >
+        update fa_user set yongjin = yongjin+#{money} where id = #{id}
+
+    </update>
+
+</mapper>

@@ -19,11 +19,15 @@ public class FaUserMoneyEntity {
     /**金额*/
     private Double money;
     /**=增加减少 1加2减*/
+    @TableField(value = "`type`")
     private Integer type;
     /**备注*/
     private String msg;
     /**操作之前的余额*/
+    @TableField(value = "`before`")
     private Double before;
+    /**操作之前的余额*/
+    private Double afterMoney;
     /**创建时间*/
     private String createTime;
     /**商户id*/
@@ -33,7 +37,8 @@ public class FaUserMoneyEntity {
     /**是否分销 0正常1分销*/
     private String isFenxiao;
     /**订单号*/
-    private Integer orderid;
+    private String orderid;
     /**运单号*/
-    private Integer billCode;
+    @TableField( "billCode")
+    private String billCode;
 }

@@ -153,3 +153,5 @@ ALTER TABLE fa_withdrawal MODIFY COLUMN `day` varchar(255) NULL COMMENT '提现�
 
 ALTER TABLE fa_company ADD is_pay varchar(20) DEFAULT 'N' NULL COMMENT '是否开启去付款按钮：Y:是，N：否';
 ALTER TABLE fa_company ADD pay_retio int(11) DEFAULT NULL COMMENT '去收款比例单位百';
+
+ALTER TABLE fa_user_money ADD after_money decimal(10,2) DEFAULT NULL COMMENT '变动后余额';

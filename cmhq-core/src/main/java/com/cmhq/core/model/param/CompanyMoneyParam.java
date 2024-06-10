@@ -1,4 +1,4 @@
-package com.cmhq.core.model;
+package com.cmhq.core.model.param;
 
 import com.cmhq.core.enums.MoneyConsumeEumn;
 import com.cmhq.core.enums.MoneyConsumeMsgEumn;

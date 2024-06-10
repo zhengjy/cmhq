@@ -1,6 +1,6 @@
 package com.cmhq.core.service;
 
-import com.cmhq.core.model.CompanyMoneyParam;
+import com.cmhq.core.model.param.CompanyMoneyParam;
 import com.cmhq.core.model.param.FcCompanyMoneyQuery;
 import me.zhengjie.QueryResult;
 
