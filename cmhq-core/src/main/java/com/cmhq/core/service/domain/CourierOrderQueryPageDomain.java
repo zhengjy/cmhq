@@ -119,7 +119,7 @@ public class CourierOrderQueryPageDomain {
             lam.eq(FaCourierOrderEntity::getId,query.getId());
         }
         if (StringUtils.isNotEmpty(query.getCourierCompanyWaybillNo())){
-            lam.eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,query.getCourierCompanyWaybillNo());
+            lam.eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,query.getCourierCompanyWaybillNo().trim());
         }
         if (StringUtils.isNotEmpty(query.getGoodsName())){
             lam.eq(FaCourierOrderEntity::getGoodsName,query.getGoodsName());
