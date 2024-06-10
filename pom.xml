@@ -17,7 +17,6 @@
         <module>eladmin-generator</module>
         <module>cmhq-core</module>
         <module>cmhq-app</module>
-        <module>cmhq-app</module>
     </modules>
 
     <name>ELADMIN 后台管理</name>
