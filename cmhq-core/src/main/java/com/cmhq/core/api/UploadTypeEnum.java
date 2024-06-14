@@ -31,8 +31,8 @@ public enum UploadTypeEnum {
     TYPE_BAIDU_ADDRDESS("baidu_addrdess","baidu_addrdess",CourierCompanyEnum.COMPANY_BAIDU.getType(),"百度地址识别"),
 
     TYPE_JD_ORDER_MODIFY("jd_courier_order_modify","courier_order_modify", CourierCompanyEnum.COMPANY_JD.getType(),"订单修改"),
-    TYPE_JD_ORDER_SUBSCRIBE_TRACE("jd_order_subscribe_trace","courier_subscribe_trace", CourierCompanyEnum.COMPANY_JD.getType(),"订单状态订阅"),
-    TYPE_JD_ORDER_ACTUAL_FEE("jd_order_actual_fee","courier_actual_fee", CourierCompanyEnum.COMPANY_JD.getType(),"订单实际费用查询 "),
+    TYPE_JD_ORDER_SUBSCRIBE_TRACE("jd_order_subscribe_trace","order_subscribe_trace", CourierCompanyEnum.COMPANY_JD.getType(),"订单状态订阅"),
+    TYPE_JD_ORDER_ACTUAL_FEE("jd_order_actual_fee","order_actual_fee", CourierCompanyEnum.COMPANY_JD.getType(),"订单实际费用查询 "),
     ;
     private String code;
     private String codeNickName;
