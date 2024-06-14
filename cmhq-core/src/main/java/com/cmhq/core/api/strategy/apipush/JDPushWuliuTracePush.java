@@ -55,7 +55,7 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
                     || d.getState().equals("200003")
             ){
                 return CourierWuliuStateEnum.STATE_2;
-            }else if (d.getCategoryName().contains("运输") ){
+            }else if (d.getCategoryName().contains("运输") && !d.getState().equals("200020")){
                 return CourierWuliuStateEnum.STATE_1;
             }else if (d.getState().equals("10035")){
                 return CourierWuliuStateEnum.STATE_4;
@@ -106,22 +106,25 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
             log.error("获取jd物流公司订单状态失败【{}】",uploadResult.getErrorMsg());
         }else {
             CommonActualFeeResponse response = JSONObject.parseObject(JSONObject.toJSONString(uploadResult.getJsonMsg()),CommonActualFeeResponse.class);
-            List<CommonActualFeeInfoDetailResponse> oc = response.getCommonActualFeeInfoDetails().stream()
-                    .filter(v -> v.getFeeType().equals("kkcccc") ||  v.getFeeType().equals("QLHCF") ||  v.getFeeType().equals("QLBJ")).collect(Collectors.toList());
-            if (CollectionUtils.isNotEmpty(oc)) {
-                return oc.stream().map(v -> {
-                    ActualFeeInfoDto dto1 = new ActualFeeInfoDto();
-                    if (v.getFeeType().equals("kkcccc")) {
-                        dto1.setFeeType(ActualFeeInfoDto.FEETYPE_CCCC);
-                    } else if (v.getFeeType().equals("QLHCF")) {
-                        dto1.setFeeType(ActualFeeInfoDto.FEETYPE_QLHCF);
-                    } else if (v.getFeeType().equals("QLBJ")) {
-                        dto1.setFeeType(ActualFeeInfoDto.FEETYPE_QLBJ);
-                    }
-                    dto1.setMoney(v.getMoney().doubleValue());
-                    return dto1;
-                }).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(response.getCommonActualFeeInfoDetails())){
+                List<CommonActualFeeInfoDetailResponse> oc = response.getCommonActualFeeInfoDetails().stream()
+                        .filter(v -> v.getFeeType().equals("kkcccc") ||  v.getFeeType().equals("QLHCF") ||  v.getFeeType().equals("QLBJ")).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(oc)) {
+                    return oc.stream().map(v -> {
+                        ActualFeeInfoDto dto1 = new ActualFeeInfoDto();
+                        if (v.getFeeType().equals("kkcccc")) {
+                            dto1.setFeeType(ActualFeeInfoDto.FEETYPE_CCCC);
+                        } else if (v.getFeeType().equals("QLHCF")) {
+                            dto1.setFeeType(ActualFeeInfoDto.FEETYPE_QLHCF);
+                        } else if (v.getFeeType().equals("QLBJ")) {
+                            dto1.setFeeType(ActualFeeInfoDto.FEETYPE_QLBJ);
+                        }
+                        dto1.setMoney(v.getMoney().doubleValue());
+                        return dto1;
+                    }).collect(Collectors.toList());
+                }
             }
+
         }
         return null;
     }

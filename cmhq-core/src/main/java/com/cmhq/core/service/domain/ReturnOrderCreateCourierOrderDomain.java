@@ -3,6 +3,7 @@ package com.cmhq.core.service.domain;
 import com.alibaba.fastjson.JSONObject;
 import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
+import com.cmhq.core.api.dto.request.CourierOrderSubscribeTraceDto;
 import com.cmhq.core.api.strategy.StrategyFactory;
 import com.cmhq.core.api.strategy.Upload;
 import com.cmhq.core.dao.FaCourierOrderDao;
@@ -101,10 +102,12 @@ public class ReturnOrderCreateCourierOrderDomain {
             faCourierOrderDao.insert(order);
             //额外字段插入
             saveOrderExt(order.getId(), order.getCourierOrderExtend());
-
+            CourierOrderSubscribeTraceDto dto = new CourierOrderSubscribeTraceDto();
+            dto.setWaybillCode(order.getCourierCompanyWaybillNo());
+            dto.setMobile(order.getToMobile());
             //上传物流公司
             Upload upload = StrategyFactory.getUpload(Objects.requireNonNull(UploadTypeEnum.getMsgByCode(order.getCourierCompanyCode(), UploadTypeEnum.TYPE_JD_ORDER_SUBSCRIBE_TRACE.getCodeNickName())));
-            UploadResult uploadResult = upload.execute(order);
+            UploadResult uploadResult = upload.execute(dto);
             if (uploadResult.getFlag()){
             }else {
                 throw new RuntimeException("订阅状态失败:"+uploadResult.getErrorMsg());

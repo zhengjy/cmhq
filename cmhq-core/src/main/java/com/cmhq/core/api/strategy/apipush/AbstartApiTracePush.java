@@ -25,6 +25,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -49,6 +50,8 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
     FaCompanyDayOpeNumService faCompanyDayOpeNumService;
     @Autowired
     FaUserMoneyService faUserMoneyService;
+
+    @Transactional
     @Override
     public void doPushHandle(Req req) {
         FaCourierOrderEntity order = getFaCourierOrder(req);
