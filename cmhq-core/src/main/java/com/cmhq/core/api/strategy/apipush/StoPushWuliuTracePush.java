@@ -1,9 +1,12 @@
 package com.cmhq.core.api.strategy.apipush;
 
 import com.cmhq.core.api.dto.request.StoPushTraceDto;
+import com.cmhq.core.api.dto.response.ActualFeeInfoDto;
 import com.cmhq.core.enums.CourierWuliuStateEnum;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Created by Jiyang.Zheng on 2024/4/11 21:38.
@@ -50,6 +53,11 @@ public class StoPushWuliuTracePush extends AbstartApiTracePush<StoPushTraceDto>{
                 return trace.getWeight()+"";
             }
         }
+        return null;
+    }
+
+    @Override
+    protected List<ActualFeeInfoDto> getActualFeeInfo(StoPushTraceDto stoPushTraceDto) {
         return null;
     }
 

@@ -2,6 +2,7 @@ package com.cmhq.core.api.strategy.apipush;
 
 import com.cmhq.core.api.dto.request.JTPushDto;
 import com.cmhq.core.api.dto.request.JTPushTraceDto;
+import com.cmhq.core.api.dto.response.ActualFeeInfoDto;
 import com.cmhq.core.enums.CourierWuliuStateEnum;
 import org.springframework.stereotype.Component;
 
@@ -70,6 +71,11 @@ public class JTPushWuliuTracePush extends AbstartApiTracePush<JTPushDto<JTPushTr
             return detailList.get(0).getWeight();
         }
         return "";
+    }
+
+    @Override
+    protected List<ActualFeeInfoDto> getActualFeeInfo(JTPushDto<JTPushTraceDto> jtPushTraceDtoJTPushDto) {
+        return null;
     }
 
     @Override

@@ -29,6 +29,8 @@ public class FaCourierOrderExtEntity {
      * goodsType:sto物品类型
      * jtGoodsType:jt物品类型
      * timeout24HourCourierCompanyCodes:超时24小时已下单的快递公司编号列表
+     * order_fee_money:订单费用金额
+     * order_fee_type:订单费用类型：超长超重额外费用
      * */
     private String cname;
     private String cvalue;

@@ -3,6 +3,7 @@ package com.cmhq.core.api.strategy.apipush;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.api.UploadData;
+import com.cmhq.core.api.dto.response.ActualFeeInfoDto;
 import com.cmhq.core.enums.CourierWuliuStateEnum;
 import com.cmhq.core.enums.MoneyConsumeEumn;
 import com.cmhq.core.enums.MoneyConsumeMsgEumn;
@@ -17,7 +18,6 @@ import com.cmhq.core.model.param.UserMoneyParam;
 import com.cmhq.core.service.FaCompanyDayOpeNumService;
 import com.cmhq.core.service.FaCompanyService;
 import com.cmhq.core.service.FaUserMoneyService;
-import com.cmhq.core.service.FaUserService;
 import com.cmhq.core.service.domain.ReturnOrderCreateCourierOrderDomain;
 import com.cmhq.core.util.EstimatePriceUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +32,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 物流状态处理
@@ -118,6 +119,32 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             order.setWeightto(traceWeight);
             order.setIsJiesuan(1);
             faCourierOrderDao.update(order, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
+            //超长超重记录
+            List<ActualFeeInfoDto> list = getActualFeeInfo(req);
+            if (CollectionUtils.isNotEmpty(list)){
+                faCourierOrderService.saveOrderExt(order.getId(),"order_fee_type",list.stream().map(ActualFeeInfoDto::getFeeType).collect(Collectors.joining(",")));
+                faCourierOrderService.saveOrderExt(order.getId(),"order_fee_money",list.stream().map(v -> v.getMoney()+"").collect(Collectors.joining(",")));
+                Double d = 0D;
+                for (ActualFeeInfoDto dto : list){
+                    MoneyConsumeMsgEumn eumn = null;
+                    if (dto != null && dto.getFeeType().equals(ActualFeeInfoDto.FEETYPE_CCCC)){
+                        eumn = MoneyConsumeMsgEumn.MSG_10;
+                    }else if (dto != null && dto.getFeeType().equals(ActualFeeInfoDto.FEETYPE_QLHCF)){
+                        eumn = MoneyConsumeMsgEumn.MSG_11;
+                    }else if (dto != null && dto.getFeeType().equals(ActualFeeInfoDto.FEETYPE_QLBJ)){
+                        eumn = MoneyConsumeMsgEumn.MSG_12;
+                    }
+                    if (eumn != null){
+                        d = d+ dto.getMoney();
+                        faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, eumn,dto.getMoney(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+                    }
+                }
+                FaCourierOrderEntity pe = new FaCourierOrderEntity();
+                pe.setPrice(d);
+                faCourierOrderDao.update(pe, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
+            }
+
+
         }
     }
 
@@ -175,6 +202,7 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
     protected abstract CourierWuliuStateEnum getTraceState(Req req);
     protected abstract String getCourierWuliuState(Req req);
     protected abstract String getWeight(Req req);
+    protected abstract List<ActualFeeInfoDto> getActualFeeInfo(Req req);
     protected abstract String getIsErrorMsg(Req req);
 
     protected abstract String getRetWaybillNo(Req req);
