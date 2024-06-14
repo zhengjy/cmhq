@@ -102,9 +102,6 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             FreightChargeDto price = EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),traceWeight,faCompanyEntity.getRatio());
             //插入记录  返还商户预估费用& 扣除商户金额
             faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_4,order.getEstimatePrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
-            if (faCompanyEntity.getFUser() != null){
-                faUserMoneyService.saveRecord(new UserMoneyParam(1, UserMoneyConsumeMsgEumn.MSG_1,order.getPrice(),order.getFaCompanyId(),faCompanyEntity.getFUser(),faCompanyEntity.getDistributionRatio(),order.getId()+"",order.getCourierCompanyWaybillNo()));
-            }
 
             try {
                 //会出现创建时间相同
@@ -113,6 +110,9 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
                 throw new RuntimeException(e);
             }
             faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_2,price.getTotalPrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+            if (faCompanyEntity.getFUser() != null){
+                faUserMoneyService.saveRecord(new UserMoneyParam(1, UserMoneyConsumeMsgEumn.MSG_1,price.getTotalPrice(),order.getFaCompanyId(),faCompanyEntity.getFUser(),faCompanyEntity.getDistributionRatio(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+            }
             //更新实际费用和重量
             order.setPrice(price.getTotalPrice());
             order.setWeightto(traceWeight);

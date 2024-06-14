@@ -33,7 +33,9 @@ public class FaProductEntity {
     /**高*/
     @ExcelProperty("高(cm)")
     private Integer height;
-
+/**体积重 长*宽*高(cm)/8000*/
+    @ExcelProperty("体积重")
+    private Double volume;
 
     private Integer cid;
 

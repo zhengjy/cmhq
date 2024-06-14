@@ -35,7 +35,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -117,6 +117,10 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
     @Override
     public Integer edit(FaCompanyEntity entity) {
         if (entity.getId() == null){
+            List<FaCompanyEntity> list = faCompanyDao.selectList(new LambdaQueryWrapper<FaCompanyEntity>().eq(FaCompanyEntity::getMobile,entity.getMobile()));
+            if (CollectionUtils.isNotEmpty(list)){
+                throw new RuntimeException("手机号已经存在！");
+            }
             entity.setMoney(0D);
             String pwd = passwordEncoder.encode(entity.getPassword());
             entity.setPassword(pwd);
@@ -163,6 +167,7 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
             //保存用户表、商户用户默认权限
             userService.create(user);
         }else {
+            entity.setMobile(null);
             faCompanyDao.updateById(entity);
         }
         return entity.getId();
@@ -284,11 +289,11 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
         FaCompanyEntity ee= new FaCompanyEntity();
         ee.setId(id);
         ee.setIsDelete("Y");
-        faCompanyDao.updateById(ee);
+        faCompanyDao.deleteById(id);
         try {
             UserDto dto = getUserDto(entity);
             if (dto != null){
-                userService.updateEnable(dto.getId(),dto.getUsername(),true);
+                userService.delete(Arrays.asList(dto.getId()).stream().collect(Collectors.toSet()));
             }
         }catch (Exception e){
             log.error("",e);

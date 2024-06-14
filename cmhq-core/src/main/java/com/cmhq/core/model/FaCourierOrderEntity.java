@@ -205,6 +205,9 @@ public class FaCourierOrderEntity {
     private String companyIdHeader;
     @TableField(exist = false)
     private String userIdHeader;
+    /**是否去收款：Y:是，N：否*/
+    @TableField(exist = false)
+    private String is_pay;
 
     @ApiModelProperty(value = "是否删除（0:未删除,1:已删除）")
     private Integer xdelkid;

@@ -49,6 +49,7 @@ public class CourierOrderQueryPageDomain {
                 FaCompanyEntity faCompanyEntity = faCompanyService.selectById(v.getFaCompanyId());
                 if (faCompanyEntity != null){
                     v.setCompanyName(faCompanyEntity.getCompanyName());
+                    v.setIs_pay(faCompanyEntity.getIsPay());
                 }
                 if (faCompanyEntity != null && faCompanyEntity.getFid() != null && v.getCreateUserId() != null){
                     try {

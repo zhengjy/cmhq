@@ -34,7 +34,7 @@ public class FaUserMoneyServiceImpl implements FaUserMoneyService {
             return;
         }
         if (param.getMsgEumn().getDesc().equals(UserMoneyConsumeMsgEumn.MSG_1.getDesc())){
-            Double money = BigDecimal.valueOf((param.getMoney() / retio)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+            Double money = BigDecimal.valueOf((double)param.getMoney() * ((double) retio/100) ).setScale(2, RoundingMode.HALF_UP).doubleValue();
             FaUserMoneyEntity um = new FaUserMoneyEntity();
             um.setUserId(param.getUserId());
             um.setMoney(money);

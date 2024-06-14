@@ -21,13 +21,6 @@ public class FaUserEntity {
 
     /**
      * <pre>
-     * 组别ID
-     * </pre>
-     */
-    private Integer	groupId;
-
-    /**
-     * <pre>
      * 用户名
      * </pre>
      */
@@ -49,20 +42,6 @@ public class FaUserEntity {
 
     /**
      * <pre>
-     * 密码盐
-     * </pre>
-     */
-    private String	salt;
-
-    /**
-     * <pre>
-     * 邮箱
-     * </pre>
-     */
-    private String	email;
-
-    /**
-     * <pre>
      * 手机号
      * </pre>
      */
@@ -74,34 +53,6 @@ public class FaUserEntity {
      * </pre>
      */
     private String	avatar;
-
-    /**
-     * <pre>
-     * 等级
-     * </pre>
-     */
-    private Integer	level;
-
-    /**
-     * <pre>
-     * 性别
-     * </pre>
-     */
-    private Integer	gender;
-
-    /**
-     * <pre>
-     * 生日
-     * </pre>
-     */
-    private String	birthday;
-
-    /**
-     * <pre>
-     * 身份证号
-     * </pre>
-     */
-    private String	idcard;
 
     /**
      * <pre>
@@ -144,14 +95,6 @@ public class FaUserEntity {
      * </pre>
      */
     private Long	logintime;
-
-    /**
-     * <pre>
-     * 登录IP
-     * </pre>
-     */
-    private String	loginip;
-
     /**
      * <pre>
      * 失败次数
@@ -227,42 +170,42 @@ public class FaUserEntity {
      * 每天最大提现次数
      * </pre>
      */
-    private Integer	maxWithdrawalNum;
+    private Integer	max_withdrawal_num;
 
     /**
      * <pre>
      * 每天最大提现金额
      * </pre>
      */
-    private Double	maxWithdrawalMoney;
+    private Double	max_withdrawal_money;
 
     /**
      * <pre>
      * 支付宝账号
      * </pre>
      */
-    private String	zhiAccount;
+    private String	zhi_account;
 
     /**
      * <pre>
      * 支付宝名字
      * </pre>
      */
-    private String	zhiName;
+    private String	zhi_name;
 
     /**
      * <pre>
      * 每天提现限额
      * </pre>
      */
-    private Double	withdrawalMaxMoney;
+    private Double	withdrawal_max_money;
 
     /**
      * <pre>
      * 每天最大提现次数
      * </pre>
      */
-    private Integer	withdrawalMaxNum;
+    private Integer	withdrawal_max_num;
 
     /**
      * <pre>

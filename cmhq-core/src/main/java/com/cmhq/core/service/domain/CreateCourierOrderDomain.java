@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.util.Objects;
-
+import java.util.List;
 /**
  * Created by Jiyang.Zheng on 2024/4/10 15:18.
  */
@@ -51,6 +51,20 @@ public class CreateCourierOrderDomain {
         }
         if (StringUtils.isEmpty(order.getGoodsName())){
             order.setGoodsName("灯具");
+        }else {
+            String[] arr = order.getGoodsName().split("-");
+            if (arr.length >= 2 && arr[0].equals("undefined")){
+                order.setGoodsName(arr[1]);
+            }
+        }
+        if (StringUtils.isNotEmpty(order.getTakeGoodsTime()) && order.getTakeGoodsTime().length() >= 12){
+            try {
+                List<String> srs = JSONObject.parseArray(order.getTakeGoodsTime(),String.class);
+                order.setTakeGoodsTime(srs.get(0));
+                order.setTakeGoodsTimeEnd(srs.get(1));
+            }catch (Exception e){
+                log.error("order.getTakeGoodsTime() error"+order.getTakeGoodsTime(),e.getMessage());
+            }
         }
         if (StringUtils.isNotEmpty(order.getTakeGoodsTime()) && order.getTakeGoodsTime().length() == 16){
             order.setTakeGoodsTime(order.getTakeGoodsTime() +":00");

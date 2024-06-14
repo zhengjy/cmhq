@@ -104,6 +104,7 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
         Matcher matcher = pattern.matcher(input);
 
         if (matcher.find()) {
+            log.error("退单提取到运单号 【{}】",JSONObject.toJSONString(dto));
             return matcher.group();
         } else {
             log.error("未能提取到运单号 【{}】",JSONObject.toJSONString(dto));

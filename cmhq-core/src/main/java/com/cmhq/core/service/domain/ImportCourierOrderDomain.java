@@ -83,12 +83,12 @@ public class ImportCourierOrderDomain {
             FaCourierOrderEntity order = new FaCourierOrderEntity();
             JSONObject jo = new JSONObject();
             if (StringUtils.isNotEmpty(data.getGoodsType())){
-                jo.put("goodsType","小件");
+                jo.put("goodsType",data.getGoodsType());
             }else {
                 jo.put("goodsType","小件");
             }
             if (StringUtils.isNotEmpty(data.getJtGoodsType())){
-                jo.put("jtGoodsType","其他");
+                jo.put("jtGoodsType",data.getJtGoodsType());
             }else {
                 jo.put("jtGoodsType","其他");
             }
