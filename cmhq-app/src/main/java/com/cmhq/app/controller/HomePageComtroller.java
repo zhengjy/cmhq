@@ -1,10 +1,12 @@
 package com.cmhq.app.controller;
 
+import cn.hutool.extra.spring.SpringUtil;
 import com.cmhq.app.dao.HomeDao;
 import com.cmhq.app.model.param.HomeOrderQuery;
 import com.cmhq.app.model.param.HomeQuery;
 import com.cmhq.app.model.rsp.HomeCompanyRsp;
 import com.cmhq.app.model.rsp.HomeOrderRsp;
+import com.cmhq.app.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -27,10 +29,13 @@ import java.util.List;
 public class HomePageComtroller {
     @Autowired
     private HomeDao homeDao;
+    @Autowired
+    private UserService userService;
 
     @ApiOperation("商户列表")
     @GetMapping(value = "indexCompany")
     public APIResponse list(@ModelAttribute HomeQuery query) {
+        query.setUserId(userService.queryCurrentUser().getId());
         PageHelper.startPage(query.getPage(), query.getLimit());
         List<HomeCompanyRsp> list = homeDao.selectCompanyList(query);
         PageInfo<HomeCompanyRsp> page = new PageInfo<>(list);
@@ -43,6 +48,7 @@ public class HomePageComtroller {
     @ApiOperation("订单列表")
     @GetMapping(value = "indexFenxiao")
     public APIResponse indexFenxiao(@ModelAttribute HomeOrderQuery query) {
+        query.setUserId(userService.queryCurrentUser().getId());
         PageHelper.startPage(query.getPage(), query.getLimit());
         List<HomeOrderRsp> list = homeDao.selectOrderList(query);
         PageInfo<HomeOrderRsp> page = new PageInfo<>(list);

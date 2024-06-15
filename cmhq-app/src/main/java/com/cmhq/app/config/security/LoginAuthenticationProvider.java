@@ -1,4 +1,4 @@
-package com.cmhq.app.config;
+package com.cmhq.app.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;

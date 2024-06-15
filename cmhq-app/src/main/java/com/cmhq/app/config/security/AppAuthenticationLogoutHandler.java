@@ -1,4 +1,4 @@
-package com.cmhq.app.config;
+package com.cmhq.app.config.security;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;

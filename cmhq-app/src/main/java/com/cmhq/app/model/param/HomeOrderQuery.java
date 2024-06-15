@@ -1,5 +1,7 @@
 package com.cmhq.app.model.param;
 
+import cn.hutool.extra.spring.SpringUtil;
+import com.cmhq.app.service.UserService;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -16,6 +18,7 @@ public class HomeOrderQuery {
 
     private String sd;
     private String ed;
+    private Integer userId;
 
 
     public String getSd() {

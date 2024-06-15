@@ -4,7 +4,7 @@
 
     <select id="selectCompanyList"  parameterType="com.cmhq.app.model.param.HomeQuery"
             resultType="com.cmhq.app.model.rsp.HomeCompanyRsp">
-        select company_name,cnt as all_orders,epr as yugufenyong,pr as all_fenyong from (
+        select company_name,cnt as all_orders,ROUND(epr, 2) as yugufenyong,ROUND(pr, 2)  as all_fenyong from (
             select username,nickname,company_name,distribution_ratio,sum(estimate_price) estimate_price,sum(price) price,
                    sum(jiesuan_cnt) jiesuan_cnt,sum(not_jiesuan_cnt) not_jiesuan_cnt,
                    IFNULL( sum(estimate_price) / distribution_ratio,0) epr,IFNULL( sum(price) / distribution_ratio,0) pr,
@@ -18,11 +18,11 @@
                      from fa_user u
                               inner join  fa_company c on c.f_user = u.id
                               inner join fa_expressorder o on o.cid = c.id
-                     where  1=1
-                     <if test="company_name != null and company_name != '">
+                     where  u.id=#{userId}
+                     <if test="company_name != null and company_name != ''">
                          c.company_name = #{company_name}
                      </if>
-                    <if test="ed != null and ed != '">
+                    <if test="ed != null and ed != ''">
                         o.create_time = >= #{sd} and o.create_time &lt;= #{ed}
                     </if>
                  ) t
@@ -32,7 +32,7 @@
     <select id="selectOrderList"  parameterType="com.cmhq.app.model.param.HomeOrderQuery"
             resultType="com.cmhq.app.model.rsp.HomeOrderRsp">
 select * from (
-        select billCode as orderid,create_time,company_name as company_name,fy_price as yugufenyong,
+        select billCode as orderid,create_time,company_name as company_name,ROUND(fy_price, 2) as yugufenyong,
                case when status ='cancel' then '3'
                     when  status ='success' then '2'
                     else '1' end cancel
@@ -50,14 +50,14 @@ select * from (
                  from fa_user u
                           inner join  fa_company c on c.f_user = u.id
                           inner join fa_expressorder o on o.cid = c.id
-                where  1=1
-                <if test="company_name != null and company_name != '">
+                where  u.id=#{userId}
+                <if test="company_name != null and company_name != ''">
                     c.company_name = #{company_name}
                 </if>
              ) t
         ) a
         where  1=1
-        <if test="current != null and current != '">
+        <if test="current != null and current != ''">
             cancel = #{current}
         </if>
     </select>

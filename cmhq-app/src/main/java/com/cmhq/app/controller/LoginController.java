@@ -1,7 +1,7 @@
 
 package com.cmhq.app.controller;
 
-import com.cmhq.app.config.LoginAuthenticationProvider;
+import com.cmhq.app.config.security.LoginAuthenticationProvider;
 import com.cmhq.app.dao.FaUserDao;
 import com.cmhq.app.model.AuthUserDto;
 import io.swagger.annotations.Api;
@@ -60,4 +60,6 @@ public class LoginController {
     public APIResponse logout(HttpServletRequest request) {
         return APIResponse.success();
     }
+
+
 }

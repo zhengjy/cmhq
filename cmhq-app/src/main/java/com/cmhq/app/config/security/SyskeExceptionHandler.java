@@ -1,4 +1,4 @@
-package com.cmhq.app.config;
+package com.cmhq.app.config.security;
 
 public class SyskeExceptionHandler {
 }

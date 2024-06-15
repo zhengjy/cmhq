@@ -27,11 +27,6 @@ public class ShowSqlBeanPostProcessor implements BeanPostProcessor {
             if (showSqlInterceptor) {
                 dsf.getConfiguration().addInterceptor(new SqlStatementInterceptor());
             }
-        } else if (bean instanceof MybatisSqlSessionFactoryBean) {
-            MybatisSqlSessionFactoryBean dsf = (MybatisSqlSessionFactoryBean) bean;
-            if (showSqlInterceptor) {
-                dsf.getConfiguration().addInterceptor(new SqlStatementInterceptor());
-            }
         }
         return bean;
     }
