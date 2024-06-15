@@ -95,7 +95,7 @@ public class ReturnOrderCreateCourierOrderDomain {
 
 
     public Integer handle(){
-        double price = 0;
+        double price = order.getPrice();
         Integer companyId = order.getFaCompanyId();
         try {
             //下单
