@@ -59,7 +59,7 @@ public class ReturnOrderCreateCourierOrderDomain {
         order.setEstimatePrice(param.getEstimatePrice());
         order.setPrice(param.getPrice());
         order.setType(1);
-        order.setOrderState(2);
+        order.setOrderState(0);
         order.setCancelOrderState(1);
 
         order.setFromName(param.getToName());
