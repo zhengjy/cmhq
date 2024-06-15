@@ -143,7 +143,7 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
                     }
                 }
                 FaCourierOrderEntity pe = new FaCourierOrderEntity();
-                pe.setPrice(d);
+                pe.setPrice(order.getPrice()+d);
                 faCourierOrderDao.update(pe, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
             }
 
