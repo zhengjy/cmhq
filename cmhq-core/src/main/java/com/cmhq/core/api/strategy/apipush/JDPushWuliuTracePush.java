@@ -137,7 +137,7 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
 
     @Override
     protected String getRetWaybillNo(JDPushTraceDto dto) {
-        String input = "新运单号JDVC24498388029";
+        String input = dto.getOperationRemark();
         String regex = "JDVC\\d+";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(input);
