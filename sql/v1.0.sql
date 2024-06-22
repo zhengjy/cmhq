@@ -157,3 +157,4 @@ ALTER TABLE fa_company ADD pay_retio int(11) DEFAULT NULL COMMENT '去收款比�
 ALTER TABLE fa_user_money ADD after_money decimal(10,2) DEFAULT NULL COMMENT '变动后余额';
 
 ALTER TABLE fa_product_category MODIFY COLUMN volume int(10) NULL COMMENT '体积重(长*宽*高(cm)/8000)';
+ALTER TABLE cmhq_test.fa_expressorder ADD quantity varchar(100) NULL COMMENT '包裹数';

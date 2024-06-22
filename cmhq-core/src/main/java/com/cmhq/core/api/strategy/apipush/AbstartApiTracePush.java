@@ -210,6 +210,12 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
 
     protected abstract String getRetWaybillNo(Req req);
 
+    protected void updateQuantity(String quantity,String waybillCode){
+        FaCourierOrderEntity pe = new FaCourierOrderEntity();
+        pe.setQuantity(quantity);
+        faCourierOrderDao.update(pe, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,waybillCode));
+    }
+
     @Override
     protected FaCourierOrderEntity getFaCourierOrder(Req req) {
         List<FaCourierOrderEntity> list = faCourierOrderDao.selectList(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));

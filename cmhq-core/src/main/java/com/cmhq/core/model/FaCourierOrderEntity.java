@@ -196,6 +196,8 @@ public class FaCourierOrderEntity {
     @ApiModelProperty(value = "扩展信息")
     @TableField(exist = false)
     private String courierOrderExtend;
+    @ApiModelProperty(value = "包裹数")
+    private String quantity;
 
     @TableField(exist = false)
     private String	companyName;
