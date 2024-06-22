@@ -94,20 +94,20 @@ public class AliPayInterfaceController {
     public APIResponse<String> toPayAsPc2(@Validated @RequestBody TradeVo trade) throws Exception {
         AlipayConfig aliPay = alipayService.find();
         String ordercode = trade.getOrderCode();
-        trade.setOutTradeNo(ordercode);
         trade.setSubject("支付");
         trade.setBusinessType(2);
         FaCourierOrderEntity order = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,trade.getOrderCode()));
         FreightChargeDto fcd = EstimatePriceUtil.getCourerCompanyCostPrice(order);
-        trade.setTotalAmount(0.01+"");
+
+        ordercode = order.getCourierCompanyWaybillNo();
+        trade.setOutTradeNo(ordercode);
 //        FaCompanyEntity company = faCompanyService.selectById(order.getFaCompanyId());
 //        if (company.getPayRetio() != null && company.getPayRetio() > 0){
 //            trade.setTotalAmount(BigDecimal.valueOf((double)fcd.getTotalPriceInit() * ((double) company.getPayRetio()/100) ).setScale(2, RoundingMode.HALF_UP).doubleValue()+"");
 //        }else {
 //            trade.setTotalAmount(fcd.getTotalPriceInit()+"");
 //        }
-        ordercode = order.getCourierCompanyWaybillNo();
-        // trade.setTotalAmount("0.01");
+         trade.setTotalAmount("0.01");
         trade.setBody("支付退单运费");
         String payUrl = alipayService.toPayAsPc(aliPay, trade);
         FaRechargeEntity faRecharge = new FaRechargeEntity();
