@@ -99,13 +99,13 @@ public class AliPayInterfaceController {
         trade.setBusinessType(2);
         FaCourierOrderEntity order = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,trade.getOrderCode()));
         FreightChargeDto fcd = EstimatePriceUtil.getCourerCompanyCostPrice(order);
-
-        FaCompanyEntity company = faCompanyService.selectById(order.getFaCompanyId());
-        if (company.getPayRetio() != null && company.getPayRetio() > 0){
-            trade.setTotalAmount(BigDecimal.valueOf((double)fcd.getTotalPriceInit() * ((double) company.getPayRetio()/100) ).setScale(2, RoundingMode.HALF_UP).doubleValue()+"");
-        }else {
-            trade.setTotalAmount(fcd.getTotalPriceInit()+"");
-        }
+        trade.setTotalAmount(0.01+"");
+//        FaCompanyEntity company = faCompanyService.selectById(order.getFaCompanyId());
+//        if (company.getPayRetio() != null && company.getPayRetio() > 0){
+//            trade.setTotalAmount(BigDecimal.valueOf((double)fcd.getTotalPriceInit() * ((double) company.getPayRetio()/100) ).setScale(2, RoundingMode.HALF_UP).doubleValue()+"");
+//        }else {
+//            trade.setTotalAmount(fcd.getTotalPriceInit()+"");
+//        }
         ordercode = order.getCourierCompanyWaybillNo();
         // trade.setTotalAmount("0.01");
         trade.setBody("支付退单运费");
