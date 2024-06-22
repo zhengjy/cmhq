@@ -52,7 +52,7 @@ public class FaRechargeServiceImpl  implements FaRechargeService {
             queryWrapper.inSql(FaRechargeEntity::getCid,"select id from fa_company where company_name like '%"+query.getCompanyName()+"%'");
         }
         if (StringUtils.isNotEmpty(query.getOrderId())){
-            queryWrapper.inSql(FaRechargeEntity::getOrderid,query.getOrderId());
+            queryWrapper.eq(FaRechargeEntity::getOrderid,query.getOrderId());
         }
         if (StringUtils.isNotEmpty(query.getStatus())){
             queryWrapper.like(FaRechargeEntity::getStatus,query.getStatus());
