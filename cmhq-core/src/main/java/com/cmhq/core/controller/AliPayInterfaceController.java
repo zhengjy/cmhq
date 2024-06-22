@@ -101,13 +101,12 @@ public class AliPayInterfaceController {
 
         ordercode = order.getCourierCompanyWaybillNo();
         trade.setOutTradeNo(ordercode);
-//        FaCompanyEntity company = faCompanyService.selectById(order.getFaCompanyId());
-//        if (company.getPayRetio() != null && company.getPayRetio() > 0){
-//            trade.setTotalAmount(BigDecimal.valueOf((double)fcd.getTotalPriceInit() * ((double) company.getPayRetio()/100) ).setScale(2, RoundingMode.HALF_UP).doubleValue()+"");
-//        }else {
-//            trade.setTotalAmount(fcd.getTotalPriceInit()+"");
-//        }
-         trade.setTotalAmount("0.01");
+        FaCompanyEntity company = faCompanyService.selectById(order.getFaCompanyId());
+        if (company.getPayRetio() != null && company.getPayRetio() > 0){
+            trade.setTotalAmount(BigDecimal.valueOf((double)fcd.getTotalPriceInit() * ((double) company.getPayRetio()/100) ).setScale(2, RoundingMode.HALF_UP).doubleValue()+"");
+        }else {
+            trade.setTotalAmount(fcd.getTotalPriceInit()+"");
+        }
         trade.setBody("支付退单运费");
         String payUrl = alipayService.toPayAsPc(aliPay, trade);
         FaRechargeEntity faRecharge = new FaRechargeEntity();
