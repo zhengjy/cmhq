@@ -133,9 +133,9 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
                     if (dto != null && dto.getFeeType().equals(ActualFeeInfoDto.FEETYPE_CCCC)){
                         eumn = MoneyConsumeMsgEumn.MSG_10;
                     }else if (dto != null && dto.getFeeType().equals(ActualFeeInfoDto.FEETYPE_QLHCF)){
-                        eumn = MoneyConsumeMsgEumn.MSG_11;
-                    }else if (dto != null && dto.getFeeType().equals(ActualFeeInfoDto.FEETYPE_QLBJ)){
                         eumn = MoneyConsumeMsgEumn.MSG_12;
+                    }else if (dto != null && dto.getFeeType().equals(ActualFeeInfoDto.FEETYPE_QLBJ)){
+                        eumn = MoneyConsumeMsgEumn.MSG_11;
                     }
                     if (eumn != null){
                         d = d+ dto.getMoney();

@@ -129,7 +129,10 @@ public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
             }
             //货物签收退扣除费用
         }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_2.getDesc()) ||
-                param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_10.getDesc())){
+                param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_10.getDesc()) ||
+                param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_11.getDesc()) ||
+                param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_12.getDesc())
+        ){
             e.setAfter(faCompanyEntity.getMoney()-param.getMoney());
             int num = faCompanyDao.minusMoney(param.getCompanyId(),param.getMoney());
             if (num < 1){
