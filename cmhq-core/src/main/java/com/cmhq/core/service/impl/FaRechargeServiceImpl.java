@@ -96,7 +96,7 @@ public class FaRechargeServiceImpl  implements FaRechargeService {
     @Transactional
     @Override
     public void applySuccessHandle(String outTradeNo, String tradeNo) {
-        FaRechargeEntity faRecharge = faRechargeDao.selectOne(new LambdaQueryWrapper<FaRechargeEntity>().eq(FaRechargeEntity::getOrderid,outTradeNo));
+        FaRechargeEntity faRecharge = faRechargeDao.selectOne(new LambdaQueryWrapper<FaRechargeEntity>().eq(FaRechargeEntity::getOrderid,outTradeNo).last(" limit 1"));
         if (faRecharge == null){
             log.error("接支付返回状态，未查询到订单信息，更新失败。{},{}",outTradeNo,tradeNo);
             return;
@@ -116,10 +116,6 @@ public class FaRechargeServiceImpl  implements FaRechargeService {
 
         if (faRecharge.getBusinessType() == 2){
             String billNo = outTradeNo;
-            List<FaCourierOrderEntity> list = faCourierOrderDao.selectList(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getOrderNo,outTradeNo));
-            if (CollectionUtils.isNotEmpty(list)){
-                billNo = list.get(0).getCourierCompanyWaybillNo();
-            }
             CompanyMoneyParam param = new CompanyMoneyParam(1,MoneyConsumeEumn.CONSUM_2, MoneyConsumeMsgEumn.MSG_9, faRecharge.getMoney(),faRecharge.getCid(),outTradeNo,billNo);
             //插入消费记录
             faCompanyMoneyService.saveRecord(param );

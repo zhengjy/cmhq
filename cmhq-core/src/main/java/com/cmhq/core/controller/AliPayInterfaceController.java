@@ -22,6 +22,7 @@ import me.zhengjie.service.AliPayService;
 import me.zhengjie.utils.AliPayStatusEnum;
 import me.zhengjie.utils.AlipayUtils;
 import me.zhengjie.utils.SecurityUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
@@ -104,6 +106,7 @@ public class AliPayInterfaceController {
         }else {
             trade.setTotalAmount(fcd.getTotalPriceInit()+"");
         }
+        ordercode = order.getCourierCompanyWaybillNo();
         // trade.setTotalAmount("0.01");
         trade.setBody("支付退单运费");
         String payUrl = alipayService.toPayAsPc(aliPay, trade);
@@ -117,7 +120,8 @@ public class AliPayInterfaceController {
         faRecharge.setUpdateTime(new Date());
         faRecharge.setDelkid(0);
         faRecharge.setXdelkid(0);
-        int i = faRechargeDao.update(faRecharge,new LambdaQueryWrapper<>(faRecharge).eq(FaRechargeEntity::getOrderid,ordercode));
+
+        int i = faRechargeDao.update(faRecharge,new LambdaQueryWrapper<FaRechargeEntity>().eq(FaRechargeEntity::getOrderid,ordercode));
         if (i <= 0){
             faRechargeDao.insert(faRecharge);
         }
@@ -169,7 +173,7 @@ public class AliPayInterfaceController {
             String tradeNo = new String(request.getParameter("trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
             //付款金额
             String totalAmount = new String(request.getParameter("total_amount").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-  	    log.info("商户订单号" + outTradeNo + "  " + "第三方交易号" + tradeNo + "付款金额" + totalAmount);
+  	        log.info("商户订单号" + outTradeNo + "  " + "第三方交易号" + tradeNo + "付款金额" + totalAmount);
   	    //验证
             if (tradeStatus.equals(AliPayStatusEnum.SUCCESS.getValue()) || tradeStatus.equals(AliPayStatusEnum.FINISHED.getValue())) {
                 faRechargeService.applySuccessHandle(outTradeNo,tradeNo);

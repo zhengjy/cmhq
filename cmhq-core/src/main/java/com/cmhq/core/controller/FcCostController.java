@@ -124,9 +124,11 @@ class CostDataListener extends AnalysisEventListener<FaCostEntity> {
         log.info("{}条数据，开始存储数据库！", list.size());
         FaCostDao dao = SpringApplicationUtils.getBean(FaCostDao.class);
         list.forEach(v ->{
-            int num = dao.update(v,new LambdaQueryWrapper<FaCostEntity>().eq(FaCostEntity::getProD,v.getProD()).eq(FaCostEntity::getProF,v.getProF()));
+            int num = dao.update(v,new LambdaQueryWrapper<FaCostEntity>().eq(FaCostEntity::getProD,v.getProD()).eq(FaCostEntity::getProF,v.getProF()).eq(FaCostEntity::getAddress,v.getAddress()));
             if (num <= 0){
                 dao.insert(v);
+            }else {
+                log.info("已存在【{}】",JSONObject.toJSONString(v));
             }
         });
         log.info("存储数据库成功！");
