@@ -24,11 +24,11 @@ public class CourierOrderImport {
     @ExcelProperty(value = "重量(kg)")
     private Double weight;
     @ExcelProperty(value = "长(cm)")
-    private Integer length;
+    private Double length;
     @ExcelProperty(value = "宽(cm)")
-    private Integer width;
+    private Double width;
     @ExcelProperty(value = "高(cm)")
-    private Integer height;
+    private Double height;
 
     @ExcelProperty(value = "上门取件时间")
     private String takeGoodsTime;

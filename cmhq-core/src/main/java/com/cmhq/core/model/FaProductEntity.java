@@ -18,23 +18,23 @@ public class FaProductEntity {
     private String categoreCode;
 
     /**商品名称*/
-    @ExcelProperty("商品名称")
+    @ExcelProperty("商品名称*")
     private String categoryName;
 
     /**重量*/
-    @ExcelProperty("重量(kg)")
+    @ExcelProperty("重量(kg)*")
     private Double weight;
     /**长度*/
     @ExcelProperty("长(cm)")
-    private Integer length;
+    private Double length;
     /**宽度*/
     @ExcelProperty("宽(cm)")
-    private Integer width;
+    private Double width;
     /**高*/
     @ExcelProperty("高(cm)")
-    private Integer height;
+    private Double height;
 /**体积重 长*宽*高(cm)/8000*/
-    @ExcelProperty("体积重")
+    @ExcelProperty("体积重(cm³)")
     private Double volume;
 
     private Integer cid;

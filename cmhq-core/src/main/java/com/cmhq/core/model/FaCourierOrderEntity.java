@@ -60,13 +60,13 @@ public class FaCourierOrderEntity {
     private Double weightto;
 
     @ApiModelProperty(value = "宽度")
-    private Integer width;
+    private Double width;
 
     @ApiModelProperty(value = "长度")
-    private Integer length;
+    private Double length;
 
     @ApiModelProperty(value = "高")
-    private Integer height;
+    private Double height;
 
     //
     @ApiModelProperty(value = "预估费用（第一次填写的重量预估）")

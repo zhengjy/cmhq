@@ -98,7 +98,7 @@ public class FaProductController {
         try {
             inputStream = file.getInputStream();
             // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
-            EasyExcel.read(inputStream, FaProductEntity.class, new ProductDataListener()).headRowNumber(1).sheet().doRead();
+            EasyExcel.read(inputStream, FaProductEntity.class, new ProductDataListener()).headRowNumber(2).sheet().doRead();
         } catch (IOException e) {
             log.error("",e);
         }
@@ -127,6 +127,9 @@ class ProductDataListener extends AnalysisEventListener<FaProductEntity> {
      */
     @Override
     public void invoke(FaProductEntity data, AnalysisContext context) {
+        if (context.getCurrentRowNum() <=2){//是模板
+            return;
+        }
         log.info("解析到一条数据:{}", JSONObject.toJSONString(data));//使用需要导入json依赖
         log.info("{} 数据，开始存储数据库！",i);
         data.setCid(CurrentUserContent.getCurrentCompany().getId());

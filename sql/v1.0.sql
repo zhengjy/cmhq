@@ -158,3 +158,10 @@ ALTER TABLE fa_user_money ADD after_money decimal(10,2) DEFAULT NULL COMMENT '�
 
 ALTER TABLE fa_product_category MODIFY COLUMN volume int(10) NULL COMMENT '体积重(长*宽*高(cm)/8000)';
 ALTER TABLE cmhq_test.fa_expressorder ADD quantity varchar(100) NULL COMMENT '包裹数';
+ALTER TABLE cmhq_test.fa_product_category MODIFY COLUMN width double(10,2) NULL COMMENT '宽度';
+ALTER TABLE cmhq_test.fa_product_category MODIFY COLUMN `length` double(10,2) NULL COMMENT '长度';
+ALTER TABLE cmhq_test.fa_product_category MODIFY COLUMN height double(10,2) NULL COMMENT '高';
+ALTER TABLE cmhq_test.fa_product_category MODIFY COLUMN volume double(10,2) NULL COMMENT '体积重(长*宽*高(cm)/8000)';
+ALTER TABLE cmhq_test.fa_expressorder MODIFY COLUMN width double(10,2) NULL COMMENT '宽度';
+ALTER TABLE cmhq_test.fa_expressorder MODIFY COLUMN `length` double(10,2) NULL COMMENT '长度';
+ALTER TABLE cmhq_test.fa_expressorder MODIFY COLUMN height double(10,2) NULL COMMENT '高';
