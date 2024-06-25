@@ -204,7 +204,7 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
         dept.setId(userDto.getDept().getId());
         resources.setDept(dept);
 
-        if (resources.getJobs() == null){
+        if (resources.getJobs() == null || resources.getJobs().isEmpty()){
             Set<Job> jobs = new HashSet<>();
             Job job = new Job();
             job.setId(12L);//运维人员
@@ -216,7 +216,7 @@ public class FaCompanyServiceImpl implements FaCompanyService, InitializingBean 
         dept.setSubCount(0);
         resources.setDept(dept);
 
-        if (resources.getRoles() == null){
+        if (resources.getRoles() == null || resources.getRoles().isEmpty()){
             Set<Role> roles = new HashSet<>();
             Role role = new Role();
             role.setId(5L);//商户运维人员角色
