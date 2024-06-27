@@ -106,7 +106,7 @@ public class FaCourierOrderController {
         return APIResponse.success(map);
     }
 
-    @PostMapping("getCourierFreightCharge")
+    @AnonymousPostMapping("getCourierFreightCharge")
     @Log("查询运费CourierOrder")
     @ApiOperation("查询运费CourierOrder")
     public APIResponse getCourierFreightCharge(@Validated @RequestBody FaCourierOrderEntity resources) {
@@ -228,6 +228,7 @@ public class FaCourierOrderController {
             map.put("预估费用", e.getEstimatePrice());//
             map.put("实际重量", e.getWeightto());
             map.put("实际费用", e.getPrice());
+            map.put("包裹数", e.getQuantity());
             String oname= "";
             if (e.getOrderState() == 0){
                 oname = "待取件";
