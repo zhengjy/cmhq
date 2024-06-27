@@ -45,6 +45,7 @@ public class TokenProvider implements InitializingBean {
     private final SecurityProperties properties;
     private final RedisUtils redisUtils;
     public static final String AUTHORITIES_KEY = "user";
+    public static final String AUTHORITIES_KEY_APP = "user_app";
     private JwtParser jwtParser;
     private JwtBuilder jwtBuilder;
 
@@ -76,6 +77,21 @@ public class TokenProvider implements InitializingBean {
                 // 加入ID确保生成的 Token 都不一致
                 .setId(IdUtil.simpleUUID())
                 .claim(AUTHORITIES_KEY, authentication.getName())
+                .setSubject(authentication.getName())
+                .compact();
+    }
+    /**
+     * 创建Token 设置永不过期，
+     * Token 的时间有效性转到Redis 维护
+     *
+     * @param authentication /
+     * @return /
+     */
+    public String createTokenApp(Authentication authentication) {
+        return jwtBuilder
+                // 加入ID确保生成的 Token 都不一致
+                .setId(IdUtil.simpleUUID())
+                .claim(AUTHORITIES_KEY_APP, authentication.getName())
                 .setSubject(authentication.getName())
                 .compact();
     }
