@@ -1,13 +1,16 @@
 package com.cmhq.core.service.domain;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.api.UploadResult;
 import com.cmhq.core.api.UploadTypeEnum;
 import com.cmhq.core.api.strategy.StrategyFactory;
 import com.cmhq.core.api.strategy.Upload;
 import com.cmhq.core.dao.FaCourierOrderDao;
+import com.cmhq.core.dao.FaProductDao;
 import com.cmhq.core.enums.MoneyConsumeEumn;
 import com.cmhq.core.enums.MoneyConsumeMsgEumn;
+import com.cmhq.core.model.FaProductEntity;
 import com.cmhq.core.model.param.CompanyMoneyParam;
 import com.cmhq.core.model.FaCompanyDayOpeNumEntity;
 import com.cmhq.core.model.FaCompanyEntity;
@@ -24,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.modules.system.service.UserService;
 import me.zhengjie.modules.system.service.dto.UserDto;
 import me.zhengjie.utils.SecurityUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
@@ -55,8 +59,47 @@ public class CreateCourierOrderDomain {
             String[] arr = order.getGoodsName().split("-");
             if (arr.length >= 2 && arr[0].equals("undefined")){
                 order.setGoodsName(arr[1]);
+                try {
+                    FaProductDao faProductDao = SpringApplicationUtils.getBean(FaProductDao.class);
+                    List<FaProductEntity> list = faProductDao.selectList(new LambdaQueryWrapper<FaProductEntity>().eq(FaProductEntity::getCategoreCode,arr[0]).eq(FaProductEntity::getCid,companyId));
+                    if (CollectionUtils.isEmpty(list)){
+                        list = faProductDao.selectList(new LambdaQueryWrapper<FaProductEntity>().eq(FaProductEntity::getCategoryName,arr[1]).eq(FaProductEntity::getCid,companyId));
+                    }
+                    if (CollectionUtils.isNotEmpty(list)){
+                        Double d1 = list.get(0).getWeight() == null ? 0 : list.get(0).getWeight();
+                        Double d2 = list.get(0).getVolume() == null ? 0 : list.get(0).getVolume();
+                        Double dd = Math.max(d1,d2);
+                        if (order.getWeight() < dd){
+                            log.info("订单取最大值，{}",JSONObject.toJSONString(list.get(0)));
+                            order.setWeight(dd);
+                        }
+
+                    }
+                }catch (Exception e){
+                    log.error("",e);
+                }
+
+            }else {
+                try {
+                    FaProductDao faProductDao = SpringApplicationUtils.getBean(FaProductDao.class);
+                    List<FaProductEntity> list = faProductDao.selectList(new LambdaQueryWrapper<FaProductEntity>().eq(FaProductEntity::getCategoryName,order.getGoodsName()).eq(FaProductEntity::getCid,companyId));
+                    if (CollectionUtils.isNotEmpty(list)){
+                        Double d1 = list.get(0).getWeight() == null ? 0 : list.get(0).getWeight();
+                        Double d2 = list.get(0).getVolume() == null ? 0 : list.get(0).getVolume();
+                        Double dd = Math.max(d1,d2);
+                        if (order.getWeight() < dd){
+                            log.info("订单取最大值，{}",JSONObject.toJSONString(list.get(0)));
+                            order.setWeight(dd);
+                        }
+                    }
+                }catch (Exception e){
+                    log.error("",e);
+                }
+
             }
+
         }
+
         if (StringUtils.isNotEmpty(order.getTakeGoodsTime()) && order.getTakeGoodsTime().length() >= 12){
             try {
                 List<String> srs = JSONObject.parseArray(order.getTakeGoodsTime(),String.class);
