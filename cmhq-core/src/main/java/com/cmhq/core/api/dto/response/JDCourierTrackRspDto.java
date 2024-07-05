@@ -40,7 +40,7 @@ public class JDCourierTrackRspDto {
         private String operationTitle;
         private String operatorName;
         private String operatorPhone;
-        private Integer state;
+        private String state;
         private String waybillCode;
 
     }
