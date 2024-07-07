@@ -66,7 +66,6 @@ public class FcCompanyMoneyController {
             map.put("操作之后余额", e.getAfter());
             map.put("具体信息", e.getMsg());
             map.put("运单号", e.getBillCode());
-            map.put("订单号", e.getOrderNo());
             map.put("创建日期", DateUtil.format(e.getCreateTime(), "yyyy-MM-dd mm:hh:ss"));
             list.add(map);
         }
