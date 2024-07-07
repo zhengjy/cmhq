@@ -59,7 +59,7 @@ public class FcCompanyMoneyController {
         for (FaCompanyMoneyEntity e : queryAll.getItems()) {
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("公司名字", e.getCompanyName());
-            map.put("金额", e.getOrderid());
+            map.put("金额", e.getMoney());
             map.put("消费类型", e.getType() == 1 ? "系统" : e.getType() == 2 ? "充值" : "消费");
             map.put("增加或减少", e.getAddType() == 1 ? "增加" : e.getAddType() == 2 ? "减少" : "无");
             map.put("操作之前余额", e.getBefore());
