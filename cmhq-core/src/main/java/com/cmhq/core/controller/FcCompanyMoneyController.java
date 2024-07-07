@@ -51,7 +51,7 @@ public class FcCompanyMoneyController {
     }
 
     @ApiOperation("导出")
-    @GetMapping(value = "/download")
+    @GetMapping(value = "list/download")
     public void export(HttpServletResponse response, @ModelAttribute FcCompanyMoneyQuery query) throws IOException {
         query.setPageSize(10000);
         QueryResult<FaCompanyMoneyEntity> queryAll =  fcCompanyMoneyService.list(query);
