@@ -5,9 +5,7 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.cmhq.core.dao.FaCompanyCostDao;
 import com.cmhq.core.dao.FaProductDao;
-import com.cmhq.core.model.FaCompanyCostEntity;
 import com.cmhq.core.model.FaProductEntity;
 import com.cmhq.core.model.param.ProductQuery;
 import com.cmhq.core.util.CurrentUserContent;
@@ -23,16 +21,20 @@ import me.zhengjie.QueryResult;
 import me.zhengjie.annotation.AnonymousAccess;
 import me.zhengjie.annotation.Log;
 import me.zhengjie.annotation.rest.AnonymousGetMapping;
+import me.zhengjie.utils.FileUtil;
 import me.zhengjie.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Jiyang.Zheng on 2020/4/28 13:42.
@@ -50,6 +52,14 @@ public class FaProductController {
     @ApiOperation("列表查询")
     @AnonymousGetMapping(value = "list")
     public APIResponse list(@ModelAttribute ProductQuery query) {
+        List<FaProductEntity> list  = doList(query);
+        PageInfo<FaProductEntity> page = new PageInfo<>(list);
+        QueryResult<FaProductEntity> queryResult = new QueryResult<>();
+        queryResult.setItems(list);
+        queryResult.setTotal(page.getTotal());
+        return APIResponse.success(queryResult);
+    }
+    private List<FaProductEntity> doList(ProductQuery query){
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         LambdaQueryWrapper<FaProductEntity> queryWrapper = new LambdaQueryWrapper<>();
         if (StringUtils.isNotEmpty(query.getSearchTxt())){
@@ -63,12 +73,10 @@ public class FaProductController {
             }
         }
         List<FaProductEntity> list = faProductDao.selectList(queryWrapper);
-        PageInfo<FaProductEntity> page = new PageInfo<>(list);
-        QueryResult<FaProductEntity> queryResult = new QueryResult<>();
-        queryResult.setItems(list);
-        queryResult.setTotal(page.getTotal());
-        return APIResponse.success(queryResult);
+        return list;
+
     }
+
     @Log("修改新增")
     @AnonymousAccess
     @RequestMapping(value = "edit", method = RequestMethod.POST)
@@ -88,6 +96,26 @@ public class FaProductController {
     public APIResponse delete( @ApiParam(value = "id") @RequestParam() Integer id) {
         faProductDao.deleteById(id);
         return APIResponse.success();
+    }
+
+    @ApiOperation("导出")
+    @GetMapping(value = "list/download")
+    public void export(HttpServletResponse response, @ModelAttribute ProductQuery query) throws IOException {
+        query.setPageSize(10000);
+        List<FaProductEntity> queryAll =  doList(query);
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (FaProductEntity e : queryAll) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("商品名称", e.getCategoryName());
+            map.put("商品编码", e.getCategoreCode());
+            map.put("重量(kg)", e.getWeight());
+            map.put("长(cm)", e.getLength());
+            map.put("宽(cm)", e.getWidth());
+            map.put("高(cm)", e.getHeight());
+            map.put("体积重(cm³)", e.getVolume());
+            list.add(map);
+        }
+        FileUtil.downloadExcel(list, response);
     }
 
     @Log("导入")
