@@ -97,8 +97,9 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
 
     private void doHandle(FaCourierOrderEntity order,Req req){
         FaCompanyEntity faCompanyEntity = faCompanyService.selectById(order.getFaCompanyId());
-        if (StringUtils.isNotEmpty(getWeight(req))){
-            double traceWeight = Double.parseDouble(getWeight(req));
+        String weightstr = getWeight(req);
+        if (StringUtils.isNotEmpty(weightstr)){
+            double traceWeight = Double.parseDouble(weightstr);
             double weight = order.getWeight() == null ? 0D : order.getWeight();
             //计算是否超过商户配置的比例
             saveRecord(order,faCompanyEntity,traceWeight,weight,req);
