@@ -107,12 +107,20 @@ public class EstimatePriceUtil {
         List<FaCostEntity> list = faCostDao.selectList(new LambdaQueryWrapper<>());
         String finalToProv = toProv2;
         Optional<FaCostEntity> ocostEntity = list.stream().filter(v -> {
-            if (fromProv.contains(v.getProF())
-                    && (toProv.contains(v.getProD()) || (StringUtils.isNotEmpty(finalToProv) && (v.getProD().contains(finalToProv) || v.getProD().contains(toProv) )))){
+            if (fromProv.contains(v.getProF()) && toProv.contains(v.getProD())  && v.getAddress().contains(finalToProv)){
                 return true;
             }
             return false;
         }).findFirst();
+        if (!ocostEntity.isPresent()){
+            ocostEntity = list.stream().filter(v -> {
+                if (fromProv.contains(v.getProF())
+                        && (toProv.contains(v.getProD()) || (StringUtils.isNotEmpty(finalToProv) && (v.getProD().contains(finalToProv) || v.getProD().contains(toProv) )))){
+                    return true;
+                }
+                return false;
+            }).findFirst();
+        }
         if (ocostEntity.isPresent()){
             return ocostEntity.get();
         }else {
