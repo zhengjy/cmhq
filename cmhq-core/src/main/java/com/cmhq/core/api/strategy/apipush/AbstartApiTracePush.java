@@ -140,6 +140,12 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
                     }
                     if (eumn != null){
                         d = d+ dto.getMoney();
+                        try {
+                            //会出现创建时间相同
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                         faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, eumn,dto.getMoney(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
                     }
                 }

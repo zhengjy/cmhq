@@ -83,63 +83,77 @@ public class FaCompanyMoneyServiceImpl implements FaCompanyMoneyService {
 
     @Transactional
     @Override
-    public void saveRecord(CompanyMoneyParam param) {
-        FaCompanyEntity faCompanyEntity = faCompanyService.selectById(param.getCompanyId());
-        FaCompanyMoneyEntity e = new FaCompanyMoneyEntity();
-        e.setAddType(param.getAddType());
-        e.setCid(param.getCompanyId());
-        e.setMoney(param.getMoney());
-        e.setType(Integer.parseInt(param.getConsumeEumn().getType()));
-        e.setMsg(param.getMsgEumn().getDesc());
-        e.setBefore(faCompanyEntity.getMoney());
-        e.setDelkid(0);
-        e.setXdelkid(0);
-        e.setOrderNo(param.getOrderId());
-        e.setBillCode(param.getBillCode());
-        //充值
-        if (param.getConsumeEumn().getType().equals(MoneyConsumeEumn.CONSUM_2.getType())){
-            e.setAfter(faCompanyEntity.getMoney()+param.getMoney());
-            e.setKoufeiType(1);
-            //更新商户金额
-            faCompanyDao.addMoney(param.getCompanyId(),param.getMoney());
-        }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_3.getDesc()) || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_7.getDesc())){
-            e.setAfter(faCompanyEntity.getMoney()-param.getMoney());
-            //更新商户金额
-            //扣除余额，更新预扣款
-            int num = faCompanyDao.minusMoneyAndEstimatePrice(param.getCompanyId(),param.getMoney());
-            if (num < 1){
-                throw new RuntimeException("更新账户余额失败");
+    public  void saveRecord(CompanyMoneyParam param) {
+        synchronized(this){
+            FaCompanyEntity faCompanyEntity = faCompanyService.selectById(param.getCompanyId());
+            FaCompanyMoneyEntity e = new FaCompanyMoneyEntity();
+            e.setAddType(param.getAddType());
+            e.setCid(param.getCompanyId());
+            e.setMoney(param.getMoney());
+            e.setType(Integer.parseInt(param.getConsumeEumn().getType()));
+            e.setMsg(param.getMsgEumn().getDesc());
+            e.setBefore(faCompanyEntity.getMoney());
+            e.setDelkid(0);
+            e.setXdelkid(0);
+            e.setOrderNo(param.getOrderId());
+            e.setBillCode(param.getBillCode());
+            //充值
+            if (param.getConsumeEumn().getType().equals(MoneyConsumeEumn.CONSUM_2.getType())){
+                e.setAfter(faCompanyEntity.getMoney()+param.getMoney());
+                e.setKoufeiType(1);
+                //更新商户金额
+                faCompanyDao.addMoney(param.getCompanyId(),param.getMoney());
+            }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_3.getDesc()) || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_7.getDesc())){
+                e.setAfter(faCompanyEntity.getMoney()-param.getMoney());
+                //更新商户金额
+                //扣除余额，更新预扣款
+                int num = faCompanyDao.minusMoneyAndEstimatePrice(param.getCompanyId(),param.getMoney());
+                if (num < 1){
+                    throw new RuntimeException("更新账户余额失败");
+                }
+                //取消订单退回预估费用
+            }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_6.getDesc())
+                    || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_5.getDesc())
+                    || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_8.getDesc())
+            ){
+                e.setAfter(faCompanyEntity.getMoney()+param.getMoney());
+                int num = faCompanyDao.addMoney(param.getCompanyId(),param.getMoney());
+                if (num < 1){
+                    throw new RuntimeException("取消订单退回预估费用失败");
+                }
+                //货物签收退回预估费用
+            }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_4.getDesc())
+                    || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_13.getDesc())
+                    || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_14.getDesc())
+                    || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_15.getDesc())
+            ){
+                e.setAfter(faCompanyEntity.getMoney()+param.getMoney());
+                int num = faCompanyDao.addMoneyAndEstimatePrice(param.getCompanyId(),param.getMoney());
+                if (num < 1){
+                    throw new RuntimeException("货物签收退回预估费用");
+                }
+                //货物签收扣除费用
+            }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_2.getDesc()) ||
+                    param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_10.getDesc()) ||
+                    param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_11.getDesc()) ||
+                    param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_12.getDesc())
+            ){
+                e.setAfter(faCompanyEntity.getMoney()-param.getMoney());
+                int num = faCompanyDao.minusMoney(param.getCompanyId(),param.getMoney());
+                if (num < 1){
+                    throw new RuntimeException("货物签收扣除费用");
+                }
             }
-        //取消订单退回预估费用
-        }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_6.getDesc())
-                || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_5.getDesc())
-                || param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_8.getDesc())
-        ){
-            e.setAfter(faCompanyEntity.getMoney()+param.getMoney());
-            int num = faCompanyDao.addMoney(param.getCompanyId(),param.getMoney());
-            if (num < 1){
-                throw new RuntimeException("取消订单退回预估费用失败");
-            }
-        //货物签收退回预估费用
-        }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_4.getDesc())){
-            e.setAfter(faCompanyEntity.getMoney()+param.getMoney());
-            int num = faCompanyDao.addMoneyAndEstimatePrice(param.getCompanyId(),param.getMoney());
-            if (num < 1){
-                throw new RuntimeException("货物签收退回预估费用");
-            }
-            //货物签收退扣除费用
-        }else if (param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_2.getDesc()) ||
-                param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_10.getDesc()) ||
-                param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_11.getDesc()) ||
-                param.getMsgEumn().getDesc().equals(MoneyConsumeMsgEumn.MSG_12.getDesc())
-        ){
-            e.setAfter(faCompanyEntity.getMoney()-param.getMoney());
-            int num = faCompanyDao.minusMoney(param.getCompanyId(),param.getMoney());
-            if (num < 1){
-                throw new RuntimeException("货物签收扣除费用");
-            }
+            faCompanyMoneyDao.insert(e);
         }
-        faCompanyMoneyDao.insert(e);
+
+
+    }
+
+    @Override
+    public void updateRecord(CompanyMoneyParam param) {
+        //退还之前的
+        //重开扣费最新的
 
     }
 

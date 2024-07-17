@@ -16,4 +16,10 @@ public interface FaCompanyMoneyService {
      * 插入消费记录 &返还商户或扣除商户金额
      */
     void saveRecord(CompanyMoneyParam param);
+
+    /**
+     * 更新消费记录
+     * @param param
+     */
+    void updateRecord(CompanyMoneyParam param);
 }

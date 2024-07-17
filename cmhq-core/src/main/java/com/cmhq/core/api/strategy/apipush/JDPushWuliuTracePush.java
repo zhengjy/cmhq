@@ -95,7 +95,7 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
             if (weight > 0){
                 return weight+"";
             }
-	}
+	    }
         return "";
     }
 

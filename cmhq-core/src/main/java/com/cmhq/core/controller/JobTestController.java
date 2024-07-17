@@ -1,6 +1,7 @@
 package com.cmhq.core.controller;
 import com.cmhq.core.quartz.CourierGetJDOrderStatusTask;
 import com.cmhq.core.quartz.CourierOrderTask;
+import com.cmhq.core.quartz.CourierOrderUpdateMonery;
 import com.cmhq.core.service.impl.FaCompanyServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,6 +26,8 @@ public class JobTestController {
     private CourierOrderTask courierOrderTask;
     @Autowired
     private CourierGetJDOrderStatusTask courierGetJDOrderStatusTask;
+    @Autowired
+    private CourierOrderUpdateMonery courierOrderUpdateMonery;
 
     @ApiOperation("checkCourierTimeout24")
     @AnonymousGetMapping(value = "checkCourierTimeout24")
@@ -42,6 +45,12 @@ public class JobTestController {
     @AnonymousGetMapping(value = "removeCache")
     public APIResponse removeCache() {
         FaCompanyServiceImpl.cache.cleanUp();
+        return APIResponse.success();
+    }
+    @ApiOperation("updateMoney")
+    @AnonymousGetMapping(value = "updateMoney")
+    public APIResponse updateMoney() {
+        courierOrderUpdateMonery.updateMoney();
         return APIResponse.success();
     }
 
