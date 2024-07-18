@@ -98,64 +98,87 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
     private void doHandle(FaCourierOrderEntity order,Req req){
         FaCompanyEntity faCompanyEntity = faCompanyService.selectById(order.getFaCompanyId());
         String weightstr = getWeight(req);
-        if (StringUtils.isNotEmpty(weightstr)){
-            double traceWeight = Double.parseDouble(weightstr);
-            double weight = order.getWeight() == null ? 0D : order.getWeight();
-            //计算是否超过商户配置的比例
-            saveRecord(order,faCompanyEntity,traceWeight,weight,req);
-
-            FreightChargeDto price = EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),traceWeight,faCompanyEntity.getRatio());
-            //插入记录  返还商户预估费用& 扣除商户金额
-            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_4,order.getEstimatePrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
-
-            try {
-                //会出现创建时间相同
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_2,price.getTotalPrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
-            if (faCompanyEntity.getFUser() != null){
-                faUserMoneyService.saveRecord(new UserMoneyParam(1, UserMoneyConsumeMsgEumn.MSG_1,price.getTotalPrice(),order.getFaCompanyId(),faCompanyEntity.getFUser(),faCompanyEntity.getDistributionRatio(),order.getId()+"",order.getCourierCompanyWaybillNo()));
-            }
-            //更新实际费用和重量
-            order.setPrice(price.getTotalPrice());
-            order.setWeightto(traceWeight);
-            order.setIsJiesuan(1);
-            faCourierOrderDao.update(order, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
-            //超长超重记录
-            List<ActualFeeInfoDto> list = getActualFeeInfo(req);
-            if (CollectionUtils.isNotEmpty(list)){
-                faCourierOrderService.saveOrderExt(order.getId(),"order_fee_type",list.stream().map(ActualFeeInfoDto::getFeeType).collect(Collectors.joining(",")));
-                faCourierOrderService.saveOrderExt(order.getId(),"order_fee_money",list.stream().map(v -> v.getMoney()+"").collect(Collectors.joining(",")));
-                Double d = 0D;
-                for (ActualFeeInfoDto dto : list){
-                    MoneyConsumeMsgEumn eumn = null;
-                    if (dto != null && dto.getFeeType().equals(ActualFeeInfoDto.FEETYPE_CCCC)){
-                        eumn = MoneyConsumeMsgEumn.MSG_10;
-                    }else if (dto != null && dto.getFeeType().equals(ActualFeeInfoDto.FEETYPE_QLHCF)){
-                        eumn = MoneyConsumeMsgEumn.MSG_12;
-                    }else if (dto != null && dto.getFeeType().equals(ActualFeeInfoDto.FEETYPE_QLBJ)){
-                        eumn = MoneyConsumeMsgEumn.MSG_11;
-                    }
-                    if (eumn != null){
-                        d = d+ dto.getMoney();
-                        try {
-                            //会出现创建时间相同
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                        faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, eumn,dto.getMoney(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
-                    }
-                }
-                FaCourierOrderEntity pe = new FaCourierOrderEntity();
-                pe.setPrice(order.getPrice()+d);
-                faCourierOrderDao.update(pe, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
-            }
-
-
+        if (StringUtils.isEmpty(weightstr)){
+            log.error("{} 物流公司未推送重量",req.getUnKey());
+            FaCourierOrderEntity pe = new FaCourierOrderEntity();
+            pe.setIsJiesuan(1);
+            pe.setWuliuState(4);
+            pe.setOrderIsError(0);
+            faCourierOrderDao.update(pe, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
+            faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg","物流公司未推送重量");
+            return;
         }
+
+        double traceWeight = Double.parseDouble(weightstr);
+
+        double difference = Math.abs(traceWeight-order.getWeight());
+        //重量差距超过30kg，则物流公司重量可能不准则置为异常
+        if (difference > 30){
+            log.error("{} 物流公司重量差距超过30kg",req.getUnKey());
+            FaCourierOrderEntity pe = new FaCourierOrderEntity();
+            pe.setIsJiesuan(1);
+            pe.setWuliuState(4);
+            pe.setOrderIsError(0);
+            faCourierOrderDao.update(pe, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
+            faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg","物流公司重量差距超过30kg");
+            return;
+        }
+
+
+        double weight = order.getWeight() == null ? 0D : order.getWeight();
+        //计算是否超过商户配置的比例
+        saveRecord(order,faCompanyEntity,traceWeight,weight,req);
+
+        FreightChargeDto price = EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),traceWeight,faCompanyEntity.getRatio());
+        //插入记录  返还商户预估费用& 扣除商户金额
+        faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_4,order.getEstimatePrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+
+        try {
+            //会出现创建时间相同
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_2,price.getTotalPrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+        if (faCompanyEntity.getFUser() != null){
+            faUserMoneyService.saveRecord(new UserMoneyParam(1, UserMoneyConsumeMsgEumn.MSG_1,price.getTotalPrice(),order.getFaCompanyId(),faCompanyEntity.getFUser(),faCompanyEntity.getDistributionRatio(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+        }
+        //更新实际费用和重量
+        order.setPrice(price.getTotalPrice());
+        order.setWeightto(traceWeight);
+        order.setIsJiesuan(1);
+        faCourierOrderDao.update(order, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
+        //超长超重记录
+        List<ActualFeeInfoDto> list = getActualFeeInfo(req);
+        if (CollectionUtils.isNotEmpty(list)){
+            faCourierOrderService.saveOrderExt(order.getId(),"order_fee_type",list.stream().map(ActualFeeInfoDto::getFeeType).collect(Collectors.joining(",")));
+            faCourierOrderService.saveOrderExt(order.getId(),"order_fee_money",list.stream().map(v -> v.getMoney()+"").collect(Collectors.joining(",")));
+            Double d = 0D;
+            for (ActualFeeInfoDto dto : list){
+                MoneyConsumeMsgEumn eumn = null;
+                if (dto != null && dto.getFeeType().equals(ActualFeeInfoDto.FEETYPE_CCCC)){
+                    eumn = MoneyConsumeMsgEumn.MSG_10;
+                }else if (dto != null && dto.getFeeType().equals(ActualFeeInfoDto.FEETYPE_QLHCF)){
+                    eumn = MoneyConsumeMsgEumn.MSG_12;
+                }else if (dto != null && dto.getFeeType().equals(ActualFeeInfoDto.FEETYPE_QLBJ)){
+                    eumn = MoneyConsumeMsgEumn.MSG_11;
+                }
+                if (eumn != null){
+                    d = d+ dto.getMoney();
+                    try {
+                        //会出现创建时间相同
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, eumn,dto.getMoney(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+                }
+            }
+            FaCourierOrderEntity pe = new FaCourierOrderEntity();
+            pe.setPrice(order.getPrice()+d);
+            faCourierOrderDao.update(pe, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
+        }
+
     }
 
     /**
