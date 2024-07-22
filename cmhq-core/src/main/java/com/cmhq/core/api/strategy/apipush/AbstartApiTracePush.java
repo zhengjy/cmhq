@@ -69,6 +69,33 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             log.error("未匹配到物流状态 params 【{}】", JSONObject.toJSONString(req));
             return;
         }
+        
+        String weightstr = getWeight(req);
+        if (StringUtils.isEmpty(weightstr)){
+            log.error("{} 物流公司未推送重量",req.getUnKey());
+            FaCourierOrderEntity pe = new FaCourierOrderEntity();
+            pe.setIsJiesuan(1);
+            pe.setWuliuState(4);
+            pe.setOrderIsError(0);
+            faCourierOrderDao.update(pe, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
+            faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg","物流公司未推送重量");
+            return;
+        }
+
+        double traceWeight = Double.parseDouble(weightstr);
+        double difference = Math.abs(traceWeight-order.getWeight());
+        //重量差距超过30kg，则物流公司重量可能不准则置为异常
+        if (difference > 50){
+            log.error("{} 物流公司重量差距超过30kg",req.getUnKey());
+            FaCourierOrderEntity pe = new FaCourierOrderEntity();
+            pe.setIsJiesuan(1);
+            pe.setWuliuState(4);
+            pe.setOrderIsError(0);
+            faCourierOrderDao.update(pe, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
+            faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg","物流公司重量差距超过50kg");
+            return;
+        }
+        
         //获取状态
         FaCourierOrderEntity orderEntity = new FaCourierOrderEntity();
         orderEntity.setWuliuState(Integer.parseInt(wuliuStateEnum.getType()));
@@ -98,31 +125,8 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
     private void doHandle(FaCourierOrderEntity order,Req req){
         FaCompanyEntity faCompanyEntity = faCompanyService.selectById(order.getFaCompanyId());
         String weightstr = getWeight(req);
-        if (StringUtils.isEmpty(weightstr)){
-            log.error("{} 物流公司未推送重量",req.getUnKey());
-            FaCourierOrderEntity pe = new FaCourierOrderEntity();
-            pe.setIsJiesuan(1);
-            pe.setWuliuState(4);
-            pe.setOrderIsError(0);
-            faCourierOrderDao.update(pe, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
-            faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg","物流公司未推送重量");
-            return;
-        }
 
         double traceWeight = Double.parseDouble(weightstr);
-
-        double difference = Math.abs(traceWeight-order.getWeight());
-        //重量差距超过30kg，则物流公司重量可能不准则置为异常
-        if (difference > 30){
-            log.error("{} 物流公司重量差距超过30kg",req.getUnKey());
-            FaCourierOrderEntity pe = new FaCourierOrderEntity();
-            pe.setIsJiesuan(1);
-            pe.setWuliuState(4);
-            pe.setOrderIsError(0);
-            faCourierOrderDao.update(pe, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
-            faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg","物流公司重量差距超过30kg");
-            return;
-        }
 
 
         double weight = order.getWeight() == null ? 0D : order.getWeight();

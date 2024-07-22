@@ -72,6 +72,9 @@ public class CourierOrderUpdateMonery {
 
         for (FaCourierOrderEntity order : orderList){
             String weightstr = getWeight(order.getCourierCompanyWaybillNo());
+            if (StringUtils.isEmpty(weightstr)){
+                continue;
+            }
             double traceWeight = Double.parseDouble(weightstr);
             traceWeight = BigDecimal.valueOf(traceWeight ).setScale(2, RoundingMode.HALF_UP).doubleValue();
             if (order.getWeightto().equals(traceWeight) ){
