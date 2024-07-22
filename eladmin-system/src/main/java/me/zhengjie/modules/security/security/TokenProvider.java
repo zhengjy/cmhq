@@ -46,6 +46,7 @@ public class TokenProvider implements InitializingBean {
     private final RedisUtils redisUtils;
     public static final String AUTHORITIES_KEY = "user";
     public static final String AUTHORITIES_KEY_APP = "user_app";
+    public static final String AUTHORITIES_KEY_FAUSER = "fauser";
     private JwtParser jwtParser;
     private JwtBuilder jwtBuilder;
 
@@ -92,6 +93,14 @@ public class TokenProvider implements InitializingBean {
                 // 加入ID确保生成的 Token 都不一致
                 .setId(IdUtil.simpleUUID())
                 .claim(AUTHORITIES_KEY_APP, authentication.getName())
+                .setSubject(authentication.getName())
+                .compact();
+    }
+    public String createTokenFauser(Authentication authentication) {
+        return jwtBuilder
+                // 加入ID确保生成的 Token 都不一致
+                .setId(IdUtil.simpleUUID())
+                .claim(AUTHORITIES_KEY_FAUSER, authentication.getName())
                 .setSubject(authentication.getName())
                 .compact();
     }

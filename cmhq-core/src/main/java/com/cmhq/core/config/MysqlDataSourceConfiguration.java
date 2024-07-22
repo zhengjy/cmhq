@@ -21,7 +21,7 @@ import javax.sql.DataSource;
  * @date 2021/4/27 10:22
  */
 @Configuration
-@MapperScan(basePackages = {"com.cmhq.core.dao"}, sqlSessionFactoryRef = "sqlSessionFactory")
+@MapperScan(basePackages = {"com.cmhq.core.dao","com.cmhq.core.app.dao"}, sqlSessionFactoryRef = "sqlSessionFactory")
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class MysqlDataSourceConfiguration {
 
