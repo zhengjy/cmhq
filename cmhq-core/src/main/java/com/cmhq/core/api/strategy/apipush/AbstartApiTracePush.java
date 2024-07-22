@@ -69,7 +69,37 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             log.error("未匹配到物流状态 params 【{}】", JSONObject.toJSONString(req));
             return;
         }
-        
+
+        //获取状态
+        FaCourierOrderEntity orderEntity = new FaCourierOrderEntity();
+        orderEntity.setWuliuState(Integer.parseInt(wuliuStateEnum.getType()));
+        orderEntity.setCourierWuliuState(getCourierWuliuState(req));
+        if (wuliuStateEnum.getType().equals(CourierWuliuStateEnum.STATE_4.getType())){
+            orderEntity.setOrderIsError(0);
+            faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg",getIsErrorMsg(req));
+            faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
+        }if (wuliuStateEnum.getType().equals(CourierWuliuStateEnum.STATE_5.getType())){
+            orderEntity.setWuliuState(Integer.parseInt(CourierWuliuStateEnum.STATE_4.getType()));
+            orderEntity.setOrderIsError(0);
+            faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
+            //签收处理
+            doHandle(order, req);
+            faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg","换单打印");
+            //生成退货订单
+            FaCourierOrderEntity faCourierOrderEntity = getFaCourierOrder(req);
+            faCourierOrderEntity.setCourierCompanyWaybillNo(getRetWaybillNo(req));
+            ReturnOrderCreateCourierOrderDomain domain = new ReturnOrderCreateCourierOrderDomain(faCourierOrderEntity);
+            domain.handle();
+        }
+        if (wuliuStateEnum.getType().equals(CourierWuliuStateEnum.STATE_3.getType())){
+            faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
+            //签收处理
+            doHandle(order, req);
+        }
+    }
+
+    private void doHandle(FaCourierOrderEntity order,Req req){
+        FaCompanyEntity faCompanyEntity = faCompanyService.selectById(order.getFaCompanyId());
         String weightstr = getWeight(req);
         if (StringUtils.isEmpty(weightstr)){
             log.error("{} 物流公司未推送重量",req.getUnKey());
@@ -95,39 +125,6 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg","物流公司重量差距超过50kg");
             return;
         }
-        
-        //获取状态
-        FaCourierOrderEntity orderEntity = new FaCourierOrderEntity();
-        orderEntity.setWuliuState(Integer.parseInt(wuliuStateEnum.getType()));
-        orderEntity.setCourierWuliuState(getCourierWuliuState(req));
-        if (wuliuStateEnum.getType().equals(CourierWuliuStateEnum.STATE_4.getType())){
-            orderEntity.setOrderIsError(0);
-            faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg",getIsErrorMsg(req));
-        }if (wuliuStateEnum.getType().equals(CourierWuliuStateEnum.STATE_5.getType())){
-            orderEntity.setWuliuState(Integer.parseInt(CourierWuliuStateEnum.STATE_4.getType()));
-            orderEntity.setOrderIsError(0);
-            //签收处理
-            doHandle(order, req);
-            faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg","换单打印");
-            //生成退货订单
-            FaCourierOrderEntity faCourierOrderEntity = getFaCourierOrder(req);
-            faCourierOrderEntity.setCourierCompanyWaybillNo(getRetWaybillNo(req));
-            ReturnOrderCreateCourierOrderDomain domain = new ReturnOrderCreateCourierOrderDomain(faCourierOrderEntity);
-            domain.handle();
-        }
-        if (wuliuStateEnum.getType().equals(CourierWuliuStateEnum.STATE_3.getType())){
-            //签收处理
-            doHandle(order, req);
-        }
-        faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
-    }
-
-    private void doHandle(FaCourierOrderEntity order,Req req){
-        FaCompanyEntity faCompanyEntity = faCompanyService.selectById(order.getFaCompanyId());
-        String weightstr = getWeight(req);
-
-        double traceWeight = Double.parseDouble(weightstr);
-
 
         double weight = order.getWeight() == null ? 0D : order.getWeight();
         //计算是否超过商户配置的比例
