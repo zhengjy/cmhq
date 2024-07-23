@@ -1,4 +1,4 @@
-package com.cmhq.core.app.security;
+package me.zhengjie.modules.security.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -10,12 +10,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.Objects;
 
 @Component
 public class FauserLoginAuthenticationProvider implements AuthenticationProvider {
 
-    @Autowired
+    @Resource(name = "fauserDetailServiceImpl")
     private UserDetailsService userDetailsService;
 
     @Override
@@ -32,11 +33,11 @@ public class FauserLoginAuthenticationProvider implements AuthenticationProvider
             throw new BadCredentialsException("用户名或密码不正确");
         }
 
-        return new UsernamePasswordAuthenticationToken(username,password,userDetails.getAuthorities());
+        return new FaUserAuthenticationToken(userDetails,password,userDetails.getAuthorities());
     }
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return true;
+        return aClass.equals(FaUserAuthenticationToken.class);
     }
 }

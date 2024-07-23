@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-@Component("fauserDetailServiceImpl")
+@Component("fauserDetailServiceImpl2")
 public class UserDetailServiceImpl implements UserDetailsService,UserService {
 
     @Autowired

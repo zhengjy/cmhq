@@ -1,4 +1,4 @@
-package com.cmhq.core.app.model;
+package me.zhengjie.modules.security.rest;
 
 import lombok.Data;
 

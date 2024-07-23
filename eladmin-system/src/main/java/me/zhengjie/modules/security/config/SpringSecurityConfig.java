@@ -26,12 +26,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -40,6 +43,8 @@ import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -59,6 +64,36 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private final SecurityProperties properties;
     private final OnlineUserService onlineUserService;
     private final UserCacheManager userCacheManager;
+
+    @Resource(name = "userDetailsService")
+    private UserDetailsService userDetailsService;
+    @Resource(name = "fauserDetailServiceImpl")
+    private UserDetailsService fauserDetailsService;
+
+    @Bean
+    public SysUserAuthenticationProvider sysUserAuthenticationProvider(){
+        SysUserAuthenticationProvider sysUserAuthenticationProvider = new  SysUserAuthenticationProvider();
+        sysUserAuthenticationProvider.setUserDetailsService(userDetailsService);
+        sysUserAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        return sysUserAuthenticationProvider;
+    }
+    @Bean
+    public FauserLoginAuthenticationProvider fauserLoginAuthenticationProvider(){
+        FauserLoginAuthenticationProvider sysUserAuthenticationProvider = new  FauserLoginAuthenticationProvider();
+        return sysUserAuthenticationProvider;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(sysUserAuthenticationProvider()).userDetailsService(userDetailsService)
+                .and().authenticationProvider(fauserLoginAuthenticationProvider()).userDetailsService(fauserDetailsService)
+        ;
+    }
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
     @Bean
     GrantedAuthorityDefaults grantedAuthorityDefaults() {
@@ -143,6 +178,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/userMoney/**").permitAll()
                 .antMatchers("/jobtest/**").permitAll()
                 .antMatchers("/product/**").permitAll()
+                .antMatchers("/api/user/**").permitAll()
+                .antMatchers("/api/index/**").permitAll()
                 // 所有类型的接口都放行
                 .antMatchers(anonymousUrls.get(RequestMethodEnum.ALL.getType()).toArray(new String[0])).permitAll()
                 // 所有请求都需要认证
