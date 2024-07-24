@@ -3,6 +3,7 @@ package com.cmhq.core.app.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.app.dao.FaSaleUserDao;
 import com.cmhq.core.app.model.FaUserEntity;
+import me.zhengjie.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -32,7 +33,7 @@ public class UserDetailServiceImpl implements UserDetailsService,UserService {
 
     @Override
     public FaUserEntity queryCurrentUser() {
-        FaUserEntity sysUser = userDAO.selectOne(new LambdaQueryWrapper<FaUserEntity>().eq(FaUserEntity::getUsername, SecurityContextHolder.getContext().getAuthentication().getPrincipal()));
+        FaUserEntity sysUser = userDAO.selectOne(new LambdaQueryWrapper<FaUserEntity>().eq(FaUserEntity::getUsername, SecurityUtils.getCurrentUsername()));
         if (sysUser == null){
             throw new UsernameNotFoundException("用户不存在");
         }
