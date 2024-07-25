@@ -53,8 +53,12 @@ public class CreateCourierOrderDomain {
         if (order.getOrderOrigin() == null){
             order.setOrderOrigin(1);
         }
+
         if (order.getWeight() == null){
             order.setWeight(1D);
+        }
+        if (order.getWeight() >=30){
+            order.setWeight(4D);
         }
         if (StringUtils.isEmpty(order.getGoodsName())){
             order.setGoodsName("灯具");
