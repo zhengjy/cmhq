@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.APIResponse;
 import me.zhengjie.QueryResult;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -47,6 +48,9 @@ public class HomePageComtroller {
     @ApiOperation("订单列表")
     @GetMapping(value = "indexFenxiao")
     public APIResponse indexFenxiao(@ModelAttribute HomeOrderQuery query) {
+        if (query.getType() != null && StringUtils.equals(query.getType(),"0")){
+            query.setType(null);
+        }
         query.setUserId(userService.queryCurrentUser().getId());
         PageHelper.startPage(query.getPage(), query.getLimit());
         List<HomeOrderRsp> list = homeDao.selectOrderList(query);

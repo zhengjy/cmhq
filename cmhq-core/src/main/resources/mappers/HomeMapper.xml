@@ -57,9 +57,10 @@ select * from (
              ) t
         ) a
         where  1=1
-        <if test="current != null and current != ''">
-            cancel = #{current}
+        <if test="type != null and type != ''">
+             and cancel = #{type}
         </if>
+order by create_time desc
     </select>
 
 

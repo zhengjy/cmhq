@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class HomeOrderQuery {
     private String company_name ;
-    private String current ;
+    private String type;
     private List<String> range;
 
     private Integer page=1;
