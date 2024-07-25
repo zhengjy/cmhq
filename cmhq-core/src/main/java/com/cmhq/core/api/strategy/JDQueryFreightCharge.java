@@ -65,7 +65,7 @@ public class JDQueryFreightCharge extends AbstractJDUpload<FaCourierOrderEntity,
         receiver.setMobile(param.getToMobile());
         receiver.setFullAddress(param.getToProv()+param.getToCity()+param.getToArea()+param.getToAddress());
 
-        dto.setOrderOrigin(1); //TODO 下单来源
+        dto.setOrderOrigin(param.getOrderOrigin());
         dto.setCustomerCode(getCustomerCode());//TODO 问客户编码
 
         CommonProductInfo product = new CommonProductInfo();

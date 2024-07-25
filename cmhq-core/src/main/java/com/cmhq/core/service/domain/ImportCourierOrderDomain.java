@@ -103,6 +103,7 @@ public class ImportCourierOrderDomain {
                 fails.add("第"+index+"行,收货地不能为空");
                 return;
             }
+
             //产品名称编码查询
             if (StringUtils.isNotEmpty(data.getGoodsCode())){
                 FaProductEntity faProductEntity = faProductDao.selectOne(new LambdaQueryWrapper<FaProductEntity>().eq(FaProductEntity::getCid, CurrentUserContent.getCurrentCompany().getId()).eq(FaProductEntity::getCategoreCode, data.getGoodsCode()).last(" limit 1"));
@@ -177,6 +178,7 @@ public class ImportCourierOrderDomain {
                 order.setFromCity(dto.getCity());
                 order.setFromArea(dto.getCounty());
                 order.setFromAddress(dto.getDetail());
+
             }catch (Exception e){
                 log.error("",e);
                 fails.add("第"+index+"行,发货地址解析错误");

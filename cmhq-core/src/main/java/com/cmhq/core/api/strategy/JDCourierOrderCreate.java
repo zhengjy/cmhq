@@ -99,7 +99,7 @@ public class JDCourierOrderCreate extends AbstractJDUpload<FaCourierOrderEntity,
         receiver.setMobile(param.getToMobile());
         receiver.setFullAddress(param.getToProv()+param.getToCity()+param.getToArea()+param.getToAddress());
 
-        dto.setOrderOrigin(1); //TODO 下单来源
+        dto.setOrderOrigin(param.getOrderOrigin()); //TODO 下单来源
         dto.setCustomerCode(getCustomerCode());//TODO 问客户编码
 
         com.lop.open.api.sdk.domain.ECAP.CommonCreateOrderApi.commonCreateOrderV1.CommonProductInfo product = new com.lop.open.api.sdk.domain.ECAP.CommonCreateOrderApi.commonCreateOrderV1.CommonProductInfo();

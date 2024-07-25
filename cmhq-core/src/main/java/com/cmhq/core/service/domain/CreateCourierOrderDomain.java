@@ -50,6 +50,9 @@ public class CreateCourierOrderDomain {
         if (order.getType() == null){
             order.setType(1);
         }
+        if (order.getOrderOrigin() == null){
+            order.setOrderOrigin(1);
+        }
         if (order.getWeight() == null){
             order.setWeight(1D);
         }

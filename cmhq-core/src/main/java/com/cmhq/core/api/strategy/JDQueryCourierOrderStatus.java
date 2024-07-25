@@ -45,7 +45,7 @@ public class JDQueryCourierOrderStatus extends AbstractJDUpload<FaCourierOrderEn
         CommonOrderStatusRequest dto = new CommonOrderStatusRequest();
         dto.setWaybillCode(param.getCourierCompanyWaybillNo());
         dto.setCustomerCode(getCustomerCode());
-        dto.setOrderOrigin(1);
+        dto.setOrderOrigin(param.getOrderOrigin());
         JDUploadData<CommonOrderStatusRequest> uploadData = new JDUploadData<>();
         uploadData.setUnKey2(param.getOrderNo());
         uploadData.setRequest(dto);
