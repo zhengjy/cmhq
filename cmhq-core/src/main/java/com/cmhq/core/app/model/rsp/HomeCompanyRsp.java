@@ -6,11 +6,11 @@ import lombok.Data;
 @Data
 public class HomeCompanyRsp {
     /***/
-    private String company_name ;
+    private String companyName ;
     /**订单总数*/
-    private Integer all_orders;
+    private Integer allOrders;
     /**累计分佣金额*/
-    private Double all_fenyong;
+    private Double allFenyong;
     /**预计分佣金额*/
     private Double yugufenyong;
 }

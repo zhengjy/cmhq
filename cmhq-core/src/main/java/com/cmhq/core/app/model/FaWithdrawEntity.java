@@ -12,7 +12,7 @@ public class FaWithdrawEntity {
     private Integer	id;
 
     /**分校人id*/
-    private Integer user_id;
+    private Integer userId;
     /**金额*/
     private Double money;
     /**1微信2支付宝*/
@@ -22,15 +22,15 @@ public class FaWithdrawEntity {
     /**0待审核1已通过待打款2已打款3不通过*/
     private Integer status;
     /**创建时间*/
-    private String create_time;
+    private String createTime;
 
     /**
      * 支付宝账号
      */
-    private String	zhi_account;
+    private String	zhiAccount;
 
     /**
      * 支付宝名字
      */
-    private String	zhi_name;
+    private String	zhiName;
 }

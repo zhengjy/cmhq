@@ -64,10 +64,10 @@ public class FaSaleUserController {
 
         LambdaQueryWrapper<FaWithdrawEntity> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         if (StringUtils.isNotEmpty(query.getSd())){
-            lambdaQueryWrapper.eq(FaWithdrawEntity::getCreate_time,query.getSd());
-            lambdaQueryWrapper.eq(FaWithdrawEntity::getCreate_time,query.getEd());
+            lambdaQueryWrapper.eq(FaWithdrawEntity::getCreateTime,query.getSd());
+            lambdaQueryWrapper.eq(FaWithdrawEntity::getCreateTime,query.getEd());
         }
-        lambdaQueryWrapper.eq(FaWithdrawEntity::getUser_id,faUser.getId());
+        lambdaQueryWrapper.eq(FaWithdrawEntity::getUserId,faUser.getId());
         PageHelper.startPage(query.getPage(), query.getLimit());
         List<FaWithdrawEntity> list2 = faSaleWithdrawDao.selectList(lambdaQueryWrapper);
         PageInfo<FaWithdrawEntity> page = new PageInfo<>(list2);
@@ -91,11 +91,11 @@ public class FaSaleUserController {
     @PostMapping(value = "/withdrawal")
     public APIResponse withdrawal(@RequestParam String zhi_account,@RequestParam String zhi_name,@RequestParam Double money) {
         FaWithdrawEntity e = new FaWithdrawEntity();
-        e.setZhi_account(zhi_account);
-        e.setZhi_name(zhi_name);
+        e.setZhiAccount(zhi_account);
+        e.setZhiName(zhi_name);
         e.setMoney(money);
         FaUserEntity faUser = userService.queryCurrentUser();
-        e.setUser_id(faUser.getId());
+        e.setUserId(faUser.getId());
         e.setType(2);
         faSaleWithdrawDao.insert(e);
 

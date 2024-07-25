@@ -7,9 +7,9 @@ public class HomeOrderRsp {
     /***/
     private String orderid;
     /**所属公司*/
-    private String company_name;
+    private String companyName;
     /**下单时间*/
-    private String create_time;
+    private String createTime;
     /**预计分佣*/
     private String yugufenyong;
     /***/
