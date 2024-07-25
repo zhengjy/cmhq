@@ -1,8 +1,11 @@
 package com.cmhq.core.api.strategy;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.api.UploadTypeEnum;
+import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.model.FaCourierOrderEntity;
+import com.cmhq.core.util.SpringApplicationUtils;
 import com.lop.open.api.sdk.DefaultDomainApiClient;
 import com.lop.open.api.sdk.domain.ECAP.CommonCreateOrderApi.commonCheckPreCreateOrderV1.CommonCargoInfo;
 import com.lop.open.api.sdk.domain.ECAP.CommonCreateOrderApi.commonCheckPreCreateOrderV1.CommonCreateOrderRequest;
@@ -51,8 +54,8 @@ public class JDQueryActualFeeInfo extends AbstractJDUpload<String, JDUploadData<
     @Override
     protected JDUploadData<CommonActualFeeRequest> getData(String waybillCode) throws RuntimeException {
         CommonActualFeeRequest dto = new CommonActualFeeRequest();
-
-        dto.setOrderOrigin(1);
+        FaCourierOrderDao faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
+        dto.setOrderOrigin(faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,waybillCode)).getOrderOrigin());
         dto.setCustomerCode(getCustomerCode());
         dto.setWaybillCode(waybillCode);
         JDUploadData<CommonActualFeeRequest> uploadData = new JDUploadData<>();

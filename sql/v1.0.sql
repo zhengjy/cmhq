@@ -165,3 +165,6 @@ ALTER TABLE cmhq_test.fa_product_category MODIFY COLUMN volume double(10,2) NULL
 ALTER TABLE cmhq_test.fa_expressorder MODIFY COLUMN width double(10,2) NULL COMMENT '宽度';
 ALTER TABLE cmhq_test.fa_expressorder MODIFY COLUMN `length` double(10,2) NULL COMMENT '长度';
 ALTER TABLE cmhq_test.fa_expressorder MODIFY COLUMN height double(10,2) NULL COMMENT '高';
+ALTER TABLE cmhq_test.fa_expressorder ADD order_origin INT DEFAULT 1 NULL COMMENT '京东下单来源1：快递B2C，4：快运B2C';
+
+

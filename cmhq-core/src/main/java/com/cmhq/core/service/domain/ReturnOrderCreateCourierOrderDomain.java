@@ -44,6 +44,7 @@ public class ReturnOrderCreateCourierOrderDomain {
         faCompanyDayOpeNumService = SpringApplicationUtils.getBean(FaCompanyDayOpeNumService.class);
 
         order = new FaCourierOrderEntity();
+        order.setOrderOrigin(param.getOrderOrigin());
         order.setOrderNo(System.currentTimeMillis()+"");
         order.setCourierCompanyCode(param.getCourierCompanyCode());
         order.setCourierCompanyOrderNo("");

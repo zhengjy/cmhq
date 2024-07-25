@@ -214,4 +214,7 @@ public class FaCourierOrderEntity {
     @ApiModelProperty(value = "是否删除（0:未删除,1:已删除）")
     private Integer xdelkid;
 
+    @ApiModelProperty(value = "京东下单来源1：快递B2C，4：快运B2C")
+    private Integer orderOrigin;
+
 }

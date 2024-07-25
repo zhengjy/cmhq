@@ -91,7 +91,7 @@ public class JDCourierOrderModify extends AbstractJDUpload<FaCourierOrderEntity,
             }
         }
 
-        dto.setOrderOrigin(1);
+        dto.setOrderOrigin(param.getOrderOrigin());
         dto.setCustomerCode(getCustomerCode());
 
         JDUploadData<CommonModifyCancelOrderRequest> uploadData = new JDUploadData<>();

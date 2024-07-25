@@ -1,7 +1,11 @@
 package com.cmhq.core.api.strategy;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.api.UploadTypeEnum;
+import com.cmhq.core.dao.FaCourierOrderDao;
+import com.cmhq.core.model.FaCourierOrderEntity;
+import com.cmhq.core.util.SpringApplicationUtils;
 import com.lop.open.api.sdk.DefaultDomainApiClient;
 import com.lop.open.api.sdk.domain.ECAP.CommonQueryOrderApi.commonGetOrderInfoV1.CommonOrderInfoRequest;
 import com.lop.open.api.sdk.plugin.LopPlugin;
@@ -41,7 +45,8 @@ public class JDQueryOrderInfoOrder extends AbstractJDUpload<String, JDUploadData
         CommonOrderInfoRequest dto = new CommonOrderInfoRequest();
         dto.setWaybillCode(param);
         dto.setCustomerCode(getCustomerCode());
-        dto.setOrderOrigin(1);
+        FaCourierOrderDao faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
+        dto.setOrderOrigin(faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,param)).getOrderOrigin());
         JDUploadData<CommonOrderInfoRequest> uploadData = new JDUploadData<>();
         uploadData.setUnKey2(param);
         uploadData.setRequest(dto);
