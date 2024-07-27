@@ -1,9 +1,12 @@
 package com.cmhq.core.api.strategy.apipush;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cmhq.core.api.dto.response.ActualFeeInfoDto;
+import com.cmhq.core.dao.FaCourierOrderDao;
 import com.cmhq.core.enums.CourierCompanyEnum;
 import com.cmhq.core.model.FaCourierOrderEntity;
 import com.cmhq.core.service.domain.ReturnOrderCreateCourierOrderDomain;
+import com.cmhq.core.util.SpringApplicationUtils;
 import com.lop.open.api.sdk.domain.ECAP.CommonQueryOrderApi.commonGetActualFeeInfoV1.CommonActualFeeInfoDetailResponse;
 import com.lop.open.api.sdk.domain.ECAP.CommonQueryOrderApi.commonGetActualFeeInfoV1.CommonActualFeeResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -85,7 +88,14 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
             String againVolume = infoResponse.getCargoes().get(0).getAgainVolume();
             Double weight = 0D;
             if (StringUtils.isNotEmpty(againVolume)){
-                weight = Double.parseDouble(againVolume) / 8000;
+                FaCourierOrderDao faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
+                FaCourierOrderEntity orderEntity = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,param.getWaybillCode()));
+                if (orderEntity.getOrderOrigin() == 4){
+                    weight = Double.parseDouble(againVolume) / 6000;
+                }else {
+                    weight = Double.parseDouble(againVolume) / 8000;
+
+                }
             }
             String againWeight = infoResponse.getCargoes().get(0).getAgainWeight();
             if (StringUtils.isNotEmpty(againWeight)){

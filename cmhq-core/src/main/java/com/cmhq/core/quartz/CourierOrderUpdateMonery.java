@@ -20,6 +20,7 @@ import com.cmhq.core.service.FaCompanyService;
 import com.cmhq.core.service.FaCourierOrderService;
 import com.cmhq.core.service.FaUserMoneyService;
 import com.cmhq.core.util.EstimatePriceUtil;
+import com.cmhq.core.util.SpringApplicationUtils;
 import com.lop.open.api.sdk.domain.ECAP.CommonQueryOrderApi.commonGetActualFeeInfoV1.CommonActualFeeInfoDetailResponse;
 import com.lop.open.api.sdk.domain.ECAP.CommonQueryOrderApi.commonGetActualFeeInfoV1.CommonActualFeeResponse;
 import com.lop.open.api.sdk.domain.ECAP.CommonQueryOrderApi.commonGetOrderInfoV1.CommonOrderInfoResponse;
@@ -143,7 +144,14 @@ public class CourierOrderUpdateMonery {
             String againVolume = infoResponse.getCargoes().get(0).getAgainVolume();
             Double weight = 0D;
             if (StringUtils.isNotEmpty(againVolume)){
-                weight = Double.parseDouble(againVolume) / 8000;
+                FaCourierOrderDao faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
+                FaCourierOrderEntity orderEntity = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,billCode));
+                if (orderEntity.getOrderOrigin() == 4){
+                    weight = Double.parseDouble(againVolume) / 6000;
+                }else {
+                    weight = Double.parseDouble(againVolume) / 8000;
+
+                }
             }
             String againWeight = infoResponse.getCargoes().get(0).getAgainWeight();
             if (StringUtils.isNotEmpty(againWeight)){
