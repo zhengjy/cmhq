@@ -74,6 +74,8 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
         FaCourierOrderEntity orderEntity = new FaCourierOrderEntity();
         orderEntity.setWuliuState(Integer.parseInt(wuliuStateEnum.getType()));
         orderEntity.setCourierWuliuState(getCourierWuliuState(req));
+        //避免没有走到下面if条件
+        faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
         if (wuliuStateEnum.getType().equals(CourierWuliuStateEnum.STATE_4.getType())){
             orderEntity.setOrderIsError(0);
             faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg",getIsErrorMsg(req));
