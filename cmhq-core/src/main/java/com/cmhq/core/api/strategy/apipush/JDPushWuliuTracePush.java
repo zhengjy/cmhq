@@ -142,8 +142,7 @@ public class JDPushWuliuTracePush extends AbstartApiTracePush<JDPushTraceDto>{
 
     @Override
     protected String getIsErrorMsg(JDPushTraceDto param) {
-
-        return "";
+        return param.getCategoryName();
     }
 
     @Override
