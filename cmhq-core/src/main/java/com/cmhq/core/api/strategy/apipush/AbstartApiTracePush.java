@@ -94,7 +94,6 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             domain.handle();
         }
         if (wuliuStateEnum.getType().equals(CourierWuliuStateEnum.STATE_3.getType())){
-            faCourierOrderDao.update(orderEntity, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
             //签收处理
             doHandle(order, req);
         }
@@ -146,11 +145,12 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
         if (faCompanyEntity.getFUser() != null){
             faUserMoneyService.saveRecord(new UserMoneyParam(1, UserMoneyConsumeMsgEumn.MSG_1,price.getTotalPrice(),order.getFaCompanyId(),faCompanyEntity.getFUser(),faCompanyEntity.getDistributionRatio(),order.getId()+"",order.getCourierCompanyWaybillNo()));
         }
+        FaCourierOrderEntity pe2 = new FaCourierOrderEntity();
         //更新实际费用和重量
-        order.setPrice(price.getTotalPrice());
-        order.setWeightto(traceWeight);
-        order.setIsJiesuan(1);
-        faCourierOrderDao.update(order, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
+        pe2.setPrice(price.getTotalPrice());
+        pe2.setWeightto(traceWeight);
+        pe2.setIsJiesuan(1);
+        faCourierOrderDao.update(pe2, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
         //超长超重记录
         List<ActualFeeInfoDto> list = getActualFeeInfo(req);
         if (CollectionUtils.isNotEmpty(list)){
@@ -178,7 +178,7 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
                 }
             }
             FaCourierOrderEntity pe = new FaCourierOrderEntity();
-            pe.setPrice(order.getPrice()+d);
+            pe.setPrice(price.getTotalPrice()+d);
             faCourierOrderDao.update(pe, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
         }
 
