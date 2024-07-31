@@ -51,14 +51,6 @@ public class ConfigurerAdapter implements WebMvcConfigurer {
         this.properties = properties;
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // 设置允许跨域的路径
-                .allowedOrigins("*") // 设置允许跨域请求的源
-                .allowedMethods("POST", "GET", "PUT", "DELETE") // 设置允许跨域请求的方法
-                .allowedHeaders("*"); // 设置允许跨域请求的头
-
-    }
 
     @Bean
     public CorsFilter corsFilter() {
