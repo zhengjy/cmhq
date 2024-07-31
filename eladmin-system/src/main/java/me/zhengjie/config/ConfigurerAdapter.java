@@ -26,6 +26,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -48,6 +49,15 @@ public class ConfigurerAdapter implements WebMvcConfigurer {
 
     public ConfigurerAdapter(FileProperties properties) {
         this.properties = properties;
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**") // 设置允许跨域的路径
+                .allowedOrigins("*") // 设置允许跨域请求的源
+                .allowedMethods("POST", "GET", "PUT", "DELETE") // 设置允许跨域请求的方法
+                .allowedHeaders("*"); // 设置允许跨域请求的头
+
     }
 
     @Bean
