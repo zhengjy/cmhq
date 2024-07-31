@@ -14,10 +14,8 @@ public class WebAppMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 设置允许跨域的路径
-                .allowedOriginPatterns("*")
-                .allowCredentials(true)
                 .allowedOrigins("*") // 设置允许跨域请求的源
-                .allowedMethods("POST", "GET", "PUT","OPTIONS", "DELETE") // 设置允许跨域请求的方法
+                .allowedMethods("POST", "GET", "PUT", "DELETE") // 设置允许跨域请求的方法
                 .allowedHeaders("*"); // 设置允许跨域请求的头
 
     }
