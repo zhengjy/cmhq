@@ -55,8 +55,9 @@ public class JDQueryActualFeeInfo extends AbstractJDUpload<String, JDUploadData<
     protected JDUploadData<CommonActualFeeRequest> getData(String waybillCode) throws RuntimeException {
         CommonActualFeeRequest dto = new CommonActualFeeRequest();
         FaCourierOrderDao faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
-        dto.setOrderOrigin(faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,waybillCode)).getOrderOrigin());
-        dto.setCustomerCode(getCustomerCode());
+        FaCourierOrderEntity order = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,waybillCode));
+        dto.setOrderOrigin(order.getOrderOrigin());
+        dto.setCustomerCode(getCustomerCode(order.getOrderOrigin()));
         dto.setWaybillCode(waybillCode);
         JDUploadData<CommonActualFeeRequest> uploadData = new JDUploadData<>();
         uploadData.setUnKey2(waybillCode);

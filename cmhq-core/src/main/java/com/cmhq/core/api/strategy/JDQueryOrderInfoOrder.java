@@ -44,9 +44,10 @@ public class JDQueryOrderInfoOrder extends AbstractJDUpload<String, JDUploadData
     protected JDUploadData<CommonOrderInfoRequest> getData(String param) throws RuntimeException {
         CommonOrderInfoRequest dto = new CommonOrderInfoRequest();
         dto.setWaybillCode(param);
-        dto.setCustomerCode(getCustomerCode());
         FaCourierOrderDao faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
-        dto.setOrderOrigin(faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,param)).getOrderOrigin());
+        FaCourierOrderEntity order = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,param));
+        dto.setCustomerCode(getCustomerCode(order.getOrderOrigin()));
+        dto.setOrderOrigin(order.getOrderOrigin());
         JDUploadData<CommonOrderInfoRequest> uploadData = new JDUploadData<>();
         uploadData.setUnKey2(param);
         uploadData.setRequest(dto);

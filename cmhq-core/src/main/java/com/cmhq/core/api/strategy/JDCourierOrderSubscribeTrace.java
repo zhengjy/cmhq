@@ -48,8 +48,9 @@ public class JDCourierOrderSubscribeTrace extends AbstractJDUpload<CourierOrderS
         dto.setWaybillCode(param.getWaybillCode());
 
         FaCourierOrderDao faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
-        dto.setOrderOrigin(faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,param.getWaybillCode())).getOrderOrigin());
-        dto.setCustomerCode(getCustomerCode());
+        FaCourierOrderEntity order = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,param.getWaybillCode()));
+        dto.setOrderOrigin(order.getOrderOrigin());
+        dto.setCustomerCode(getCustomerCode(order.getOrderOrigin()));
         dto.setMobile(param.getMobile().substring(7));
 
         JDUploadData<CommonSubscribeTraceRequest> uploadData = new JDUploadData<>();

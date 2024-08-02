@@ -88,9 +88,15 @@ public abstract class AbstractJDUpload<Req, T extends JDUploadData> extends Abst
         return StringUtils.equals(code,"0");
     }
 
-    protected String getCustomerCode(){
+    protected String getCustomerCode(Integer orderOrigin){
+        orderOrigin = orderOrigin == null ? 1 : orderOrigin;
         String[] split = getToken().split(",");
-        return split[3];
+        if (orderOrigin == 4){
+            return split[4];
+        }else {
+            return split[3];
+        }
+
     }
 
 }

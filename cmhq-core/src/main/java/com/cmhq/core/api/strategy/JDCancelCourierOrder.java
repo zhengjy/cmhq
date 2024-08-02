@@ -46,7 +46,7 @@ public class JDCancelCourierOrder extends AbstractJDUpload<FaCourierOrderEntity,
         CommonOrderCancelRequest dto = new CommonOrderCancelRequest();
         dto.setWaybillCode(param.getCourierCompanyWaybillNo());
 //        dto.setOrderCode(param.getCourierCompanyOrderNo());
-        dto.setCustomerCode(getCustomerCode());
+        dto.setCustomerCode(getCustomerCode(param.getOrderOrigin()));
         dto.setOrderOrigin(param.getOrderOrigin());
         dto.setCancelReason(param.getReason());
         dto.setCancelReasonCode("1");
