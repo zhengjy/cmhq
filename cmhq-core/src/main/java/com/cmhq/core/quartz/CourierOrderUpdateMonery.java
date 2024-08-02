@@ -98,6 +98,14 @@ public class CourierOrderUpdateMonery {
             newOrder.setPrice(price.getTotalPrice());
             newOrder.setWeightto(traceWeight);
             newOrder.setIsJiesuan(1);
+
+            double difference = Math.abs(traceWeight-order.getWeight());
+            //重量差距超过30kg，则物流公司重量可能不准则置为异常
+            if (difference > 50){
+                log.error("{} 物流公司重量差距超过30kg",order.getCourierCompanyWaybillNo());
+            }else {
+                newOrder.setOrderIsError(1);
+            }
             faCourierOrderDao.update(newOrder, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,order.getCourierCompanyWaybillNo()));
 
             //超长超重记录

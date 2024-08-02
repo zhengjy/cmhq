@@ -124,7 +124,6 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             pe.setOrderIsError(0);
             faCourierOrderDao.update(pe, new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,req.getUnKey()));
             faCourierOrderService.saveOrderExt(order.getId(),"orderIsErrorMsg","物流公司重量差距超过50kg");
-            return;
         }
 
         double weight = order.getWeight() == null ? 0D : order.getWeight();
