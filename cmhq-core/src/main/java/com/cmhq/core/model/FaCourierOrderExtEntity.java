@@ -31,6 +31,7 @@ public class FaCourierOrderExtEntity {
      * timeout24HourCourierCompanyCodes:超时24小时已下单的快递公司编号列表
      * order_fee_money:订单费用金额
      * order_fee_type:订单费用类型：超长超重额外费用
+     * company_bill_code:商户订单编号
      * */
     private String cname;
     private String cvalue;

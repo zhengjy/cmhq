@@ -89,11 +89,11 @@ public class FaSaleUserController {
     @Transactional
     @ApiOperation("提现")
     @PostMapping(value = "/withdrawal")
-    public APIResponse withdrawal(@RequestParam String zhi_account,@RequestParam String zhi_name,@RequestParam Double money) {
+    public APIResponse withdrawal(@RequestBody FaWithdrawEntity entity) {
         FaWithdrawEntity e = new FaWithdrawEntity();
-        e.setZhiAccount(zhi_account);
-        e.setZhiName(zhi_name);
-        e.setMoney(money);
+        e.setZhiAccount(entity.getZhiAccount());
+        e.setZhiName(entity.getZhiName());
+        e.setMoney(entity.getMoney());
         FaUserEntity faUser = userService.queryCurrentUser();
         e.setUserId(faUser.getId());
         e.setType(2);
@@ -102,18 +102,18 @@ public class FaSaleUserController {
 
         FaUserMoneyEntity um = new FaUserMoneyEntity();
         um.setUser_id(faUser.getId());
-        um.setMoney(money);
+        um.setMoney(entity.getMoney());
         um.setType(2);
         um.setBefore(faUser.getMoney());
         um.setIs_fenxiao("1");
-        um.setAfter_money(faUser.getMoney()-money);
+        um.setAfter_money(faUser.getMoney()-entity.getMoney());
         faSaleUserMoneyDao.insert(um);
 
         FaUserEntity u = new FaUserEntity();
         u.setId(faUser.getId());
-        u.setMoney(faUser.getMoney()-money);
-        u.setZhi_name(zhi_account);
-        u.setZhi_name(zhi_name);
+        u.setMoney(faUser.getMoney()-entity.getMoney());
+        u.setZhi_name(entity.getZhiAccount());
+        u.setZhi_name(entity.getZhiName());
         faSaleUserDao.updateById(u);
 
         return APIResponse.success();

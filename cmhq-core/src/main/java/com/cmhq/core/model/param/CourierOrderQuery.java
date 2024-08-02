@@ -60,6 +60,8 @@ public class CourierOrderQuery extends BaseQuery{
     private String companyName;
     @ApiModelProperty(value = "帐户名称")
     private String userName;
+    @ApiModelProperty(value = "商户订单编号")
+    private String companyBillCode;
 
     @ApiModelProperty(value = "开始时间")
     private String sTime;
