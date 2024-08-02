@@ -106,6 +106,7 @@ public class JDCourierOrderCreate extends AbstractJDUpload<FaCourierOrderEntity,
         dto.setProductsReq(product);
         if (param.getOrderOrigin() == 4){
             product.setProductCode("fr-m-0004");
+            dto.setBusinessUnitCode(getCustomerCode(param.getOrderOrigin()));
         }else {
             product.setProductCode("ed-m-0001");
         }
