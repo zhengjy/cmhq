@@ -174,7 +174,7 @@ public class CourierOrderQueryPageDomain {
             lam.inSql(FaCourierOrderEntity::getFaCompanyId,"select id from fa_company where company_name like '%"+query.getCompanyName()+"%'");
         }
         if (StringUtils.isNotEmpty(query.getCompanyBillCode())){
-            lam.inSql(FaCourierOrderEntity::getId,"select courier_order_id from fa_courier_order_ext where cname ='company_bill_code' and cvalue = '"+query.getCompanyBillCode().trim()+"'");
+            lam.inSql(FaCourierOrderEntity::getId,"select courier_order_id from fa_courier_order_ext where cname ='company_bill_code' and cvalue like '%"+query.getCompanyBillCode()+"%'");
         }
         lam.orderByDesc(FaCourierOrderEntity::getCreateTime);
         //TODO 扩展字段查询
