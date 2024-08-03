@@ -100,7 +100,7 @@ public class JDCourierOrderCreate extends AbstractJDUpload<FaCourierOrderEntity,
         receiver.setFullAddress(param.getToProv()+param.getToCity()+param.getToArea()+param.getToAddress());
 
         dto.setOrderOrigin(param.getOrderOrigin());
-        dto.setCustomerCode(getCustomerCode(param.getOrderOrigin()));
+
 
         com.lop.open.api.sdk.domain.ECAP.CommonCreateOrderApi.commonCreateOrderV1.CommonProductInfo product = new com.lop.open.api.sdk.domain.ECAP.CommonCreateOrderApi.commonCreateOrderV1.CommonProductInfo();
         dto.setProductsReq(product);
@@ -109,6 +109,7 @@ public class JDCourierOrderCreate extends AbstractJDUpload<FaCourierOrderEntity,
             dto.setBusinessUnitCode(getCustomerCode(param.getOrderOrigin()));
         }else {
             product.setProductCode("ed-m-0001");
+            dto.setCustomerCode(getCustomerCode(param.getOrderOrigin()));
         }
 
         dto.setSettleType(3); //TODO  付款方式

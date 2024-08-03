@@ -11,6 +11,7 @@ import com.cmhq.core.model.FaRechargeEntity;
 import com.cmhq.core.model.param.CourierOrderQuery;
 import com.cmhq.core.service.FaCourierOrderService;
 import com.cmhq.core.service.domain.ImportCourierOrderDomain;
+import com.cmhq.core.service.domain.ImportJiesuanCourierOrderDomain;
 import com.cmhq.core.util.EstimatePriceUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.APIResponse;
@@ -206,6 +207,12 @@ public class FaCourierOrderController {
     @PostMapping(value = "uploadExcel",consumes = "multipart/form-data")
     public APIResponse uploadExcel(@RequestPart("file") MultipartFile file) {
         new ImportCourierOrderDomain(file).handle();
+        return APIResponse.success();
+    }
+    @Log("结算订单导入")
+    @PostMapping(value = "uploadJiesuanOrder",consumes = "multipart/form-data")
+    public APIResponse uploadJiesuanOrder(@RequestPart("file") MultipartFile file) {
+        new ImportJiesuanCourierOrderDomain(file).handle();
         return APIResponse.success();
     }
 

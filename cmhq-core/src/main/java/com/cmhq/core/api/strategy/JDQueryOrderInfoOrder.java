@@ -46,7 +46,11 @@ public class JDQueryOrderInfoOrder extends AbstractJDUpload<String, JDUploadData
         dto.setWaybillCode(param);
         FaCourierOrderDao faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
         FaCourierOrderEntity order = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,param));
-        dto.setCustomerCode(getCustomerCode(order.getOrderOrigin()));
+        if (order.getOrderOrigin() == 4){
+            dto.setBusinessUnitCode(getCustomerCode(order.getOrderOrigin()));
+        }else {
+            dto.setCustomerCode(getCustomerCode(order.getOrderOrigin()));
+        }
         dto.setOrderOrigin(order.getOrderOrigin());
         JDUploadData<CommonOrderInfoRequest> uploadData = new JDUploadData<>();
         uploadData.setUnKey2(param);

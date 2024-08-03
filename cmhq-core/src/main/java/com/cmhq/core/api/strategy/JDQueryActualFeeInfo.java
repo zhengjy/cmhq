@@ -57,7 +57,11 @@ public class JDQueryActualFeeInfo extends AbstractJDUpload<String, JDUploadData<
         FaCourierOrderDao faCourierOrderDao = SpringApplicationUtils.getBean(FaCourierOrderDao.class);
         FaCourierOrderEntity order = faCourierOrderDao.selectOne(new LambdaQueryWrapper<FaCourierOrderEntity>().eq(FaCourierOrderEntity::getCourierCompanyWaybillNo,waybillCode));
         dto.setOrderOrigin(order.getOrderOrigin());
-        dto.setCustomerCode(getCustomerCode(order.getOrderOrigin()));
+        if (order.getOrderOrigin() == 4){
+            dto.setBusinessUnitCode(getCustomerCode(order.getOrderOrigin()));
+        }else {
+            dto.setCustomerCode(getCustomerCode(order.getOrderOrigin()));
+        }
         dto.setWaybillCode(waybillCode);
         JDUploadData<CommonActualFeeRequest> uploadData = new JDUploadData<>();
         uploadData.setUnKey2(waybillCode);
