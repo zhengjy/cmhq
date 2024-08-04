@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.APIResponse;
 import me.zhengjie.QueryResult;
+import me.zhengjie.modules.security.config.AuthUserDto;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,6 +87,17 @@ public class FaSaleUserController {
         return APIResponse.success(faUser);
     }
 
+    @ApiOperation("修改密码")
+    @PostMapping(value = "/resetpwd")
+    public APIResponse resetpwd(@RequestBody AuthUserDto dto) {
+        FaUserEntity faUser = userService.queryCurrentUser();
+        FaUserEntity u = new FaUserEntity();
+        u.setId(faUser.getId());
+        u.setPassword(dto.getNewpassword());
+        faSaleUserDao.updateById(u);
+        return APIResponse.success(u);
+    }
+
     @Transactional
     @ApiOperation("提现")
     @PostMapping(value = "/withdrawal")
@@ -101,19 +113,19 @@ public class FaSaleUserController {
 
 
         FaUserMoneyEntity um = new FaUserMoneyEntity();
-        um.setUser_id(faUser.getId());
+        um.setUserId(faUser.getId());
         um.setMoney(entity.getMoney());
         um.setType(2);
         um.setBefore(faUser.getMoney());
-        um.setIs_fenxiao("1");
-        um.setAfter_money(faUser.getMoney()-entity.getMoney());
+        um.setIsFenxiao("1");
+        um.setAfterMoney(faUser.getMoney()-entity.getMoney());
         faSaleUserMoneyDao.insert(um);
 
         FaUserEntity u = new FaUserEntity();
         u.setId(faUser.getId());
         u.setMoney(faUser.getMoney()-entity.getMoney());
-        u.setZhi_name(entity.getZhiAccount());
-        u.setZhi_name(entity.getZhiName());
+        u.setZhiAccount(entity.getZhiAccount());
+        u.setZhiName(entity.getZhiName());
         faSaleUserDao.updateById(u);
 
         return APIResponse.success();

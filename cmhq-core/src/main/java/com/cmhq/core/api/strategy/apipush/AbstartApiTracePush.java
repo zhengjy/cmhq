@@ -59,10 +59,10 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             log.error("为查询到订单 params 【{}】", JSONObject.toJSONString(req));
             return;
         }
-//        if (order.getWuliuState() != null && order.getWuliuState().toString().equals(CourierWuliuStateEnum.STATE_3.getType())){
-//            log.error("订单已签收 params 【{}】", JSONObject.toJSONString(req));
-//            return;
-//        }
+        if (order.getWuliuState() != null && order.getWuliuState().toString().equals(CourierWuliuStateEnum.STATE_3.getType())){
+            log.error("订单已签收 params 【{}】", JSONObject.toJSONString(req));
+            return;
+        }
         //获取状态
         CourierWuliuStateEnum wuliuStateEnum = getTraceState(req);
         if (wuliuStateEnum == null){
@@ -131,16 +131,6 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
         saveRecord(order,faCompanyEntity,traceWeight,weight,req);
 
         FreightChargeDto price = EstimatePriceUtil.getPrice(order.getFromProv(),order.getToProv(),order.getFromCity(),order.getToCity(),traceWeight,faCompanyEntity.getRatio());
-
-        faCompanyEntity.setFUser(1);
-        faCompanyEntity.setDistributionRatio(100);
-        if (faCompanyEntity.getFUser() != null){
-            faUserMoneyService.saveRecord(new UserMoneyParam(1, UserMoneyConsumeMsgEumn.MSG_1,price.getTotalPrice(),order.getFaCompanyId(),faCompanyEntity.getFUser(),faCompanyEntity.getDistributionRatio(),order.getId()+"",order.getCourierCompanyWaybillNo()));
-        }
-        if (1==1){
-            return;
-        }
-
         //插入记录  返还商户预估费用& 扣除商户金额
         faCompanyMoneyService.saveRecord(new CompanyMoneyParam(1, MoneyConsumeEumn.CONSUM_1, MoneyConsumeMsgEumn.MSG_4,order.getEstimatePrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
 
@@ -151,7 +141,9 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
             throw new RuntimeException(e);
         }
         faCompanyMoneyService.saveRecord(new CompanyMoneyParam(2, MoneyConsumeEumn.CONSUM_3, MoneyConsumeMsgEumn.MSG_2,price.getTotalPrice(),order.getFaCompanyId(),order.getId()+"",order.getCourierCompanyWaybillNo()));
-
+        if (faCompanyEntity.getFUser() != null){
+            faUserMoneyService.saveRecord(new UserMoneyParam(1, UserMoneyConsumeMsgEumn.MSG_1,price.getTotalPrice(),order.getFaCompanyId(),faCompanyEntity.getFUser(),faCompanyEntity.getDistributionRatio(),order.getId()+"",order.getCourierCompanyWaybillNo()));
+        }
         FaCourierOrderEntity pe2 = new FaCourierOrderEntity();
         //更新实际费用和重量
         pe2.setPrice(price.getTotalPrice());
@@ -199,7 +191,7 @@ public abstract class AbstartApiTracePush< Req extends UploadData> extends Abstr
      * @param weight
      */
     private void saveRecord(FaCourierOrderEntity order,FaCompanyEntity faCompanyEntity,double traceWeight,double weight,Req req){
-	if (faCompanyEntity.getCheckWeightRatio() == null ){
+        if (faCompanyEntity.getCheckWeightRatio() == null ){
             return;
         }
         double difference = traceWeight - weight;

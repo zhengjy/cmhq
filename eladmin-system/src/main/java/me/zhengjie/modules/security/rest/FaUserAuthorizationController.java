@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.APIResponse;
+import me.zhengjie.modules.security.config.AuthUserDto;
 import me.zhengjie.modules.security.config.FaUserAuthenticationToken;
 import me.zhengjie.modules.security.config.bean.LoginProperties;
 import me.zhengjie.modules.security.config.bean.SecurityProperties;

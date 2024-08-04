@@ -108,7 +108,7 @@ public class FaUserEntity {
      * 可提现佣金
      * </pre>
      */
-    private Double	money;
+//    private Double	money;
 
     /**
      * <pre>
@@ -256,13 +256,13 @@ public class FaUserEntity {
      * </pre>
      */
     private Double	withdrawalMaxMoney;
-
-    /**
-     * <pre>
-     * 每天最大提现次数
-     * </pre>
-     */
-    private Integer	withdrawalMaxNum;
+//
+//    /**
+//     * <pre>
+//     * 每天最大提现次数
+//     * </pre>
+//     */
+//    private Integer	withdrawalMaxNum;
 
     /**
      * <pre>

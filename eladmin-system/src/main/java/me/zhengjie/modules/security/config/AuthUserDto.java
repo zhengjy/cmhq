@@ -1,4 +1,4 @@
-package me.zhengjie.modules.security.rest;
+package me.zhengjie.modules.security.config;
 
 import lombok.Data;
 
@@ -6,4 +6,7 @@ import lombok.Data;
 public class AuthUserDto {
     private String username;
     private String password;
+
+    private String mobile;
+    private String newpassword;
 }

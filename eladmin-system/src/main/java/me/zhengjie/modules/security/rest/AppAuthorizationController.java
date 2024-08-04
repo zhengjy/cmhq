@@ -26,6 +26,7 @@ import me.zhengjie.annotation.Log;
 import me.zhengjie.annotation.rest.AnonymousDeleteMapping;
 import me.zhengjie.annotation.rest.AnonymousGetMapping;
 import me.zhengjie.annotation.rest.AnonymousPostMapping;
+import me.zhengjie.modules.security.config.SysUserAuthenticationToken;
 import me.zhengjie.modules.security.config.bean.LoginCodeEnum;
 import me.zhengjie.modules.security.config.bean.LoginProperties;
 import me.zhengjie.modules.security.config.bean.SecurityProperties;
@@ -35,8 +36,10 @@ import me.zhengjie.modules.security.service.dto.AuthUserDto;
 import me.zhengjie.modules.security.service.dto.JwtUserDto;
 import me.zhengjie.utils.RedisUtils;
 import me.zhengjie.utils.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -69,7 +72,8 @@ public class AppAuthorizationController {
     private final RedisUtils redisUtils;
     private final OnlineUserService onlineUserService;
     private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    @Autowired
+    private final AuthenticationManager authenticationManagerBuilder;
     @Resource
     private LoginProperties loginProperties;
 
@@ -79,9 +83,9 @@ public class AppAuthorizationController {
     public ResponseEntity<Object> login(@Validated @RequestBody AuthUserDto authUser, HttpServletRequest request) throws Exception {
         // 密码解密
         String password = authUser.getPassword();
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(authUser.getUsername(), password);
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SysUserAuthenticationToken authenticationToken =
+                new SysUserAuthenticationToken(authUser.getUsername(), password);
+        Authentication authentication = authenticationManagerBuilder.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         // 生成令牌与第三方系统获取令牌方式
         // UserDetails userDetails = userDetailsService.loadUserByUsername(userInfo.getUsername());

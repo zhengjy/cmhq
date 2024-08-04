@@ -13,7 +13,7 @@ public class FaUserMoneyEntity {
     private Integer	id;
 
     /**分校人id*/
-    private Integer user_id;
+    private Integer userId;
     /**金额*/
     private Double money;
     /**=增加减少 1加2减*/
@@ -25,11 +25,11 @@ public class FaUserMoneyEntity {
     @TableField(value = "`before`")
     private Double before;
     /**操作之前的余额*/
-    private Double after_money;
+    private Double afterMoney;
     /**创建时间*/
-    private String create_time;
+    private String createTime;
     /**商户id*/
     private Integer cid;
     /**是否分销 0正常1分销*/
-    private String is_fenxiao="1";
+    private String isFenxiao="1";
 }

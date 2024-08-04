@@ -170,42 +170,42 @@ public class FaUserEntity {
      * 每天最大提现次数
      * </pre>
      */
-    private Integer	max_withdrawal_num;
+    private Integer	maxWithdrawalNum;
 
     /**
      * <pre>
      * 每天最大提现金额
      * </pre>
      */
-    private Double	max_withdrawal_money;
+    private Double	maxWithdrawalMoney;
 
     /**
      * <pre>
      * 支付宝账号
      * </pre>
      */
-    private String	zhi_account;
+    private String	zhiAccount;
 
     /**
      * <pre>
      * 支付宝名字
      * </pre>
      */
-    private String	zhi_name;
+    private String	zhiName;
 
     /**
      * <pre>
      * 每天提现限额
      * </pre>
      */
-    private Double	withdrawal_max_money;
+    private Double	withdrawalMaxMoney;
 
     /**
      * <pre>
      * 每天最大提现次数
      * </pre>
      */
-    private Integer	withdrawal_max_num;
+//    private Integer	withdrawalMaxNum;
 
     /**
      * <pre>
